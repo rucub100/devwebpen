@@ -56,6 +56,8 @@ This section provides a deeper dive into the core concepts and design choices be
 
 [Optional/TODO: Include a diagram to visually represent the architecture]
 
+Webpen includes a native binary of the Java daemon, compiled with GraalVM, as a sidecar within the application, as described in the [Tauri documentation](https://v2.tauri.app/develop/sidecar/).
+
 ### [TODO: Concept 2 Title (e.g., Security Scanning)]
 
 TODO
