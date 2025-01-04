@@ -13,6 +13,8 @@ Designed with developers and security professionals in mind, webpen empowers you
 ### Prerequisites
 
 - [Tauri](https://v2.tauri.app/start/prerequisites/)
+- [Maven](https://maven.apache.org/index.html)
+- [GraalVM](https://www.graalvm.org/downloads/)
 
 ### Development Workflow
 
