@@ -1,0 +1,57 @@
+.rootLayout {
+  position: relative;
+
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  min-width: 100vw;
+  max-width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+
+  display: grid;
+  grid-template-columns:
+    [full-start nav-aside-start] minmax(0, max-content)
+    [nav-aside-end left-aside-start] minmax(0, max-content)
+    [left-aside-end main-start] minmax(max-content, 1fr)
+    [main-end right-aside-start] minmax(0, max-content)
+    [right-aside-end full-end];
+
+  grid-template-rows:
+    [full-start mein-start] minmax(max-content, 1fr)
+    [main-end bottom-aside-start] minmax(0, max-content)
+    [bottom-aside-end footer-start] minmax(0, max-content)
+    [footer-end];
+
+  grid-template-areas:
+    "nav-aside left-aside main right-aside"
+    "nav-aside bottom-aside bottom-aside bottom-aside"
+    "footer footer footer footer";
+
+  .navAside {
+    grid-area: nav-aside;
+  }
+
+  .leftAside {
+    grid-area: left-aside;
+  }
+
+  .main {
+    grid-area: main;
+  }
+
+  .rightAside {
+    grid-area: right-aside;
+  }
+
+  .bottomAside {
+    grid-area: bottom-aside;
+  }
+
+  .footer {
+    grid-area: footer;
+  }
+}
