@@ -1,7 +1,8 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import styles from "./RootLayout.module.css";
 
 export default function RootLayout() {
+  const leftAsideRef = useRef<HTMLDivElement>(null);
   const [leftSplitIsResizing, setLeftSplitIsResizing] = useState(false);
   const [leftAsideWidth, setLeftAsideWidth] = useState(200);
 
@@ -9,6 +10,11 @@ export default function RootLayout() {
     (event: React.MouseEvent<HTMLDivElement>) => {
       event.preventDefault();
       document.body.style.cursor = "e-resize";
+
+      const actualLeftAsideWidth = leftAsideRef.current?.offsetWidth;
+      if (actualLeftAsideWidth) {
+        setLeftAsideWidth(actualLeftAsideWidth);
+      }
       setLeftSplitIsResizing(true);
 
       const mouseUpHandler = (event: MouseEvent) => {
@@ -17,6 +23,10 @@ export default function RootLayout() {
         document.removeEventListener("mouseup", mouseUpHandler);
         document.body.style.cursor = "auto";
         setLeftSplitIsResizing(false);
+        const actualLeftAsideWidth = leftAsideRef.current?.offsetWidth;
+        if (actualLeftAsideWidth) {
+          setLeftAsideWidth(actualLeftAsideWidth);
+        }
       };
 
       const mouseMoveHandler = (event: MouseEvent) => {
@@ -46,6 +56,7 @@ export default function RootLayout() {
         nav
       </nav>
       <header
+        ref={leftAsideRef}
         className={`${styles.leftAside} border-r border-neutral-700 min-w-max max-w-full`}
         style={{ width: leftAsideWidth }}
       >
