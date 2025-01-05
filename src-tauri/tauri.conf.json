@@ -18,14 +18,22 @@
         "width": 1024,
         "minHeight": 600,
         "height": 768,
-        "visible": false
+        "visible": false,
+        "windowEffects": {
+          "effects": ["mica"]
+        }
       }
     ],
     "security": {
       "csp": null,
       "capabilities": [
         {
-          "identifier": "main-window-show",
+          "identifier": "default",
+          "permissions": ["core:default"],
+          "windows": ["*"]
+        },
+        {
+          "identifier": "main-window",
           "permissions": ["core:window:allow-show"],
           "windows": ["main"]
         }
