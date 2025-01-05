@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 
-import "./tauri/menu";
 import App from "./App";
 import "./global.css";
 
