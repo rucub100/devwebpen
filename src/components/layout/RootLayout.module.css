@@ -16,7 +16,8 @@
   grid-template-columns:
     [full-start nav-aside-start] minmax(0, max-content)
     [nav-aside-end left-aside-start] minmax(0, max-content)
-    [left-aside-end main-start] minmax(max-content, 1fr)
+    [left-aside-end left-split-start] 2px
+    [left-split-end main-start] minmax(max-content, 1fr)
     [main-end right-aside-start] minmax(0, max-content)
     [right-aside-end full-end];
 
@@ -27,9 +28,9 @@
     [footer-end];
 
   grid-template-areas:
-    "nav-aside left-aside main right-aside"
-    "nav-aside bottom-aside bottom-aside bottom-aside"
-    "footer footer footer footer";
+    "nav-aside left-aside left-split main right-aside"
+    "nav-aside bottom-aside bottom-aside bottom-aside bottom-aside"
+    "footer footer footer footer footer";
 
   .navAside {
     grid-area: nav-aside;
@@ -37,6 +38,13 @@
 
   .leftAside {
     grid-area: left-aside;
+  }
+
+  .leftSplit {
+    grid-area: left-split;
+    cursor: e-resize;
+    height: 100%;
+    width: 100%;
   }
 
   .main {
