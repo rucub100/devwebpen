@@ -24,12 +24,14 @@
 
   grid-template-rows:
     [full-start mein-start] minmax(max-content, 1fr)
-    [main-end bottom-aside-start] minmax(0, max-content)
+    [main-end bottom-split-start] 2px
+    [bottom-split-end bottom-aside-start] minmax(0, max-content)
     [bottom-aside-end footer-start] minmax(0, max-content)
     [footer-end];
 
   grid-template-areas:
     "nav-aside left-aside left-split main right-split right-aside"
+    "nav-aside bottom-split bottom-split bottom-split bottom-split bottom-split"
     "nav-aside bottom-aside bottom-aside bottom-aside bottom-aside bottom-aside"
     "footer footer footer footer footer footer";
 
@@ -61,6 +63,13 @@
 
   .rightAside {
     grid-area: right-aside;
+  }
+
+  .bottomSplit {
+    grid-area: bottom-split;
+    cursor: n-resize;
+    height: 100%;
+    width: 100%;
   }
 
   .bottomAside {

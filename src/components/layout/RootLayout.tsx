@@ -10,6 +10,10 @@ export default function RootLayout() {
   const [rightSplitIsResizing, setRightSplitIsResizing] = useState(false);
   const [rightAsideWidth, setRightAsideWidth] = useState(200);
 
+  const bottomAsideRef = useRef<HTMLDivElement>(null);
+  const [bottomSplitIsResizing, setBottomSplitIsResizing] = useState(false);
+  const [bottomAsideHeight, setBottomAsideHeight] = useState(200);
+
   const leftSplitMouseDownHandler = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
       event.preventDefault();
@@ -94,6 +98,48 @@ export default function RootLayout() {
     []
   );
 
+  const bottomSplitMouseDownHandler = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      document.body.style.cursor = "n-resize";
+
+      const actualBottomAsideHeight = bottomAsideRef.current?.offsetHeight;
+      if (actualBottomAsideHeight) {
+        setBottomAsideHeight(actualBottomAsideHeight);
+      }
+      setBottomSplitIsResizing(true);
+
+      const mouseUpHandler = (event: MouseEvent) => {
+        event.preventDefault();
+        document.removeEventListener("mousemove", mouseMoveHandler);
+        document.removeEventListener("mouseup", mouseUpHandler);
+        document.body.style.cursor = "auto";
+        setBottomSplitIsResizing(false);
+        const actualBottomAsideHeight = bottomAsideRef.current?.offsetHeight;
+        if (actualBottomAsideHeight) {
+          setBottomAsideHeight(actualBottomAsideHeight);
+        }
+      };
+
+      const mouseMoveHandler = (event: MouseEvent) => {
+        event.preventDefault();
+        setBottomAsideHeight((prevHeight) => {
+          const newHeight = prevHeight - event.movementY;
+          return newHeight;
+        });
+      };
+
+      document.addEventListener("mouseup", mouseUpHandler);
+      document.addEventListener("mousemove", mouseMoveHandler);
+
+      return () => {
+        document.removeEventListener("mouseup", mouseUpHandler);
+        document.removeEventListener("mousemove", mouseMoveHandler);
+      };
+    },
+    []
+  );
+
   return (
     <div
       className={`${styles.rootLayout} scroll-smooth antialiased select-none dark:bg-neutral-900 dark:text-neutral-200`}
@@ -128,7 +174,17 @@ export default function RootLayout() {
       >
         right aside
       </aside>
-      <aside className={`${styles.bottomAside} border-t border-neutral-700`}>
+      <div
+        className={`${styles.bottomSplit} ${
+          bottomSplitIsResizing ? "bg-[--color-primary-500]" : "bg-transparent"
+        }  hover:bg-[--color-primary-500] transition-colors duration-200 delay-300`}
+        onMouseDown={bottomSplitMouseDownHandler}
+      ></div>
+      <aside
+        ref={bottomAsideRef}
+        className={`${styles.bottomAside} border-t border-neutral-700 min-h-max max-h-full`}
+        style={{ height: bottomAsideHeight }}
+      >
         bottom aside
       </aside>
       <footer className={`${styles.footer} border-t border-neutral-700`}>
