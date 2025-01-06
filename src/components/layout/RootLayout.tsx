@@ -6,6 +6,10 @@ export default function RootLayout() {
   const [leftSplitIsResizing, setLeftSplitIsResizing] = useState(false);
   const [leftAsideWidth, setLeftAsideWidth] = useState(200);
 
+  const rightAsideRef = useRef<HTMLDivElement>(null);
+  const [rightSplitIsResizing, setRightSplitIsResizing] = useState(false);
+  const [rightAsideWidth, setRightAsideWidth] = useState(200);
+
   const leftSplitMouseDownHandler = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
       event.preventDefault();
@@ -48,6 +52,48 @@ export default function RootLayout() {
     []
   );
 
+  const rightSplitMouseDownHandler = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      document.body.style.cursor = "e-resize";
+
+      const actualRightAsideWidth = rightAsideRef.current?.offsetWidth;
+      if (actualRightAsideWidth) {
+        setRightAsideWidth(actualRightAsideWidth);
+      }
+      setRightSplitIsResizing(true);
+
+      const mouseUpHandler = (event: MouseEvent) => {
+        event.preventDefault();
+        document.removeEventListener("mousemove", mouseMoveHandler);
+        document.removeEventListener("mouseup", mouseUpHandler);
+        document.body.style.cursor = "auto";
+        setRightSplitIsResizing(false);
+        const actualRightAsideWidth = rightAsideRef.current?.offsetWidth;
+        if (actualRightAsideWidth) {
+          setRightAsideWidth(actualRightAsideWidth);
+        }
+      };
+
+      const mouseMoveHandler = (event: MouseEvent) => {
+        event.preventDefault();
+        setRightAsideWidth((prevWidth) => {
+          const newWidth = prevWidth - event.movementX;
+          return newWidth;
+        });
+      };
+
+      document.addEventListener("mouseup", mouseUpHandler);
+      document.addEventListener("mousemove", mouseMoveHandler);
+
+      return () => {
+        document.removeEventListener("mouseup", mouseUpHandler);
+        document.removeEventListener("mousemove", mouseMoveHandler);
+      };
+    },
+    []
+  );
+
   return (
     <div
       className={`${styles.rootLayout} scroll-smooth antialiased select-none dark:bg-neutral-900 dark:text-neutral-200`}
@@ -68,8 +114,18 @@ export default function RootLayout() {
         }  hover:bg-[--color-primary-500] transition-colors duration-200 delay-300`}
         onMouseDown={leftSplitMouseDownHandler}
       ></div>
-      <main className={`${styles.main} min-w-[200px] max-w-max`}>main</main>
-      <aside className={`${styles.rightAside} border-l border-neutral-700`}>
+      <main className={`${styles.main} min-w-[400px] max-w-max`}>main</main>
+      <div
+        className={`${styles.rightSplit} ${
+          rightSplitIsResizing ? "bg-[--color-primary-500]" : "bg-transparent"
+        }  hover:bg-[--color-primary-500] transition-colors duration-200 delay-300`}
+        onMouseDown={rightSplitMouseDownHandler}
+      ></div>
+      <aside
+        ref={rightAsideRef}
+        className={`${styles.rightAside} border-l border-neutral-700 min-w-max max-w-full`}
+        style={{ width: rightAsideWidth }}
+      >
         right aside
       </aside>
       <aside className={`${styles.bottomAside} border-t border-neutral-700`}>
