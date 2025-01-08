@@ -8,6 +8,7 @@ mod daemon_connector;
 pub fn run() {
     daemon_connector::start_connector();
     tauri::Builder::default()
+        .plugin(tauri_plugin_shell::init())
         .setup(|app| {
             app.manage(AppState::default());
             Ok(())

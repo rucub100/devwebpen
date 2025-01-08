@@ -28,11 +28,6 @@
       "csp": null,
       "capabilities": [
         {
-          "identifier": "default",
-          "permissions": ["core:default"],
-          "windows": ["*"]
-        },
-        {
           "identifier": "main-window",
           "permissions": ["core:window:allow-show"],
           "windows": ["main"]
