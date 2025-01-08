@@ -3,6 +3,8 @@ use std::sync::{
     Mutex,
 };
 
+use tauri_plugin_shell::process::CommandChild;
+
 pub enum DaemonState {
     Stopped,
     Starting,
@@ -69,6 +71,7 @@ pub struct ViewState {}
 #[derive(Default)]
 pub struct AppStateInner {
     pub daemon_state: DaemonState,
+    pub deamon_sidecar: Option<CommandChild>,
     pub ephemeral_session: Option<Session>,
     pub projects: Vec<Project>,
     pub view_state: ViewState,
