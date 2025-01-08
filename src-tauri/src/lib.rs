@@ -2,9 +2,11 @@ use app_state::AppState;
 use tauri::Manager;
 
 mod app_state;
+mod daemon_connector;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    daemon_connector::start_connector();
     tauri::Builder::default()
         .setup(|app| {
             app.manage(AppState::default());
