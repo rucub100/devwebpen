@@ -54,7 +54,7 @@ This section provides a deeper dive into the core concepts and design choices be
 - **Frontend:** Tauri + React + TypeScript (responsible for the user interface and user interactions)
 - **Backend (core):** Rust (handles core logic, data processing, and communication with the daemon)
 - **Daemon:** Java (provides long-running tasks, background processing, and potentially interacts with external services)
-- **Communication:** gRPC (efficient and secure communication between the Tauri app and the Java daemon)
+- **Communication:** WebSockets (efficient and secure communication between the Tauri app and the Java daemon)
 
 [Optional/TODO: Include a diagram to visually represent the architecture]
 
