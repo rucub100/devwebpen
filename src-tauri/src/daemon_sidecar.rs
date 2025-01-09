@@ -6,6 +6,7 @@ use crate::app_state::AppState;
 pub fn start_sidecar(app: &tauri::App) {
     let sidecar_command = app.shell().sidecar("webpen-daemon").unwrap();
     let (mut rx, child) = sidecar_command.spawn().expect("Failed to spawn sidecar");
+    log::debug!("Sidecar started, PID: {}", child.pid());
 
     // Store the child process in the app state to ensure it is not dropped
     let state = app.handle().state::<AppState>();
@@ -18,6 +19,7 @@ pub fn start_sidecar(app: &tauri::App) {
         while let Some(event) = rx.recv().await {
             if let CommandEvent::Stdout(line_bytes) = event {
                 let line = String::from_utf8_lossy(&line_bytes);
+                log::debug!("[DAEMON] {}", line);
                 // write to stdin (make child mut for this)
                 // child.write("message from Rust\n".as_bytes()).unwrap();
                 app_handle.emit("daemon-message", Some(line)).unwrap();

@@ -1,4 +1,5 @@
 use app_state::AppState;
+use log;
 use tauri::Manager;
 
 mod app_state;
@@ -7,11 +8,14 @@ mod daemon_sidecar;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    log::debug!("Starting application...");
     daemon_connector::start_connector();
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .setup(|app| {
+            log::debug!("Creating app state...");
             app.manage(AppState::default());
+            log::debug!("Starting sidecar (daemon)...");
             daemon_sidecar::start_sidecar(app);
             Ok(())
         })

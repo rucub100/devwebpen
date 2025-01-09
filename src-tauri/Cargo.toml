@@ -26,4 +26,6 @@ tokio = { version = "1", features = ["net"] }
 tokio-tungstenite = "0.26.1"
 futures-util = "0.3.31"
 tauri-plugin-shell = "2"
+log = "0.4.22"
+env_logger = "0.11.6"
 
