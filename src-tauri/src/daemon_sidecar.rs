@@ -24,6 +24,10 @@ pub fn start_sidecar(app: &tauri::App) {
                 // child.write("message from Rust\n".as_bytes()).unwrap();
                 app_handle.emit("daemon-message", Some(line)).unwrap();
                 // TODO: update daemon state (Starting, Connecting, Running, Error)
+            } else if let CommandEvent::Stderr(line_bytes) = event {
+                let line = String::from_utf8_lossy(&line_bytes);
+                log::error!("[DAEMON] {}", line);
+                app_handle.emit("daemon-error", Some(line)).unwrap();
             }
         }
     });
