@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import styles from "./RootLayout.module.css";
+import Navigation from "../Navigation";
 
 export default function RootLayout() {
   const leftAsideRef = useRef<HTMLDivElement>(null);
@@ -144,12 +145,12 @@ export default function RootLayout() {
     <div
       className={`${styles.rootLayout} scroll-smooth antialiased select-none dark:bg-neutral-900 dark:text-neutral-200`}
     >
-      <nav className={`${styles.navAside} border-r border-neutral-700`}>
-        nav
+      <nav className={`${styles.navAside} border-r border-neutral-800`}>
+        <Navigation></Navigation>
       </nav>
       <header
         ref={leftAsideRef}
-        className={`${styles.leftAside} border-r border-neutral-700 min-w-max max-w-full`}
+        className={`${styles.leftAside} border-r border-neutral-800 min-w-max max-w-full`}
         style={{ width: leftAsideWidth }}
       >
         left aside
@@ -169,7 +170,7 @@ export default function RootLayout() {
       ></div>
       <aside
         ref={rightAsideRef}
-        className={`${styles.rightAside} border-l border-neutral-700 min-w-max max-w-full`}
+        className={`${styles.rightAside} border-l border-neutral-800 min-w-max max-w-full`}
         style={{ width: rightAsideWidth }}
       >
         right aside
@@ -182,12 +183,12 @@ export default function RootLayout() {
       ></div>
       <aside
         ref={bottomAsideRef}
-        className={`${styles.bottomAside} border-t border-neutral-700 min-h-max max-h-full`}
+        className={`${styles.bottomAside} border-t border-neutral-800 min-h-max max-h-full`}
         style={{ height: bottomAsideHeight }}
       >
         bottom aside
       </aside>
-      <footer className={`${styles.footer} border-t border-neutral-700`}>
+      <footer className={`${styles.footer} border-t border-neutral-800`}>
         Status bar
       </footer>
     </div>
