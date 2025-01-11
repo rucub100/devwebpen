@@ -1,22 +1,20 @@
-import Icon, { IconProps } from "./Icon";
+import { HTMLAttributes, ReactNode } from "react";
 
-interface IconButtonProps {
-  icon: IconProps["icon"];
-  onClick?: React.MouseEventHandler;
-  className?: string;
+interface IconButtonProps extends HTMLAttributes<HTMLElement> {
+  icon: ReactNode;
 }
 
 export default function IconButton({
   icon,
-  onClick,
-  className,
+  className = "",
+  ...props
 }: IconButtonProps) {
   return (
     <button
-      onClick={onClick}
       className={`text-neutral-400 hover:text-neutral-200 outline-none px-2 py-1.5 ${className}`}
+      {...props}
     >
-      <Icon icon={icon} />
+      {icon}
     </button>
   );
 }
