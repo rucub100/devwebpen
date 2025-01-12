@@ -1,6 +1,11 @@
 import { useCallback, useRef, useState } from "react";
 import styles from "./RootLayout.module.css";
 import Navigation from "../Navigation";
+import Tabs from "./Tabs";
+import LeftAside from "./LeftAside";
+import RightAside from "./RightAside";
+import BottomAside from "./BottomAside";
+import StatusBar from "./StatusBar";
 
 export default function RootLayout() {
   const leftAsideRef = useRef<HTMLDivElement>(null);
@@ -153,19 +158,21 @@ export default function RootLayout() {
         className={`${styles.leftAside} border-r border-neutral-800 min-w-max max-w-full`}
         style={{ width: leftAsideWidth }}
       >
-        left aside
+        <LeftAside></LeftAside>
       </header>
       <div
         className={`${styles.leftSplit} ${
-          leftSplitIsResizing ? "bg-[--color-primary-500]" : "bg-transparent"
-        }  hover:bg-[--color-primary-500] transition-colors duration-200 delay-300`}
+          leftSplitIsResizing ? "bg-primary-500" : "bg-transparent"
+        }  hover:bg-primary-500 transition-colors duration-200 delay-300`}
         onMouseDown={leftSplitMouseDownHandler}
       ></div>
-      <main className={`${styles.main} min-w-[400px] max-w-max`}>main</main>
+      <main className={`${styles.main}`}>
+        <Tabs></Tabs>
+      </main>
       <div
         className={`${styles.rightSplit} ${
-          rightSplitIsResizing ? "bg-[--color-primary-500]" : "bg-transparent"
-        }  hover:bg-[--color-primary-500] transition-colors duration-200 delay-300`}
+          rightSplitIsResizing ? "bg-primary-500" : "bg-transparent"
+        }  hover:bg-primary-500 transition-colors duration-200 delay-300`}
         onMouseDown={rightSplitMouseDownHandler}
       ></div>
       <aside
@@ -173,12 +180,12 @@ export default function RootLayout() {
         className={`${styles.rightAside} border-l border-neutral-800 min-w-max max-w-full`}
         style={{ width: rightAsideWidth }}
       >
-        right aside
+        <RightAside></RightAside>
       </aside>
       <div
         className={`${styles.bottomSplit} ${
-          bottomSplitIsResizing ? "bg-[--color-primary-500]" : "bg-transparent"
-        }  hover:bg-[--color-primary-500] transition-colors duration-200 delay-300`}
+          bottomSplitIsResizing ? "bg-primary-500" : "bg-transparent"
+        }  hover:bg-primary-500 transition-colors duration-200 delay-300`}
         onMouseDown={bottomSplitMouseDownHandler}
       ></div>
       <aside
@@ -186,10 +193,10 @@ export default function RootLayout() {
         className={`${styles.bottomAside} border-t border-neutral-800 min-h-max max-h-full`}
         style={{ height: bottomAsideHeight }}
       >
-        bottom aside
+        <BottomAside></BottomAside>
       </aside>
       <footer className={`${styles.footer} border-t border-neutral-800`}>
-        Status bar
+        <StatusBar></StatusBar>
       </footer>
     </div>
   );
