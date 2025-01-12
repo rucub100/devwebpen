@@ -1,4 +1,5 @@
 import plugin from "tailwindcss/plugin";
+import containerQueriesPlugin from "@tailwindcss/container-queries";
 import {
   inherit,
   current,
@@ -51,9 +52,12 @@ const colors = {
 export default {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      colors,
+    },
   },
   plugins: [
+    containerQueriesPlugin,
     plugin(function ({ addBase }) {
       const cssVariables = Object.keys(colors).reduce((acc, color) => {
         const colorShades = colors[color];
