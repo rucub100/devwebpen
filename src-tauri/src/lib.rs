@@ -9,12 +9,13 @@ mod daemon_sidecar;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     log::debug!("Starting application...");
-    daemon_connector::start_connector();
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .setup(|app| {
             log::debug!("Creating app state...");
-            app.manage(AppState::default());
+            let state = AppState::default();
+            app.manage(state);
+            daemon_connector::start_connector(app);
             log::debug!("Starting sidecar (daemon)...");
             daemon_sidecar::start_sidecar(app);
             Ok(())

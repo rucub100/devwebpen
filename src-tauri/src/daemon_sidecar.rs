@@ -1,19 +1,14 @@
 use tauri::{Emitter, Manager};
-use tauri_plugin_shell::{process::CommandEvent, ShellExt};
+use tauri_plugin_shell::{
+    process::{CommandChild, CommandEvent},
+    Error, ShellExt,
+};
+
+use tokio::sync::mpsc::Receiver;
 
 use crate::app_state::AppState;
 
-pub fn start_sidecar(app: &tauri::App) {
-    let sidecar_command = app.shell().sidecar("webpen-daemon").unwrap();
-    let (mut rx, child) = sidecar_command.spawn().expect("Failed to spawn sidecar");
-    log::debug!("Sidecar started, PID: {}", child.pid());
-
-    // Store the child process in the app state to ensure it is not dropped
-    let state = app.handle().state::<AppState>();
-    let mut state = state.lock().unwrap();
-
-    state.deamon_sidecar = Some(child);
-
+fn handle_daemon_stdio(app: &tauri::App, mut rx: Receiver<CommandEvent>) {
     let app_handle = app.handle().clone();
     tauri::async_runtime::spawn(async move {
         while let Some(event) = rx.recv().await {
@@ -31,4 +26,44 @@ pub fn start_sidecar(app: &tauri::App) {
             }
         }
     });
+}
+
+fn set_daemon_error(app: &tauri::App, error: Error) {
+    let state = app.handle().state::<AppState>();
+    let mut state = state.lock().unwrap();
+
+    state.daemon.set_error(error.to_string());
+}
+
+fn set_daemon_starting(app: &tauri::App, child: CommandChild) {
+    let state = app.handle().state::<AppState>();
+    let mut state = state.lock().unwrap();
+
+    if let Err(e) = state.daemon.set_starting(child) {
+        log::error!("{}", e);
+    }
+}
+
+pub fn start_sidecar(app: &tauri::App) {
+    let sidecar_command = app.shell().sidecar("webpen-daemon");
+    if let Err(e) = sidecar_command {
+        log::error!("Failed to create sidecar command: {}", e);
+        set_daemon_error(app, e);
+        return;
+    }
+
+    let sidecar_command = sidecar_command.unwrap().spawn();
+    if let Err(e) = sidecar_command {
+        log::error!("Failed to spawn sidecar command: {}", e);
+        set_daemon_error(app, e);
+        return;
+    }
+
+    let (mut rx, child) = sidecar_command.unwrap();
+    log::debug!("Sidecar started, PID: {}", child.pid());
+
+    // Store the child process in the app state to ensure it is not dropped
+    set_daemon_starting(app, child);
+
+    handle_daemon_stdio(app, rx);
 }
