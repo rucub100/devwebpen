@@ -1,8 +1,8 @@
-# 🌐 webpen: A Developer's Swiss Army Knife for Web Applications 🖊️
+# 🌐 devwebpen: A Developer's Swiss Army Knife for Web Applications 🖊️
 
-Are you tired of juggling multiple tools for API testing and web security? Webpen is a desktop application that streamlines your workflow by combining essential features found in tools like [Postman](https://www.postman.com/)™️, [Insomnia](https://insomnia.rest/)™️, [Burp Suite](https://portswigger.net/burp)™️, and [ZAP](https://www.zaproxy.org/)™️. While those powerhouses excel in specialized areas, webpen focuses on providing a modern, user-friendly experience for everyday web development and security testing.
+Are you tired of juggling multiple tools for API testing and web security? Devwebpen is a desktop application that streamlines your workflow by combining essential features found in tools like [Postman](https://www.postman.com/)™️, [Insomnia](https://insomnia.rest/)™️, [Burp Suite](https://portswigger.net/burp)™️, and [ZAP](https://www.zaproxy.org/)™️. While those powerhouses excel in specialized areas, devwebpen focuses on providing a modern, user-friendly experience for everyday web development and security testing.
 
-Designed with developers and security professionals in mind, webpen empowers you to:
+Designed with developers and security professionals in mind, devwebpen empowers you to:
 
 - **Test APIs:** Send requests, analyze responses, and automate your API testing workflow.
 - **Scan for Vulnerabilities:** Identify security risks in your web applications with integrated scanning tools.
@@ -47,7 +47,7 @@ TODO: Screenshots
 
 ## Concepts
 
-This section provides a deeper dive into the core concepts and design choices behind `webpen`.
+This section provides a deeper dive into the core concepts and design choices behind devwebpen.
 
 ### Architecture
 
@@ -58,8 +58,20 @@ This section provides a deeper dive into the core concepts and design choices be
 
 [Optional/TODO: Include a diagram to visually represent the architecture]
 
-Webpen includes a native binary of the Java daemon, compiled with GraalVM, as a sidecar within the application, as described in the [Tauri documentation](https://v2.tauri.app/develop/sidecar/).
+Devwebpen includes a native binary of the Java daemon, compiled with GraalVM, as a sidecar within the application, as described in the [Tauri documentation](https://v2.tauri.app/develop/sidecar/).
 
 ### [TODO: Concept 2 Title (e.g., Security Scanning)]
 
 TODO
+
+## License
+
+Copyright © 2025 Ruslan Curbanov
+
+Licensed under the [Apache License, Version 2.0](LICENSE).
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
