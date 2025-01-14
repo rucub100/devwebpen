@@ -1,9 +1,9 @@
 use std::sync::Mutex;
 
-use daemon::Daemon;
-use project::Project;
-use session::Session;
-use view::ViewState;
+pub use daemon::Daemon;
+pub use project::Project;
+pub use session::Session;
+pub use view::ViewState;
 
 mod daemon;
 mod project;

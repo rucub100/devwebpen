@@ -59,7 +59,7 @@ pub fn start_sidecar(app: &tauri::App) {
         return;
     }
 
-    let (mut rx, child) = sidecar_command.unwrap();
+    let (rx, child) = sidecar_command.unwrap();
     log::debug!("Sidecar started, PID: {}", child.pid());
 
     // Store the child process in the app state to ensure it is not dropped

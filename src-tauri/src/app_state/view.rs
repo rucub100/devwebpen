@@ -1,18 +1,26 @@
-#[derive(Default)]
-pub struct Navigation {
-    pub current_tab: String,
+#[derive(serde::Serialize, Clone)]
+#[serde(rename_all = "lowercase")]
+pub enum Navigation {
+    Dashboard,
 }
 
-#[derive(Default)]
-pub struct Tab {
-    pub id: String,
-    pub title: String,
+#[derive(serde::Serialize, Clone)]
+#[serde(rename_all = "lowercase")]
+pub enum Tab {
+    Welcome,
 }
 
-#[derive(Default)]
+#[derive(serde::Serialize, Clone)]
 pub struct ViewState {
-    // TODO: Make sure it is not possible to generate an invalid view state
-    // e.g. don't make props public and mutate only via methods
-    navigation: Navigation,
+    navigation: Option<Navigation>,
     tabs: Vec<Tab>,
+}
+
+impl Default for ViewState {
+    fn default() -> Self {
+        Self {
+            navigation: Some(Navigation::Dashboard),
+            tabs: vec![Tab::Welcome],
+        }
+    }
 }

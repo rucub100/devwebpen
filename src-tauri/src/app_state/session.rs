@@ -1,5 +1,7 @@
 use std::sync::atomic::{AtomicU64, Ordering};
 
+#[derive(serde::Serialize, Clone)]
+#[serde(rename_all = "lowercase")]
 pub struct Session {
     pub id: u64,
 }

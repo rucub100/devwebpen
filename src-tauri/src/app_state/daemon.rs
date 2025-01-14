@@ -1,6 +1,7 @@
 use tauri_plugin_shell::process::CommandChild;
 
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize, Clone)]
+#[serde(rename_all = "lowercase")]
 pub enum DaemonState {
     Stopped,
     Starting,
@@ -9,10 +10,23 @@ pub enum DaemonState {
     Error,
 }
 
+#[derive(serde::Serialize)]
+#[serde(rename_all = "lowercase")]
 pub struct Daemon {
     state: DaemonState,
+    #[serde(skip)]
     sidecar: Option<CommandChild>,
     error: Option<String>,
+}
+
+impl Clone for Daemon {
+    fn clone(&self) -> Self {
+        Daemon {
+            state: self.state.clone(),
+            sidecar: None, // Skip cloning the sidecar
+            error: self.error.clone(),
+        }
+    }
 }
 
 impl Default for Daemon {
