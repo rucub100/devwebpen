@@ -4,10 +4,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>de.curbanov</groupId>
-  <artifactId>webpen</artifactId>
+  <artifactId>devwebpen</artifactId>
   <version>0.0.1</version>
 
-  <name>webpen</name>
+  <name>devwebpen</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -30,7 +30,7 @@
           <configuration>
             <archive>
               <manifest>
-                <mainClass>de.curbanov.webpen.Main</mainClass>
+                <mainClass>de.curbanov.devwebpen.Main</mainClass>
               </manifest>
             </archive>
           </configuration>

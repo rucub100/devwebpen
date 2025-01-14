@@ -34,7 +34,7 @@ function copySidecar(sourcePath, destPath) {
 function main() {
   const tauriSrc = "src-tauri";
   const daemonSrc = "src-daemon";
-  const daemonName = "webpen-daemon";
+  const daemonName = "devwebpen-daemon";
 
   const targetTriple = getHostTargetTriple();
 

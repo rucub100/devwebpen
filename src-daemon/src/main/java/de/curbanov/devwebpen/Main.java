@@ -1,6 +1,6 @@
-package de.curbanov.webpen;
+package de.curbanov.devwebpen;
 
-import de.curbanov.webpen.controller.WebSocketController;
+import de.curbanov.devwebpen.controller.WebSocketController;
 
 public class Main {
 

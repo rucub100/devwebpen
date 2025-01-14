@@ -45,7 +45,7 @@ fn set_daemon_starting(app: &tauri::App, child: CommandChild) {
 }
 
 pub fn start_sidecar(app: &tauri::App) {
-    let sidecar_command = app.shell().sidecar("webpen-daemon");
+    let sidecar_command = app.shell().sidecar("devwebpen-daemon");
     if let Err(e) = sidecar_command {
         log::error!("Failed to create sidecar command: {}", e);
         set_daemon_error(app, e);

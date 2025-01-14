@@ -3,5 +3,5 @@
 
 fn main() {
     env_logger::init();
-    webpen_lib::run()
+    devwebpen_lib::run()
 }
