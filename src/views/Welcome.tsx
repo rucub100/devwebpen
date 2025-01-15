@@ -2,7 +2,7 @@ import LinkButton from "../components/common/LinkButton";
 
 export default function Welcome() {
   return (
-    <div className="flex flex-col @5xl:flex-row m-auto gap-8 pt-10 p-2 max-w-[32rem] @5xl:max-w-[64rem]">
+    <div className="flex flex-col @5xl:flex-row m-auto gap-8 pt-10 pb-14 px-4 max-w-[32rem] @5xl:max-w-[64rem]">
       <div className="flex-1">
         <h1 className="text-3xl mb-2 font-semibold">Welcome to devwebpen</h1>
         <p className="text-neutral-400">
@@ -16,9 +16,9 @@ export default function Welcome() {
       </div>
       <div className="flex flex-col items-start flex-1">
         <h2 className="text-xl mb-2">Getting Started</h2>
-        <LinkButton>Start ephemeral session...</LinkButton>
-        <LinkButton>Create a new project...</LinkButton>
-        <LinkButton>Open an existing project...</LinkButton>
+        <LinkButton className="-ml-2">Start ephemeral session...</LinkButton>
+        <LinkButton className="-ml-2">Create a new project...</LinkButton>
+        <LinkButton className="-ml-2">Open an existing project...</LinkButton>
         <h2 className="text-xl my-2">Open Recent</h2>
       </div>
     </div>

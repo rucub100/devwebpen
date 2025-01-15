@@ -6,11 +6,13 @@ import LeftAside from "./LeftAside";
 import RightAside from "./RightAside";
 import BottomAside from "./BottomAside";
 import StatusBar from "./StatusBar";
+import { useViewState } from "../../hooks/useViewState";
 
 export default function RootLayout() {
+  const { viewState } = useViewState();
   const leftAsideRef = useRef<HTMLDivElement>(null);
   const [leftSplitIsResizing, setLeftSplitIsResizing] = useState(false);
-  const [leftAsideWidth, setLeftAsideWidth] = useState(200);
+  const [leftAsideWidth, setLeftAsideWidth] = useState(250);
 
   const rightAsideRef = useRef<HTMLDivElement>(null);
   const [rightSplitIsResizing, setRightSplitIsResizing] = useState(false);
@@ -155,15 +157,21 @@ export default function RootLayout() {
       </nav>
       <header
         ref={leftAsideRef}
-        className={`${styles.leftAside} border-r border-neutral-800 min-w-max max-w-full`}
-        style={{ width: leftAsideWidth }}
+        className={`${styles.leftAside} border-r border-neutral-800 min-w-min max-w-full`}
+        style={{
+          width: leftAsideWidth,
+          display: viewState?.navigation ? "block" : "none",
+        }}
       >
-        <LeftAside></LeftAside>
+        <LeftAside navigation={viewState?.navigation}></LeftAside>
       </header>
       <div
         className={`${styles.leftSplit} ${
           leftSplitIsResizing ? "bg-primary-500" : "bg-transparent"
         }  hover:bg-primary-500 transition-colors duration-200 delay-300`}
+        style={{
+          display: viewState?.navigation ? "block" : "none",
+        }}
         onMouseDown={leftSplitMouseDownHandler}
       ></div>
       <main className={`${styles.main}`}>
@@ -173,12 +181,18 @@ export default function RootLayout() {
         className={`${styles.rightSplit} ${
           rightSplitIsResizing ? "bg-primary-500" : "bg-transparent"
         }  hover:bg-primary-500 transition-colors duration-200 delay-300`}
+        style={{
+          display: viewState?.aside ? "block" : "none",
+        }}
         onMouseDown={rightSplitMouseDownHandler}
       ></div>
       <aside
         ref={rightAsideRef}
-        className={`${styles.rightAside} border-l border-neutral-800 min-w-max max-w-full`}
-        style={{ width: rightAsideWidth }}
+        className={`${styles.rightAside} border-l border-neutral-800 min-w-min max-w-full`}
+        style={{
+          width: rightAsideWidth,
+          display: viewState?.aside ? "block" : "none",
+        }}
       >
         <RightAside></RightAside>
       </aside>
@@ -186,16 +200,25 @@ export default function RootLayout() {
         className={`${styles.bottomSplit} ${
           bottomSplitIsResizing ? "bg-primary-500" : "bg-transparent"
         }  hover:bg-primary-500 transition-colors duration-200 delay-300`}
+        style={{
+          display: viewState?.bottom ? "block" : "none",
+        }}
         onMouseDown={bottomSplitMouseDownHandler}
       ></div>
       <aside
         ref={bottomAsideRef}
-        className={`${styles.bottomAside} border-t border-neutral-800 min-h-max max-h-full`}
-        style={{ height: bottomAsideHeight }}
+        className={`${styles.bottomAside} border-t border-neutral-800 min-h-min max-h-full min-w-full max-w-full`}
+        style={{
+          height: bottomAsideHeight,
+          display: viewState?.bottom ? "block" : "none",
+        }}
       >
         <BottomAside></BottomAside>
       </aside>
-      <footer className={`${styles.footer} border-t border-neutral-800`}>
+      <footer
+        className={`${styles.footer} border-t border-neutral-800`}
+        style={{ display: viewState?.status ? "block" : "none" }}
+      >
         <StatusBar></StatusBar>
       </footer>
     </div>

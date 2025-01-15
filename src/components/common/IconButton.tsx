@@ -10,10 +10,7 @@ export default function IconButton({
   ...props
 }: IconButtonProps) {
   return (
-    <button
-      className={`text-neutral-400 hover:text-neutral-200 outline-none px-2 py-1.5 ${className}`}
-      {...props}
-    >
+    <button className={`outline-none px-2 py-1.5 ${className}`} {...props}>
       {icon}
     </button>
   );

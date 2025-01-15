@@ -14,19 +14,19 @@
 
   display: grid;
   grid-template-columns:
-    [full-start nav-aside-start] minmax(0, max-content)
-    [nav-aside-end left-aside-start] minmax(0, max-content)
+    [full-start nav-aside-start] minmax(0px, max-content)
+    [nav-aside-end left-aside-start] minmax(0px, max-content)
     [left-aside-end left-split-start] 4px
     [left-split-end main-start] minmax(400px, 1fr)
     [main-end right-split-start] 4px
-    [right-split-end right-aside-start] minmax(0, max-content)
+    [right-split-end right-aside-start] minmax(0px, max-content)
     [right-aside-end full-end];
 
   grid-template-rows:
-    [full-start mein-start] minmax(200px, 1fr)
+    [full-start main-start] minmax(200px, 1fr)
     [main-end bottom-split-start] 4px
-    [bottom-split-end bottom-aside-start] minmax(0, max-content)
-    [bottom-aside-end footer-start] minmax(0, max-content)
+    [bottom-split-end bottom-aside-start] minmax(0px, max-content)
+    [bottom-aside-end footer-start] minmax(0px, max-content)
     [footer-end];
 
   grid-template-areas:

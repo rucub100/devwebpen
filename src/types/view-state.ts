@@ -9,4 +9,7 @@ export enum Tab {
 export interface ViewState {
   navigation: Navigation;
   tabs: Tab[];
+  aside: string | null;
+  bottom: string | null;
+  status: string | null;
 }
