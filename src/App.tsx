@@ -9,8 +9,8 @@ function App() {
 
   useEffect(() => {
     if (viewInitialized) {
-      console.debug("Initialization complete, showing window...");
       showWindow();
+      console.debug("Initialization complete, showing window...");
     }
   }, [viewInitialized]);
 

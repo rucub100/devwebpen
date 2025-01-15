@@ -1,5 +1,5 @@
 use app_state::AppState;
-use commands::init_view;
+use commands::{init_view, navigation};
 use log;
 
 mod app_state;
@@ -21,7 +21,7 @@ pub fn run() {
             Ok(())
         })
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![init_view])
+        .invoke_handler(tauri::generate_handler![init_view, navigation])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

@@ -1,12 +1,17 @@
 import { invoke } from "@tauri-apps/api/core";
-import { ViewState } from "../types/view-state";
+import { Navigation, ViewState } from "../types/view-state";
 
 export enum DevWebPenCommand {
-  Init = "init_view",
+  InitView = "init_view",
+  Navigation = "navigation",
 }
 
-export async function invokeInit(): Promise<ViewState> {
-  return invoke<ViewState>(DevWebPenCommand.Init);
+export async function initView(): Promise<ViewState> {
+  return invoke<ViewState>(DevWebPenCommand.InitView);
+}
+
+export async function navigate(navigation: Navigation): Promise<ViewState> {
+  return invoke<ViewState>(DevWebPenCommand.Navigation, { navigation });
 }
 
 export default DevWebPenCommand;

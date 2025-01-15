@@ -1,14 +1,14 @@
 use std::sync::Mutex;
 
-pub use daemon::Daemon;
-pub use project::Project;
-pub use session::Session;
-pub use view::ViewState;
+use daemon::Daemon;
+use project::Project;
+use session::Session;
+use view::ViewState;
 
-mod daemon;
-mod project;
-mod session;
-mod view;
+pub mod daemon;
+pub mod project;
+pub mod session;
+pub mod view;
 
 #[derive(Default)]
 pub struct AppStateInner {

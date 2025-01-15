@@ -10,7 +10,7 @@ export default function IconButton({
   ...props
 }: IconButtonProps) {
   return (
-    <button className={`outline-none px-2 py-1.5 ${className}`} {...props}>
+    <button className={`outline-none ${className}`} {...props}>
       {icon}
     </button>
   );

@@ -1,16 +1,16 @@
-#[derive(serde::Serialize, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum Navigation {
     Dashboard,
 }
 
-#[derive(serde::Serialize, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum TabName {
     Welcome,
 }
 
-#[derive(serde::Serialize, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub struct TabKind {
     nav: Navigation,
@@ -26,13 +26,14 @@ impl TabKind {
     }
 }
 
-#[derive(serde::Serialize, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub struct Tab {
     kind: TabKind,
+    label: Option<String>,
 }
 
-#[derive(serde::Serialize, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Clone)]
 pub struct ViewState {
     navigation: Option<Navigation>,
     tabs: Vec<Tab>,
@@ -47,10 +48,24 @@ impl Default for ViewState {
             navigation: Some(Navigation::Dashboard),
             tabs: vec![Tab {
                 kind: TabKind::welcome(),
+                label: None,
             }],
             aside: None,
             bottom: None,
             status: None,
+        }
+    }
+}
+
+impl ViewState {
+    pub fn navigate(&mut self, nav: Navigation) {
+        match self.navigation {
+            None => {
+                self.navigation = Some(nav);
+            }
+            Some(ref current) => {
+                self.navigation = if current == &nav { None } else { Some(nav) };
+            }
         }
     }
 }

@@ -24,8 +24,16 @@
         flex-wrap: nowrap;
         position: relative;
 
-        & > * {
+        .tab {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: 0.5rem;
+            padding-inline: 0.5rem;
+            padding-block: 0.25rem;
             flex: 0 0 auto;
+            cursor: pointer;
         }
 
         /* TODO: improve later with custom element and javascript */

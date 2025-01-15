@@ -2,7 +2,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 
 use super::session::Session;
 
-#[derive(serde::Serialize, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub struct Project {
     pub id: u64,
