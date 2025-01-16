@@ -1,4 +1,4 @@
-import { HTMLAttributes, ReactNode } from "react";
+import { HTMLAttributes, MouseEvent, ReactNode, useCallback } from "react";
 import styles from "./Tabs.module.css";
 import Main from "../Main";
 import { useViewState } from "../../hooks/useViewState";
@@ -13,16 +13,24 @@ const tabIcons: Record<Navigation, ReactNode> = {
 interface TabsProps extends HTMLAttributes<HTMLDivElement> {}
 
 export default function Tabs({}: TabsProps) {
-  const { viewState } = useViewState();
+  const { viewState, selectTab, closeTab } = useViewState();
 
   const tabs: Tab[] = viewState?.tabs || [];
+
+  const closeTabHandler = useCallback(
+    (event: MouseEvent, id: number) => {
+      event.preventDefault();
+      closeTab(id);
+    },
+    [closeTab]
+  );
 
   return (
     <div className={styles.tabs}>
       <header className={`${styles.header}`}>
         {tabs.map((tab) => (
           <div
-            key={tab.kind.name}
+            key={tab.id}
             className={`${styles.tab} border-r border-neutral-800`}
           >
             {tabIcons[tab.kind.nav]}
@@ -30,6 +38,7 @@ export default function Tabs({}: TabsProps) {
             <IconButton
               icon={<Icon icon="close"></Icon>}
               className="hover:bg-primary-600/10 p-0.5 rounded"
+              onClick={(event) => closeTabHandler(event, tab.id)}
             ></IconButton>
           </div>
         ))}

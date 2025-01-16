@@ -5,7 +5,12 @@ import {
   useEffect,
   useState,
 } from "react";
-import { initView, navigate } from "../tauri/commands";
+import {
+  initView,
+  navigateTo as _navigateTo,
+  closeTab as _closeTab,
+  selectTab as _selectTab,
+} from "../tauri/commands";
 import { Navigation, ViewState } from "../types/view-state";
 
 // Define wrapper type to force re-render on change
@@ -17,7 +22,7 @@ let viewInitializedListener: Dispatch<SetStateAction<Boolean>> | null = null;
 let globalViewState: ViewState | null = null;
 let viewStateListeners: Dispatch<SetStateAction<ViewState | null>>[] = [];
 
-export function initializeViewState() {
+function initializeViewState() {
   if (_init) {
     return;
   }
@@ -40,6 +45,22 @@ export function initializeViewState() {
     })
     .catch((error) => {
       console.error("Failed to initialize view state", error);
+    });
+}
+
+function updateViewState(promise: Promise<ViewState | null>) {
+  promise
+    .then((viewState) => {
+      if (!viewState) {
+        return;
+      }
+
+      console.debug("View state updated", viewState);
+      globalViewState = viewState;
+      viewStateListeners.forEach((listener) => listener(viewState));
+    })
+    .catch((error) => {
+      console.error("Failed to update view state", error);
     });
 }
 
@@ -70,21 +91,26 @@ export function useViewState(
     };
   }, [setInternalViewState, listen]);
 
-  const navigateTo = useCallback((navigation: Navigation) => {
-    navigate(navigation)
-      .then((viewState) => {
-        console.debug("View state updated", viewState);
-        globalViewState = viewState;
-        viewStateListeners.forEach((listener) => listener(viewState));
-      })
-      .catch((error) => {
-        console.error("Failed to update view state", error);
-      });
-  }, []);
+  const navigateTo = useCallback(
+    (navigation: Navigation) => updateViewState(_navigateTo(navigation)),
+    []
+  );
+
+  const closeTab = useCallback(
+    (id: number) => updateViewState(_closeTab(id)),
+    []
+  );
+
+  const selectTab = useCallback(
+    (id: number) => updateViewState(_selectTab(id)),
+    []
+  );
 
   return {
     viewState: globalViewState,
     navigateTo,
+    closeTab,
+    selectTab,
     viewInitialized: viewInitialized.value,
   };
 }

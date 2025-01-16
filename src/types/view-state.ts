@@ -16,6 +16,7 @@ export interface TabKind {
 }
 
 export interface Tab {
+  id: number;
   kind: TabKind;
   label: string | null;
 }
@@ -23,6 +24,7 @@ export interface Tab {
 export interface ViewState {
   navigation: Navigation;
   tabs: Tab[];
+  activeTabId: number | null;
   aside: string | null;
   bottom: string | null;
   status: string | null;

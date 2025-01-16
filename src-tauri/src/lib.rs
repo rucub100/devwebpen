@@ -1,5 +1,5 @@
 use app_state::AppState;
-use commands::{init_view, navigation};
+use commands::{close_tab, init_view, navigate_to, select_tab};
 use log;
 use window::window_event_handler;
 
@@ -16,7 +16,12 @@ pub fn run() {
         .manage(AppState::default())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![init_view, navigation])
+        .invoke_handler(tauri::generate_handler![
+            init_view,
+            navigate_to,
+            close_tab,
+            select_tab
+        ])
         .on_window_event(window_event_handler)
         .setup(|app| {
             log::debug!("Starting daemon connector...");
