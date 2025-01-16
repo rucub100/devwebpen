@@ -84,4 +84,17 @@ impl Daemon {
         self.state = DaemonState::Error;
         self.error = Some(error);
     }
+
+    pub fn stop(&mut self) -> Result<(), String> {
+        match self.sidecar.take() {
+            Some(child) => {
+                self.state = DaemonState::Stopped;
+                child.kill().map_err(|e| e.to_string())
+            }
+            None => Err(format!(
+                "Invalid state transition from {:?} to Stopped, or sidecar is not running",
+                self.state
+            )),
+        }
+    }
 }
