@@ -1,5 +1,5 @@
 use app_state::AppState;
-use commands::{close_tab, init_view, navigate_to, select_tab};
+use commands::{close_tab, init_view, navigate_to, open_welcome, select_tab};
 use log;
 use window::window_event_handler;
 
@@ -20,7 +20,8 @@ pub fn run() {
             init_view,
             navigate_to,
             close_tab,
-            select_tab
+            select_tab,
+            open_welcome
         ])
         .on_window_event(window_event_handler)
         .setup(|app| {

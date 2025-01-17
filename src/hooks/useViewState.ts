@@ -10,6 +10,7 @@ import {
   navigateTo as _navigateTo,
   closeTab as _closeTab,
   selectTab as _selectTab,
+  openWelcome as _openWelcome,
 } from "../tauri/commands";
 import { Navigation, ViewState } from "../types/view-state";
 
@@ -106,11 +107,14 @@ export function useViewState(
     []
   );
 
+  const openWelcome = useCallback(() => updateViewState(_openWelcome()), []);
+
   return {
     viewState: globalViewState,
     navigateTo,
     closeTab,
     selectTab,
+    openWelcome,
     viewInitialized: viewInitialized.value,
   };
 }

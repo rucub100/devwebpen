@@ -6,6 +6,7 @@ export enum DevWebPenCommand {
   NavigateTo = "navigate_to",
   CloseTab = "close_tab",
   SelectTab = "select_tab",
+  OpenWelcome = "open_welcome",
 }
 
 export async function initView(): Promise<ViewState> {
@@ -22,6 +23,10 @@ export async function closeTab(id: number): Promise<ViewState> {
 
 export async function selectTab(id: number): Promise<ViewState | null> {
   return invoke<ViewState>(DevWebPenCommand.SelectTab, { id });
+}
+
+export async function openWelcome(): Promise<ViewState | null> {
+  return invoke<ViewState>(DevWebPenCommand.OpenWelcome);
 }
 
 export default DevWebPenCommand;

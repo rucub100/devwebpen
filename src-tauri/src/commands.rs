@@ -36,3 +36,14 @@ pub fn select_tab(id: u64, state: tauri::State<AppState>) -> Result<Option<ViewS
         None
     })
 }
+
+#[tauri::command]
+pub fn open_welcome(state: tauri::State<AppState>) -> Result<Option<ViewState>, String> {
+    let mut state = state.lock().unwrap();
+    let changed = state.view.open_welcome();
+    Ok(if changed {
+        Some(state.view.clone())
+    } else {
+        None
+    })
+}

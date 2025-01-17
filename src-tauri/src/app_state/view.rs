@@ -112,4 +112,29 @@ impl ViewState {
 
         prev_active_tab_id == None || self.tabs.active_tab_id != prev_active_tab_id
     }
+
+    pub fn open_welcome(&mut self) -> bool {
+        let tab = self
+            .tabs
+            .tabs
+            .iter()
+            .find(|tab| tab.kind.name == TabName::Welcome);
+
+        match tab {
+            None => {
+                let id = Tab::next_id();
+                self.tabs.tabs.push(Tab {
+                    id,
+                    kind: TabKind::welcome(),
+                    label: None,
+                });
+                self.tabs.active_tab_id = Some(id);
+                self.update_main();
+                return true;
+            }
+            _ => {
+                return false;
+            }
+        }
+    }
 }
