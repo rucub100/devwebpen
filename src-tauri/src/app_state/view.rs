@@ -1,57 +1,25 @@
-use std::sync::atomic::{AtomicU64, Ordering};
+use aside::AsideView;
+use bottom::BottomView;
+use main::MainView;
+use navigation::Navigation;
+use status::StatusView;
+use tabs::{Tab, TabKind, TabName, TabsView};
 
-#[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
-#[serde(rename_all = "lowercase")]
-pub enum Navigation {
-    Dashboard,
-}
-
-#[derive(serde::Serialize, serde::Deserialize, Clone)]
-#[serde(rename_all = "lowercase")]
-pub enum TabName {
-    Welcome,
-}
-
-#[derive(serde::Serialize, serde::Deserialize, Clone)]
-#[serde(rename_all = "lowercase")]
-pub struct TabKind {
-    nav: Navigation,
-    name: TabName,
-}
-
-impl TabKind {
-    pub fn welcome() -> Self {
-        Self {
-            nav: Navigation::Dashboard,
-            name: TabName::Welcome,
-        }
-    }
-}
-
-#[derive(serde::Serialize, serde::Deserialize, Clone)]
-#[serde(rename_all = "lowercase")]
-pub struct Tab {
-    id: u64,
-    kind: TabKind,
-    label: Option<String>,
-}
-
-impl Tab {
-    fn next_id() -> u64 {
-        static COUNTER: AtomicU64 = AtomicU64::new(0);
-        COUNTER.fetch_add(1, Ordering::SeqCst)
-    }
-}
+mod aside;
+mod bottom;
+mod main;
+pub mod navigation;
+mod status;
+mod tabs;
 
 #[derive(serde::Serialize, serde::Deserialize, Clone)]
 pub struct ViewState {
     navigation: Option<Navigation>,
-    tabs: Vec<Tab>,
-    #[serde(rename = "activeTabId")]
-    active_tab_id: Option<u64>,
-    aside: Option<String>,
-    bottom: Option<String>,
-    status: Option<String>,
+    tabs: TabsView,
+    main: Option<MainView>,
+    aside: Option<AsideView>,
+    bottom: Option<BottomView>,
+    status: Option<StatusView>,
 }
 
 impl Default for ViewState {
@@ -59,12 +27,15 @@ impl Default for ViewState {
         let id = Tab::next_id();
         Self {
             navigation: Some(Navigation::Dashboard),
-            tabs: vec![Tab {
-                id,
-                kind: TabKind::welcome(),
-                label: None,
-            }],
-            active_tab_id: Some(id),
+            tabs: TabsView {
+                tabs: vec![Tab {
+                    id,
+                    kind: TabKind::welcome(),
+                    label: None,
+                }],
+                active_tab_id: Some(id),
+            },
+            main: Some(MainView::Welcome),
             aside: None,
             bottom: None,
             status: None,
@@ -73,6 +44,26 @@ impl Default for ViewState {
 }
 
 impl ViewState {
+    fn update_main(&mut self) {
+        match self.tabs.active_tab_id {
+            Some(id) => {
+                let tab = self.tabs.tabs.iter().find(|tab| tab.id == id);
+                if let None = tab {
+                    log::error!("Tab with id {} not found", id);
+                    return;
+                }
+
+                let tab = tab.unwrap();
+                self.main = match tab.kind.name {
+                    TabName::Welcome => Some(MainView::Welcome),
+                };
+            }
+            None => {
+                self.main = None;
+            }
+        }
+    }
+
     pub fn navigate_to(&mut self, nav: Navigation) {
         match self.navigation {
             None => {
@@ -85,35 +76,40 @@ impl ViewState {
     }
 
     pub fn close_tab(&mut self, id: u64) {
-        let index = self.tabs.iter().position(|tab| tab.id == id);
+        let index = self.tabs.tabs.iter().position(|tab| tab.id == id);
         if let None = index {
             log::error!("Tab with id {} not found", id);
             return;
         }
 
         let index = index.unwrap();
-        self.tabs.remove(index);
-        if self.active_tab_id == Some(id) {
-            if (index < self.tabs.len()) {
-                self.active_tab_id = Some(self.tabs[index].id);
-            } else if (self.tabs.len() > 0) {
-                self.active_tab_id = Some(self.tabs.last().unwrap().id);
+        self.tabs.tabs.remove(index);
+        if self.tabs.active_tab_id == Some(id) {
+            if (index < self.tabs.tabs.len()) {
+                self.tabs.active_tab_id = Some(self.tabs.tabs[index].id);
+            } else if (self.tabs.tabs.len() > 0) {
+                self.tabs.active_tab_id = Some(self.tabs.tabs.last().unwrap().id);
             } else {
-                self.active_tab_id = None;
+                self.tabs.active_tab_id = None;
             }
         }
+
+        self.update_main();
     }
 
     pub fn select_tab(&mut self, id: u64) -> bool {
-        let tab = self.tabs.iter().find(|tab| tab.id == id);
+        let tab = self.tabs.tabs.iter().find(|tab| tab.id == id);
         if let None = tab {
             log::error!("Tab with id {} not found", id);
             return false;
         }
 
         let tab = tab.unwrap();
-        let prev_active_tab_id = self.active_tab_id;
-        self.active_tab_id = Some(tab.id);
-        prev_active_tab_id == None || self.active_tab_id != prev_active_tab_id
+        let prev_active_tab_id = self.tabs.active_tab_id;
+        self.tabs.active_tab_id = Some(tab.id);
+
+        self.update_main();
+
+        prev_active_tab_id == None || self.tabs.active_tab_id != prev_active_tab_id
     }
 }

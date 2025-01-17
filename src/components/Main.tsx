@@ -1,10 +1,21 @@
+import { ReactNode } from "react";
+import { MainView } from "../types/view-state";
 import Welcome from "../views/Welcome";
 import styles from "./Main.module.css";
+import Default from "../views/Default";
 
-export default function Main() {
+const viewComponents: Record<MainView, ReactNode> = {
+  [MainView.Welcome]: <Welcome></Welcome>,
+};
+
+interface MainProps {
+  view?: MainView | null;
+}
+
+export default function Main({ view }: MainProps) {
   return (
     <div className={`@container ${styles.main}`}>
-      <Welcome></Welcome>
+      {view ? viewComponents[view] : <Default></Default>}
     </div>
   );
 }

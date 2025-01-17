@@ -1,5 +1,5 @@
 use crate::app_state::{
-    view::{Navigation, ViewState},
+    view::{navigation::Navigation, ViewState},
     AppState,
 };
 

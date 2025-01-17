@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import styles from "./RootLayout.module.css";
 import Navigation from "../Navigation";
-import Tabs from "./Tabs";
+import Tabs from "../tabs/Tabs";
 import LeftAside from "./LeftAside";
 import RightAside from "./RightAside";
 import BottomAside from "./BottomAside";
