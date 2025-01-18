@@ -33,7 +33,9 @@ export default function Tab({
   const closeTabHandler = useCallback(
     (event: MouseEvent, id: number) => {
       event.preventDefault();
-      onCloseTab(id);
+      if (event.button === 0 || event.button === 1) {
+        onCloseTab(id);
+      }
     },
     [onCloseTab]
   );
@@ -42,6 +44,7 @@ export default function Tab({
     <div
       key={tab.id}
       className={`${styles.tab} hover:bg-neutral-800/25 border-r border-neutral-800 ${isActiveClass} ${className}`}
+      onAuxClick={(event) => closeTabHandler(event, tab.id)}
       {...props}
     >
       {tabIcons[tab.kind.nav]}
