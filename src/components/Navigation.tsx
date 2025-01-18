@@ -20,7 +20,7 @@ export default function Navigation() {
       {/* Dashboard */}
       <div className="relative">
         <div
-          className={`${displayIndicator} absolute left-0 bg-primary-600 h-12 w-0.5`}
+          className={`${displayIndicator} absolute left-0 bg-primary-600/50 h-12 w-0.5`}
         ></div>
         <IconButton
           onClick={() => navigateTo(Nav.Dashboard)}

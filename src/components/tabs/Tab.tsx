@@ -34,6 +34,8 @@ export default function Tab({
   ...props
 }: TabProps) {
   const isActiveClass = isActive ? "bg-neutral-800/25" : "";
+  const displayIndicator = isActive ? "block" : "hidden";
+
   const closeTabHandler = useCallback(
     (event: MouseEvent, id: number) => {
       event.preventDefault();
@@ -47,10 +49,13 @@ export default function Tab({
   return (
     <div
       key={tab.id}
-      className={`${styles.tab} hover:bg-neutral-800/25 border-r border-neutral-800 ${isActiveClass} ${className}`}
+      className={`${styles.tab} relative hover:bg-neutral-800/25 border-r border-neutral-800 ${isActiveClass} ${className}`}
       onAuxClick={(event) => closeTabHandler(event, tab.id)}
       {...props}
     >
+      <div
+        className={`${displayIndicator} absolute top-0 left-0 right-0 bg-primary-600/50 h-0.5`}
+      ></div>
       {tabIcons[tab.kind.nav]}
       <span>{tab.label || defaultTabNames[tab.kind.name]}</span>
       <IconButton
