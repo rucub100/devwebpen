@@ -9,8 +9,12 @@ import Icon from "../common/Icon";
 import IconButton from "../common/IconButton";
 import styles from "./Tabs.module.css";
 
+import Logo from "../../../app-icon.svg";
+
 const tabIcons: Record<Navigation, ReactNode> = {
-  [Navigation.Dashboard]: <Icon icon="dashboard" className="h-5" />,
+  [Navigation.Dashboard]: (
+    <img src={Logo} alt="Devwebpen Logo" className="h-4 aspect-square" />
+  ),
 };
 
 interface TabProps extends React.HTMLAttributes<HTMLDivElement> {
