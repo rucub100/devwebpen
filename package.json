@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "sidecar": "node scripts/copy-sidecar.js",
     "pretauri": "npm run sidecar",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:icon": "tauri icon app-icon.svg"
   },
   "dependencies": {
     "@tauri-apps/api": "^2",

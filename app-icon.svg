@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="512"
+   height="512"
+   viewBox="0 0 512 512"
+   version="1.1"
+   id="svg1"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1">
+    <linearGradient
+       id="linearGradient1">
+      <stop
+         style="stop-color:#008cee;stop-opacity:1;"
+         offset="0"
+         id="stop2" />
+      <stop
+         style="stop-color:#ff1479;stop-opacity:1;"
+         offset="1"
+         id="stop3" />
+    </linearGradient>
+    <linearGradient
+       id="swatch1">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop1" />
+    </linearGradient>
+    <linearGradient
+       xlink:href="#linearGradient1"
+       id="linearGradient3"
+       x1="6"
+       y1="256"
+       x2="506"
+       y2="256"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.024,0,0,1.024,-6.144,-6.144)" />
+    <linearGradient
+       xlink:href="#linearGradient1"
+       id="linearGradient22"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.024,0,0,1.024,-6.144,-6.144)"
+       x1="6"
+       y1="256"
+       x2="506"
+       y2="256" />
+    <linearGradient
+       xlink:href="#linearGradient1"
+       id="linearGradient23"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.024,0,0,1.024,-6.144,-6.144)"
+       x1="6"
+       y1="256"
+       x2="506"
+       y2="256" />
+    <linearGradient
+       xlink:href="#linearGradient1"
+       id="linearGradient24"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.024,0,0,1.024,-6.144,-6.144)"
+       x1="6"
+       y1="256"
+       x2="506"
+       y2="256" />
+    <linearGradient
+       xlink:href="#linearGradient1"
+       id="linearGradient25"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.024,0,0,1.024,-6.144,-6.144)"
+       x1="6"
+       y1="256"
+       x2="506"
+       y2="256" />
+  </defs>
+  <g
+     id="layer1">
+    <circle
+       style="fill:#ffffff;fill-opacity:1;stroke-width:296.523"
+       id="path1"
+       cx="256"
+       cy="256"
+       r="256" />
+    <g
+       id="g22"
+       transform="rotate(45,256,256)">
+      <path
+         d="M 184.39453,501.0625 C 162.25784,430.90217 123.67279,366.3056 70.683594,313.31641 48.952539,291.58535 25.274759,272.25532 0.0703125,255.4707 A 256,256 0 0 0 0,256 256,256 0 0 0 184.39453,501.0625 Z"
+         style="fill:url(#linearGradient22);stroke-width:1.11104"
+         id="path22" />
+      <path
+         d="m 511.97656,255.44531 c -25.22106,16.79148 -48.91633,36.12727 -70.66015,57.8711 -52.9892,52.98919 -91.57425,117.58576 -113.71094,187.74609 A 256,256 0 0 0 512,256 a 256,256 0 0 0 -0.0234,-0.55469 z"
+         style="fill:url(#linearGradient23);stroke-width:1.11104"
+         id="path21" />
+      <path
+         d="M 48.779297,109.12695 C 62.776966,122.64405 81.804562,131 103,131 c 43.37433,0 78,-34.625674 78,-78 0,-13.400503 -3.61593,-25.769042 -9.46289,-36.736328 A 256,256 0 0 0 48.779297,109.12695 Z"
+         style="fill:url(#linearGradient24);stroke-width:1.11104"
+         id="path20" />
+      <path
+         d="M 340.4375,14.455078 C 333.97425,25.839049 330,38.859935 330,53 c 0,43.374326 34.62567,78 78,78 22.20414,0 42.02265,-9.15742 56.16992,-23.83398 A 256,256 0 0 0 340.4375,14.455078 Z"
+         style="fill:url(#linearGradient25);stroke-width:1.11104"
+         id="path19" />
+      <path
+         d="M 221.36328,4.5605469 C 227.53748,19.527965 231,35.872735 231,53 231,123.39633 173.39633,181 103,181 73.097716,181 45.865222,170.17865 24.013672,152.82617 A 256,256 0 0 0 7.2578125,200.87695 C 42.924799,222.25728 76.143824,248.0657 106.03906,277.96094 170.69434,342.6162 216.17262,422.82729 239.04883,509.76758 A 256,256 0 0 0 256,512 a 256,256 0 0 0 16.95117,-2.23242 c 22.87621,-86.94029 68.35449,-167.15138 133.00977,-231.80664 30.14256,-30.14257 63.66505,-56.12817 99.66797,-77.61133 A 256,256 0 0 0 489.30078,150.91406 C 467.09629,169.40312 438.97635,181 408,181 337.60367,181 280,123.39633 280,53 280,35.114382 283.74927,18.071376 290.45117,2.5722656 A 256,256 0 0 0 256,0 256,256 0 0 0 221.36328,4.5605469 Z M 256,181 a 75,75 0 0 1 75,75 75,75 0 0 1 -75,75 75,75 0 0 1 -75,-75 75,75 0 0 1 75,-75 z"
+         style="fill:url(#linearGradient3);stroke-width:1.11104"
+         id="path18" />
+    </g>
+  </g>
+</svg>

@@ -1,9 +1,15 @@
 import LinkButton from "../components/common/LinkButton";
+import Logo from "../../app-icon.svg";
 
 export default function Welcome() {
   return (
     <div className="flex flex-col @5xl:flex-row m-auto gap-8 pt-10 pb-14 px-4 max-w-[32rem] @5xl:max-w-[64rem]">
-      <div className="flex-1">
+      <img
+        src={Logo}
+        alt="Devwebpen Logo"
+        className="absolute w-1/3 min-w-[350px] min-h-[350px] max-h-[90%] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 mix-blend-color opacity-15"
+      />
+      <div className="flex-1 z-10">
         <h1 className="text-3xl mb-2 font-semibold">Welcome to devwebpen</h1>
         <p className="text-neutral-400">
           Developer's Swiss Army Knife for Web Applications
@@ -14,7 +20,7 @@ export default function Welcome() {
           Unauthorized access is illegal and unethical.
         </p>
       </div>
-      <div className="flex flex-col items-start flex-1">
+      <div className="flex flex-col items-start flex-1 z-10">
         <h2 className="text-xl mb-2">Getting Started</h2>
         <LinkButton className="-ml-2">Start ephemeral session...</LinkButton>
         <LinkButton className="-ml-2">Create a new project...</LinkButton>
