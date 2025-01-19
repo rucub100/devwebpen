@@ -2,7 +2,7 @@ import { ReactNode, useCallback, MouseEvent } from "react";
 
 import {
   defaultTabNames,
-  Navigation,
+  NavView,
   Tab as TabData,
 } from "../../types/view-state";
 import Icon from "../common/Icon";
@@ -11,8 +11,8 @@ import styles from "./Tabs.module.css";
 
 import Logo from "../../../app-icon.svg";
 
-const tabIcons: Record<Navigation, ReactNode> = {
-  [Navigation.Dashboard]: (
+const tabIcons: Record<NavView, ReactNode> = {
+  [NavView.Dashboard]: (
     <img src={Logo} alt="Devwebpen Logo" className="h-4 aspect-square" />
   ),
 };

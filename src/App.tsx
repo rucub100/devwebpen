@@ -5,14 +5,14 @@ import { showWindow } from "./tauri/window";
 import { useViewState } from "./hooks/useViewState";
 
 function App() {
-  const { viewInitialized } = useViewState({ listen: false });
+  const { isInitialized } = useViewState({ listen: false });
 
   useEffect(() => {
-    if (viewInitialized) {
+    if (isInitialized) {
       showWindow();
       console.debug("Initialization complete, showing window...");
     }
-  }, [viewInitialized]);
+  }, [isInitialized]);
 
   return <RootLayout></RootLayout>;
 }

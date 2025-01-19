@@ -5,17 +5,16 @@ import styles from "./Main.module.css";
 import Default from "../views/Default";
 
 const viewComponents: Record<MainView, ReactNode> = {
+  [MainView.None]: <Default></Default>,
   [MainView.Welcome]: <Welcome></Welcome>,
 };
 
 interface MainProps {
-  view?: MainView | null;
+  view: MainView;
 }
 
 export default function Main({ view }: MainProps) {
   return (
-    <div className={`@container ${styles.main}`}>
-      {view ? viewComponents[view] : <Default></Default>}
-    </div>
+    <div className={`@container ${styles.main}`}>{viewComponents[view]}</div>
   );
 }

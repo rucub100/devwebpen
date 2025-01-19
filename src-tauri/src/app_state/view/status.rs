@@ -1,3 +1,5 @@
-#[derive(serde::Serialize, serde::Deserialize, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "lowercase")]
-pub enum StatusView {}
+pub enum StatusView {
+    None,
+}

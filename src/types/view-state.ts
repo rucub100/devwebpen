@@ -1,4 +1,5 @@
-export enum Navigation {
+export enum NavView {
+  None = "none",
   Dashboard = "dashboard",
 }
 
@@ -11,7 +12,7 @@ export const defaultTabNames: Record<TabName, string> = {
 };
 
 export interface TabKind {
-  nav: Navigation;
+  nav: NavView;
   name: TabName;
 }
 
@@ -27,14 +28,27 @@ export interface TabView {
 }
 
 export enum MainView {
+  None = "none",
   Welcome = "welcome",
 }
 
+export enum AsideView {
+  None = "none",
+}
+
+export enum BottomView {
+  None = "none",
+}
+
+export enum StatusView {
+  None = "none",
+}
+
 export interface ViewState {
-  navigation: Navigation;
+  nav: NavView;
   tabs: TabView;
-  main: MainView | null;
-  aside: string | null;
-  bottom: string | null;
-  status: string | null;
+  main: MainView;
+  aside: AsideView;
+  bottom: BottomView;
+  status: StatusView;
 }

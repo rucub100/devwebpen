@@ -1,6 +1,7 @@
 use app_state::AppState;
 use commands::{close_tab, init_view, navigate_to, open_welcome, select_tab};
 use log;
+use tauri::Manager;
 use window::window_event_handler;
 
 mod app_state;
@@ -25,6 +26,14 @@ pub fn run() {
         ])
         .on_window_event(window_event_handler)
         .setup(|app| {
+            #[cfg(debug_assertions)] // only include this code on debug builds
+            {
+                let main_window = app.get_webview_window("main");
+                if let Some(main_window) = main_window {
+                    main_window.open_devtools();
+                }
+            }
+
             log::debug!("Starting daemon connector...");
             daemon_connector::start_connector(app);
             log::debug!("Starting sidecar (daemon)...");

@@ -1,6 +1,6 @@
 use std::sync::atomic::{AtomicU64, Ordering};
 
-use super::navigation::Navigation;
+use super::nav::NavView;
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "lowercase")]
@@ -11,14 +11,14 @@ pub enum TabName {
 #[derive(serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub struct TabKind {
-    pub nav: Navigation,
+    pub nav: NavView,
     pub name: TabName,
 }
 
 impl TabKind {
     pub fn welcome() -> Self {
         Self {
-            nav: Navigation::Dashboard,
+            nav: NavView::Dashboard,
             name: TabName::Welcome,
         }
     }

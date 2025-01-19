@@ -1,13 +1,14 @@
 import { ReactNode } from "react";
-import { Navigation } from "../../types/view-state";
+import { NavView } from "../../types/view-state";
 import Start from "../navigation/Start";
 
-const components: Record<Navigation, ReactNode> = {
-  [Navigation.Dashboard]: <Start></Start>,
+const components: Record<NavView, ReactNode> = {
+  [NavView.None]: undefined,
+  [NavView.Dashboard]: <Start></Start>,
 };
 
 interface LeftAsideProps {
-  navigation?: Navigation;
+  navigation?: NavView;
 }
 
 export default function LeftAside({ navigation }: LeftAsideProps) {

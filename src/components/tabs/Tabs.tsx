@@ -29,7 +29,7 @@ export default function Tabs({}: TabsProps) {
         className={`${styles.content} bg-gradient-to-b from-neutral-800/25 to-25% to-transparent`}
       >
         {/* TODO: render based on active tab */}
-        <Main view={viewState?.main}></Main>
+        {viewState && <Main view={viewState.main}></Main>}
       </div>
     </div>
   );
