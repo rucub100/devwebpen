@@ -1,4 +1,5 @@
 use crate::app_state::{
+    session::Session,
     view::{nav::NavView, PartialViewState},
     AppState,
 };
@@ -34,4 +35,22 @@ pub fn select_tab(id: u64, state: tauri::State<AppState>) -> Result<PartialViewS
 pub fn open_welcome(state: tauri::State<AppState>) -> Result<PartialViewState, String> {
     let mut state = state.lock().unwrap();
     Ok(state.view.open_welcome())
+}
+
+#[tauri::command]
+pub fn get_ephemeral_session(state: tauri::State<AppState>) -> Result<Option<Session>, String> {
+    let state = state.lock().unwrap();
+    Ok(state.ephemeral.clone())
+}
+
+#[tauri::command]
+pub fn start_ephemeral_session(state: tauri::State<AppState>) -> Result<Session, String> {
+    let mut state = state.lock().unwrap();
+    let session = state.start_ephemeral_session();
+
+    if let Some(session) = session {
+        Ok(session)
+    } else {
+        Err("Failed to start ephemeral session".to_string())
+    }
 }

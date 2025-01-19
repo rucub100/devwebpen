@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { NavView, ViewState } from "../types/view-state";
+import { Session } from "../types/session";
 
 export enum DevWebPenCommand {
   InitView = "init_view",
@@ -7,6 +8,8 @@ export enum DevWebPenCommand {
   CloseTab = "close_tab",
   SelectTab = "select_tab",
   OpenWelcome = "open_welcome",
+  GetEphemeralSession = "get_ephemeral_session",
+  StartEphemeralSession = "start_ephemeral_session",
 }
 
 export async function initView(): Promise<ViewState> {
@@ -31,6 +34,14 @@ export async function selectTab(id: number): Promise<Partial<ViewState>> {
 
 export async function openWelcome(): Promise<Partial<ViewState>> {
   return invoke<Partial<ViewState>>(DevWebPenCommand.OpenWelcome);
+}
+
+export async function getEphemeralSession(): Promise<Session | null> {
+  return invoke<Session | null>(DevWebPenCommand.GetEphemeralSession);
+}
+
+export async function startEphemeralSession(): Promise<Session> {
+  return invoke<Session>(DevWebPenCommand.StartEphemeralSession);
 }
 
 export default DevWebPenCommand;

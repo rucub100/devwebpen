@@ -3,16 +3,22 @@ import { useEffect } from "react";
 import RootLayout from "./components/layout/RootLayout";
 import { showWindow } from "./tauri/window";
 import { useViewState } from "./hooks/useViewState";
+import { useEphemeralSession } from "./hooks/useEphemeralSession";
 
 function App() {
-  const { isInitialized } = useViewState({ listenInit: true });
+  const { isInitialized: isViewStateInitialized } = useViewState({
+    listenInit: true,
+  });
+  const { isInitialized: isEphemeralSessionInitialized } = useEphemeralSession({
+    listenInit: true,
+  });
 
   useEffect(() => {
-    if (isInitialized) {
+    if (isViewStateInitialized && isEphemeralSessionInitialized) {
       showWindow();
       console.debug("Initialization complete, showing window...");
     }
-  }, [isInitialized]);
+  }, [isViewStateInitialized, isEphemeralSessionInitialized]);
 
   return <RootLayout></RootLayout>;
 }
