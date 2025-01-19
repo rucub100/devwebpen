@@ -3,7 +3,7 @@ import { useViewState } from "../hooks/useViewState";
 import Logo from "../../app-icon.svg";
 
 export default function Default() {
-  const { openWelcome } = useViewState({ listen: false });
+  const { openWelcome } = useViewState();
 
   return (
     <div

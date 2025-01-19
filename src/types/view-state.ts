@@ -22,7 +22,7 @@ export interface Tab {
   label: string | null;
 }
 
-export interface TabView {
+export interface TabsView {
   tabs: Tab[];
   activeTabId: number | null;
 }
@@ -46,7 +46,7 @@ export enum StatusView {
 
 export interface ViewState {
   nav: NavView;
-  tabs: TabView;
+  tabs: TabsView;
   main: MainView;
   aside: AsideView;
   bottom: BottomView;

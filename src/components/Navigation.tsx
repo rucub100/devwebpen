@@ -4,13 +4,13 @@ import IconButton from "./common/IconButton";
 import { NavView as Nav } from "../types/view-state";
 
 export default function Navigation() {
-  const { viewState, navigateTo } = useViewState();
+  const { nav, navigateTo } = useViewState({ listenNav: true });
 
   const textColor = `hover:text-neutral-200 ${
-    viewState?.nav === "dashboard" ? "text-neutral-200" : "text-neutral-400"
+    nav === "dashboard" ? "text-neutral-200" : "text-neutral-400"
   }`;
 
-  const displayIndicator = viewState?.nav === "dashboard" ? "block" : "hidden";
+  const displayIndicator = nav === "dashboard" ? "block" : "hidden";
 
   return (
     <div className="flex flex-col">

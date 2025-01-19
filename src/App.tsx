@@ -5,7 +5,7 @@ import { showWindow } from "./tauri/window";
 import { useViewState } from "./hooks/useViewState";
 
 function App() {
-  const { isInitialized } = useViewState({ listen: false });
+  const { isInitialized } = useViewState({ listenInit: true });
 
   useEffect(() => {
     if (isInitialized) {
