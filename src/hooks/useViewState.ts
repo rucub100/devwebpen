@@ -33,7 +33,6 @@ let mainListeners: Dispatch<SetStateAction<MainView | null>>[] = [];
 let asideListeners: Dispatch<SetStateAction<AsideView | null>>[] = [];
 let bottomListeners: Dispatch<SetStateAction<BottomView | null>>[] = [];
 let statusListeners: Dispatch<SetStateAction<StatusView | null>>[] = [];
-let viewStateListeners: Dispatch<SetStateAction<ViewState | null>>[] = [];
 
 export function initializeViewState() {
   if (_init) {
@@ -52,7 +51,6 @@ export function initializeViewState() {
     .then((viewState) => {
       globalViewState = viewState;
       console.debug("View state initialized", globalViewState);
-      viewStateListeners.forEach((listener) => listener(globalViewState));
       initListeners.forEach((listener) => listener(true));
     })
     .catch((error) => {
@@ -101,7 +99,6 @@ function updateViewState(promise: Promise<Partial<ViewState>>) {
       }
 
       console.debug("View state updated", globalViewState);
-      viewStateListeners.forEach((listener) => listener(globalViewState));
     })
     .catch((error) => {
       console.error("Failed to update view state", error);
