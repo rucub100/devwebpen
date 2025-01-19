@@ -1,7 +1,12 @@
 import LinkButton from "../components/common/LinkButton";
 import Logo from "../../app-icon.svg";
+import { useEphemeralSession } from "../hooks/useEphemeralSession";
 
 export default function Welcome() {
+  const { isActive: isEphemeralSessionActive } = useEphemeralSession({
+    listenIsActive: true,
+  });
+
   return (
     <div className="flex flex-col @5xl:flex-row m-auto gap-8 pt-10 pb-14 px-4 max-w-[32rem] @5xl:max-w-[64rem]">
       <img
@@ -20,9 +25,14 @@ export default function Welcome() {
           Unauthorized access is illegal and unethical.
         </p>
       </div>
-      <div className="flex flex-col items-start flex-1 z-10">
+      <div
+        className="flex flex-col items-start flex-1 z-10"
+        style={{ display: isEphemeralSessionActive ? "none" : "block" }}
+      >
         <h2 className="text-xl mb-2">Getting Started</h2>
+
         <LinkButton className="-ml-2">Start ephemeral session...</LinkButton>
+
         <LinkButton className="-ml-2">Create a new project...</LinkButton>
         <LinkButton className="-ml-2">Open an existing project...</LinkButton>
         <h2 className="text-xl my-2">Open Recent</h2>
