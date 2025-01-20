@@ -9,47 +9,59 @@ use tauri::Manager;
 use tauri_plugin_dialog::DialogExt;
 
 #[tauri::command]
-pub fn init_view(state: tauri::State<AppState>) -> Result<PartialViewState, String> {
-    let state = state.lock().unwrap();
+pub async fn init_view<'a>(state: tauri::State<'a, AppState>) -> Result<PartialViewState, String> {
+    let state = state.lock().await;
     Ok(state.view.clone().into())
 }
 
 #[tauri::command]
-pub fn navigate_to(
+pub async fn navigate_to<'a>(
     navigation: NavView,
-    state: tauri::State<AppState>,
+    state: tauri::State<'a, AppState>,
 ) -> Result<PartialViewState, String> {
-    let mut state = state.lock().unwrap();
+    let mut state = state.lock().await;
     Ok(state.view.navigate_to(navigation))
 }
 
 #[tauri::command]
-pub fn close_tab(id: u64, state: tauri::State<AppState>) -> Result<PartialViewState, String> {
-    let mut state = state.lock().unwrap();
+pub async fn close_tab<'a>(
+    id: u64,
+    state: tauri::State<'a, AppState>,
+) -> Result<PartialViewState, String> {
+    let mut state = state.lock().await;
     Ok(state.view.close_tab(id))
 }
 
 #[tauri::command]
-pub fn select_tab(id: u64, state: tauri::State<AppState>) -> Result<PartialViewState, String> {
-    let mut state = state.lock().unwrap();
+pub async fn select_tab<'a>(
+    id: u64,
+    state: tauri::State<'a, AppState>,
+) -> Result<PartialViewState, String> {
+    let mut state = state.lock().await;
     Ok(state.view.select_tab(id))
 }
 
 #[tauri::command]
-pub fn open_welcome(state: tauri::State<AppState>) -> Result<PartialViewState, String> {
-    let mut state = state.lock().unwrap();
+pub async fn open_welcome<'a>(
+    state: tauri::State<'a, AppState>,
+) -> Result<PartialViewState, String> {
+    let mut state = state.lock().await;
     Ok(state.view.open_welcome())
 }
 
 #[tauri::command]
-pub fn get_ephemeral_session(state: tauri::State<AppState>) -> Result<Option<Session>, String> {
-    let state = state.lock().unwrap();
+pub async fn get_ephemeral_session<'a>(
+    state: tauri::State<'a, AppState>,
+) -> Result<Option<Session>, String> {
+    let state = state.lock().await;
     Ok(state.ephemeral.clone())
 }
 
 #[tauri::command]
-pub fn start_ephemeral_session(state: tauri::State<AppState>) -> Result<Session, String> {
-    let mut state = state.lock().unwrap();
+pub async fn start_ephemeral_session<'a>(
+    state: tauri::State<'a, AppState>,
+) -> Result<Session, String> {
+    let mut state = state.lock().await;
     let session = state.start_ephemeral_session();
 
     if let Some(session) = session {
@@ -60,8 +72,8 @@ pub fn start_ephemeral_session(state: tauri::State<AppState>) -> Result<Session,
 }
 
 #[tauri::command]
-pub fn get_project(state: tauri::State<AppState>) -> Result<Option<Project>, String> {
-    let state = state.lock().unwrap();
+pub async fn get_project<'a>(state: tauri::State<'a, AppState>) -> Result<Option<Project>, String> {
+    let state = state.lock().await;
     Ok(state.project.clone())
 }
 
@@ -81,9 +93,17 @@ pub async fn create_project(
         if let Some(path) = file_path.as_path() {
             if let Some(path) = path.to_str() {
                 let state = app_handle.state::<AppState>();
-                let mut state = state.lock().unwrap();
-                state.create_project(path.to_string());
-                return Ok(state.project.clone());
+                let mut state = state.lock().await;
+                let project = state.create_project(path.to_string());
+
+                let save = project.save().await;
+
+                if let Err(e) = save {
+                    state.remote_project();
+                    return Err(e);
+                }
+
+                return Ok(Some(project));
             } else {
                 return Err("Path contains non-UTF8 characters".to_string());
             }

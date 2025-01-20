@@ -26,7 +26,11 @@ function App() {
       showWindow();
       console.debug("Initialization complete, showing window...");
     }
-  }, [isViewStateInitialized, isEphemeralSessionInitialized]);
+  }, [
+    isViewStateInitialized,
+    isEphemeralSessionInitialized,
+    isProjectInitialized,
+  ]);
 
   return <RootLayout></RootLayout>;
 }

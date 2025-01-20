@@ -42,9 +42,7 @@ pub fn run() {
                 }
             }
 
-            log::debug!("Starting daemon connector...");
             daemon_connector::start_connector(app);
-            log::debug!("Starting sidecar (daemon)...");
             daemon_sidecar::start_sidecar(app);
             Ok(())
         })

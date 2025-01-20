@@ -4,16 +4,16 @@ use tokio::net::{TcpListener, TcpStream};
 
 use crate::app_state::AppState;
 
-fn set_daemon_error(app: &AppHandle, error: String) {
+async fn set_daemon_error(app: &AppHandle, error: String) {
     let state = app.state::<AppState>();
-    let mut state = state.lock().unwrap();
+    let mut state = state.lock().await;
 
     state.daemon.set_error(error.to_string());
 }
 
-fn set_daemon_connecting(app: &AppHandle) {
+async fn set_daemon_connecting(app: &AppHandle) {
     let state = app.state::<AppState>();
-    let mut state = state.lock().unwrap();
+    let mut state = state.lock().await;
 
     if let Err(e) = state.daemon.set_connecting() {
         log::error!("{}", e);
@@ -25,13 +25,13 @@ async fn accept_connection(app: AppHandle, stream: TcpStream) {
         "Incoming TCP connection from: {}",
         stream.peer_addr().unwrap()
     );
-    set_daemon_connecting(&app);
+    set_daemon_connecting(&app).await;
 
     let ws_stream = tokio_tungstenite::accept_async(stream).await;
 
     if let Err(e) = ws_stream {
         log::error!("Error during WebSocket handshake: {}", e);
-        set_daemon_error(&app, e.to_string());
+        set_daemon_error(&app, e.to_string()).await;
         return;
     }
 
@@ -50,7 +50,7 @@ async fn start_server(app: AppHandle) {
 
     if let Err(e) = try_socket {
         log::error!("Failed to bind to address {}: {}", addr, e);
-        set_daemon_error(&app, e.to_string());
+        set_daemon_error(&app, e.to_string()).await;
         return;
     }
 

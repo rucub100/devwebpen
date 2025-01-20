@@ -8,8 +8,8 @@ use tokio::sync::mpsc::Receiver;
 
 use crate::app_state::AppState;
 
-fn handle_daemon_stdio(app: &tauri::App, mut rx: Receiver<CommandEvent>) {
-    let app_handle = app.handle().clone();
+fn handle_daemon_stdio(app_handle: tauri::AppHandle, mut rx: Receiver<CommandEvent>) {
+    let app_handle = app_handle.clone();
     tauri::async_runtime::spawn(async move {
         while let Some(event) = rx.recv().await {
             if let CommandEvent::Stdout(line_bytes) = event {
@@ -28,16 +28,16 @@ fn handle_daemon_stdio(app: &tauri::App, mut rx: Receiver<CommandEvent>) {
     });
 }
 
-fn set_daemon_error(app: &tauri::App, error: Error) {
-    let state = app.handle().state::<AppState>();
-    let mut state = state.lock().unwrap();
+async fn set_daemon_error(app_handle: tauri::AppHandle, error: Error) {
+    let state = app_handle.state::<AppState>();
+    let mut state = state.lock().await;
 
     state.daemon.set_error(error.to_string());
 }
 
-fn set_daemon_starting(app: &tauri::App, child: CommandChild) {
-    let state = app.handle().state::<AppState>();
-    let mut state = state.lock().unwrap();
+async fn set_daemon_starting(app_handle: tauri::AppHandle, child: CommandChild) {
+    let state = app_handle.state::<AppState>();
+    let mut state = state.lock().await;
 
     if let Err(e) = state.daemon.set_starting(child) {
         log::error!("{}", e);
@@ -45,25 +45,30 @@ fn set_daemon_starting(app: &tauri::App, child: CommandChild) {
 }
 
 pub fn start_sidecar(app: &tauri::App) {
-    let sidecar_command = app.shell().sidecar("devwebpen-daemon");
-    if let Err(e) = sidecar_command {
-        log::error!("Failed to create sidecar command: {}", e);
-        set_daemon_error(app, e);
-        return;
-    }
+    log::debug!("Starting sidecar (daemon)...");
+    let app_handle = app.handle().clone();
 
-    let sidecar_command = sidecar_command.unwrap().spawn();
-    if let Err(e) = sidecar_command {
-        log::error!("Failed to spawn sidecar command: {}", e);
-        set_daemon_error(app, e);
-        return;
-    }
+    tauri::async_runtime::spawn(async {
+        let sidecar_command = app_handle.shell().sidecar("devwebpen-daemon");
+        if let Err(e) = sidecar_command {
+            log::error!("Failed to create sidecar command: {}", e);
+            set_daemon_error(app_handle, e).await;
+            return;
+        }
 
-    let (rx, child) = sidecar_command.unwrap();
-    log::debug!("Sidecar started, PID: {}", child.pid());
+        let sidecar_command = sidecar_command.unwrap().spawn();
+        if let Err(e) = sidecar_command {
+            log::error!("Failed to spawn sidecar command: {}", e);
+            set_daemon_error(app_handle, e).await;
+            return;
+        }
 
-    // Store the child process in the app state to ensure it is not dropped
-    set_daemon_starting(app, child);
+        let (rx, child) = sidecar_command.unwrap();
+        log::debug!("Sidecar started, PID: {}", child.pid());
 
-    handle_daemon_stdio(app, rx);
+        // Store the child process in the app state to ensure it is not dropped
+        set_daemon_starting(app_handle.clone(), child).await;
+
+        handle_daemon_stdio(app_handle, rx);
+    });
 }

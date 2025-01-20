@@ -1,8 +1,7 @@
-use std::{path::Path, sync::Mutex};
-
 use daemon::Daemon;
 use project::Project;
 use session::Session;
+use tokio::sync::Mutex;
 use view::ViewState;
 
 pub mod daemon;
@@ -20,7 +19,7 @@ pub struct AppStateInner {
 
 impl AppStateInner {
     pub fn start_ephemeral_session(&mut self) -> Option<Session> {
-        if (self.ephemeral.is_some()) {
+        if self.ephemeral.is_some() {
             log::error!("Ephemeral session already started");
             return None;
         }
@@ -30,13 +29,19 @@ impl AppStateInner {
         self.ephemeral.clone()
     }
 
-    pub fn create_project(&mut self, path: String) {
-        self.project = Some(Project {
+    pub fn create_project(&mut self, path: String) -> Project {
+        let project = Project {
             path,
             name: None,
             description: None,
             session: Session::default(),
-        });
+        };
+        self.project = Some(project.clone());
+        project
+    }
+
+    pub fn remote_project(&mut self) {
+        self.project = None;
     }
 }
 
