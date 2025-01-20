@@ -1,7 +1,7 @@
 use app_state::AppState;
 use commands::{
-    close_tab, get_ephemeral_session, init_view, navigate_to, open_welcome, select_tab,
-    start_ephemeral_session,
+    close_tab, create_project, get_ephemeral_session, get_project, init_view, navigate_to,
+    open_welcome, select_tab, start_ephemeral_session,
 };
 use log;
 use tauri::Manager;
@@ -20,6 +20,7 @@ pub fn run() {
         .manage(AppState::default())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
             init_view,
             get_ephemeral_session,
@@ -27,7 +28,9 @@ pub fn run() {
             close_tab,
             select_tab,
             open_welcome,
-            start_ephemeral_session
+            start_ephemeral_session,
+            get_project,
+            create_project,
         ])
         .on_window_event(window_event_handler)
         .setup(|app| {

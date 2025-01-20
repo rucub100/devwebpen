@@ -1,4 +1,5 @@
 import { useEphemeralSession } from "../../hooks/useEphemeralSession";
+import { useProject } from "../../hooks/useProject";
 import Accordion, { AccordionItem } from "../common/Accordion";
 import Button from "../common/Button";
 
@@ -8,6 +9,10 @@ export default function Start() {
       listenIsActive: true,
     });
 
+  const { isActive: isProjectActive, createProject } = useProject({
+    listenIsActive: true,
+  });
+
   const gettingStartedItem: AccordionItem = {
     key: "start",
     title: "Getting Started",
@@ -15,7 +20,7 @@ export default function Start() {
       <div className="flex flex-col p-4 gap-2 text-neutral-300">
         <p>You have not yet opened a project.</p>
         <Button>Open Project</Button>
-        <Button>New Project</Button>
+        <Button onClick={createProject}>New Project</Button>
         <Button onClick={startEphemeralSession}>Ephemeral Session</Button>
       </div>
     ),
@@ -39,9 +44,24 @@ export default function Start() {
     ),
   };
 
+  const projectItem: AccordionItem = {
+    key: "project",
+    title: "Project",
+    content: (
+      <div className="flex flex-col p-4 gap-2 text-neutral-300">
+        <p>
+          Projects are useful for organizing your work and saving your progress.
+        </p>
+      </div>
+    ),
+  };
+
   const items: AccordionItem[] = [
-    ...(isEphemeralSessionActive ? [] : [gettingStartedItem]),
+    ...(isEphemeralSessionActive || isProjectActive
+      ? []
+      : [gettingStartedItem]),
     ...(isEphemeralSessionActive ? [ephemeralSessionItem] : []),
+    ...(isProjectActive ? [projectItem] : []),
   ];
 
   return <Accordion className="p-1 min-w-[200px]" items={items} />;

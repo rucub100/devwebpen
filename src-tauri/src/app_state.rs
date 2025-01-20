@@ -1,4 +1,4 @@
-use std::sync::Mutex;
+use std::{path::Path, sync::Mutex};
 
 use daemon::Daemon;
 use project::Project;
@@ -14,7 +14,7 @@ pub mod view;
 pub struct AppStateInner {
     pub daemon: Daemon,
     pub ephemeral: Option<Session>,
-    pub projects: Vec<Project>,
+    pub project: Option<Project>,
     pub view: ViewState,
 }
 
@@ -28,6 +28,15 @@ impl AppStateInner {
         let session = Session::default();
         self.ephemeral = Some(session.clone());
         self.ephemeral.clone()
+    }
+
+    pub fn create_project(&mut self, path: String) {
+        self.project = Some(Project {
+            path,
+            name: None,
+            description: None,
+            session: Session::default(),
+        });
     }
 }
 

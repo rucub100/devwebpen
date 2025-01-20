@@ -1,12 +1,17 @@
 import LinkButton from "../components/common/LinkButton";
 import Logo from "../../app-icon.svg";
 import { useEphemeralSession } from "../hooks/useEphemeralSession";
+import { useProject } from "../hooks/useProject";
 
 export default function Welcome() {
   const { isActive: isEphemeralSessionActive, startEphemeralSession } =
     useEphemeralSession({
       listenIsActive: true,
     });
+
+  const { isActive: isProjectActive, createProject } = useProject({
+    listenIsActive: true,
+  });
 
   return (
     <div className="flex flex-col @5xl:flex-row m-auto gap-8 pt-10 pb-14 px-4 max-w-[32rem] @5xl:max-w-[64rem]">
@@ -28,13 +33,17 @@ export default function Welcome() {
       </div>
       <div
         className="flex flex-col items-start flex-1 z-10"
-        style={{ display: isEphemeralSessionActive ? "none" : "" }}
+        style={{
+          display: isEphemeralSessionActive || isProjectActive ? "none" : "",
+        }}
       >
         <h2 className="text-xl mb-2">Getting Started</h2>
         <LinkButton className="-ml-2" onClick={startEphemeralSession}>
           Start ephemeral session...
         </LinkButton>
-        <LinkButton className="-ml-2">Create a new project...</LinkButton>
+        <LinkButton className="-ml-2" onClick={createProject}>
+          Create a new project...
+        </LinkButton>
         <LinkButton className="-ml-2">Open an existing project...</LinkButton>
         <h2 className="text-xl my-2">Open Recent</h2>
       </div>
