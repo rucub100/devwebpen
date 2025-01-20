@@ -6,6 +6,16 @@ pub struct Session {
     pub id: u64,
 }
 
+#[derive(serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub struct SessionData {}
+
+impl From<Session> for SessionData {
+    fn from(_session: Session) -> Self {
+        SessionData {}
+    }
+}
+
 impl Session {
     fn next_id() -> u64 {
         static COUNTER: AtomicU64 = AtomicU64::new(0);
