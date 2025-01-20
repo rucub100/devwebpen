@@ -6,7 +6,11 @@ import {
   useState,
 } from "react";
 import { Session } from "../types/session";
-import { getProject, createProject as _createProject } from "../tauri/commands";
+import {
+  getProject,
+  createProject as _createProject,
+  openProject as _openProject,
+} from "../tauri/commands";
 import { Project } from "../types/project";
 
 let globalProject: Project | null | undefined = undefined;
@@ -128,6 +132,8 @@ export function useProject({
 
   const createProject = useCallback(() => updateProject(_createProject()), []);
 
+  const openProject = useCallback(() => updateProject(_openProject()), []);
+
   return {
     isInitialized,
     isActive: !!globalProject,
@@ -136,5 +142,6 @@ export function useProject({
     description: globalProject?.description,
     session: globalProject?.session,
     createProject,
+    openProject,
   };
 }

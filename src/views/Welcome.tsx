@@ -9,7 +9,11 @@ export default function Welcome() {
       listenIsActive: true,
     });
 
-  const { isActive: isProjectActive, createProject } = useProject({
+  const {
+    isActive: isProjectActive,
+    createProject,
+    openProject,
+  } = useProject({
     listenIsActive: true,
   });
 
@@ -44,7 +48,9 @@ export default function Welcome() {
         <LinkButton className="-ml-2" onClick={createProject}>
           Create a new project...
         </LinkButton>
-        <LinkButton className="-ml-2">Open an existing project...</LinkButton>
+        <LinkButton className="-ml-2" onClick={openProject}>
+          Open an existing project...
+        </LinkButton>
         <h2 className="text-xl my-2">Open Recent</h2>
       </div>
     </div>

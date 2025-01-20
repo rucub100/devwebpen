@@ -13,6 +13,7 @@ export enum DevWebPenCommand {
   StartEphemeralSession = "start_ephemeral_session",
   GetProject = "get_project",
   CreateNewProject = "create_project",
+  OpenProject = "open_project",
 }
 
 export async function initView(): Promise<ViewState> {
@@ -53,6 +54,10 @@ export async function getProject(): Promise<Project | null> {
 
 export async function createProject(): Promise<Project> {
   return invoke<Project>(DevWebPenCommand.CreateNewProject);
+}
+
+export async function openProject(): Promise<Project | null> {
+  return invoke<Project | null>(DevWebPenCommand.OpenProject);
 }
 
 export default DevWebPenCommand;

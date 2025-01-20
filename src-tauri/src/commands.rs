@@ -99,9 +99,46 @@ pub async fn create_project(
                 let save = project.save().await;
 
                 if let Err(e) = save {
-                    state.remote_project();
+                    state.discard_current_project();
                     return Err(e);
                 }
+
+                return Ok(Some(project));
+            } else {
+                return Err("Path contains non-UTF8 characters".to_string());
+            }
+        } else {
+            return Err("Invalid file path".to_string());
+        }
+    }
+
+    Ok(None)
+}
+
+#[tauri::command]
+pub async fn open_project(
+    app_handle: tauri::AppHandle,
+    window: tauri::Window,
+) -> Result<Option<Project>, String> {
+    let file_path = app_handle
+        .dialog()
+        .file()
+        .set_parent(&window)
+        .add_filter("Devwebpen Project", &["dwp", "devwp", "devwebpen"])
+        .blocking_pick_file();
+
+    if let Some(file_path) = file_path {
+        if let Some(path) = file_path.as_path() {
+            if let Some(path) = path.to_str() {
+                let state = app_handle.state::<AppState>();
+                let mut state = state.lock().await;
+                let project = Project::load(path.to_string()).await;
+
+                if let Err(e) = project {
+                    return Err(e);
+                }
+
+                let project = state.open_project(project.unwrap());
 
                 return Ok(Some(project));
             } else {

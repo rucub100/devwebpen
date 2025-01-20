@@ -16,6 +16,14 @@ impl From<Session> for SessionData {
     }
 }
 
+impl From<SessionData> for Session {
+    fn from(_session_data: SessionData) -> Self {
+        Session {
+            id: Session::next_id(),
+        }
+    }
+}
+
 impl Session {
     fn next_id() -> u64 {
         static COUNTER: AtomicU64 = AtomicU64::new(0);

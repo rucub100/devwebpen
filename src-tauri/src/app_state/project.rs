@@ -1,6 +1,9 @@
 use std::path::Path;
 
-use tokio::{fs::File, io::AsyncWriteExt};
+use tokio::{
+    fs::File,
+    io::{AsyncReadExt, AsyncWriteExt},
+};
 
 use super::session::{Session, SessionData};
 
@@ -32,6 +35,38 @@ impl From<Project> for ProjectData {
 }
 
 impl Project {
+    pub fn from(data: ProjectData, path: String) -> Project {
+        Project {
+            path,
+            name: data.name,
+            description: data.description,
+            session: data.session.into(),
+        }
+    }
+
+    pub async fn load(path: String) -> Result<Project, String> {
+        let _path = Path::new(&path);
+        let file = File::open(_path).await;
+
+        if let Err(e) = file {
+            return Err(e.to_string());
+        }
+
+        let mut file = file.unwrap();
+        let mut data = String::new();
+        file.read_to_string(&mut data).await;
+
+        let project_data = serde_json::from_str::<ProjectData>(&data);
+
+        if let Err(e) = project_data {
+            return Err(e.to_string());
+        }
+
+        let project_data = project_data.unwrap();
+
+        Ok(Project::from(project_data, path))
+    }
+
     pub async fn save(&self) -> Result<(), String> {
         let path = Path::new(&self.path);
         let file = File::create(path).await;

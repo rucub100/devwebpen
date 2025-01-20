@@ -40,8 +40,13 @@ impl AppStateInner {
         project
     }
 
-    pub fn remote_project(&mut self) {
+    pub fn discard_current_project(&mut self) {
         self.project = None;
+    }
+
+    pub fn open_project(&mut self, project: Project) -> Project {
+        self.project = Some(project.clone());
+        project
     }
 }
 

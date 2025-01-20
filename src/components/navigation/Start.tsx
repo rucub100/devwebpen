@@ -9,7 +9,11 @@ export default function Start() {
       listenIsActive: true,
     });
 
-  const { isActive: isProjectActive, createProject } = useProject({
+  const {
+    isActive: isProjectActive,
+    createProject,
+    openProject,
+  } = useProject({
     listenIsActive: true,
   });
 
@@ -19,7 +23,7 @@ export default function Start() {
     content: (
       <div className="flex flex-col p-4 gap-2 text-neutral-300">
         <p>You have not yet opened a project.</p>
-        <Button>Open Project</Button>
+        <Button onClick={openProject}>Open Project</Button>
         <Button onClick={createProject}>New Project</Button>
         <Button onClick={startEphemeralSession}>Ephemeral Session</Button>
       </div>

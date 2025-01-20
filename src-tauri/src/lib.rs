@@ -1,7 +1,7 @@
 use app_state::AppState;
 use commands::{
     close_tab, create_project, get_ephemeral_session, get_project, init_view, navigate_to,
-    open_welcome, select_tab, start_ephemeral_session,
+    open_project, open_welcome, select_tab, start_ephemeral_session,
 };
 use log;
 use tauri::Manager;
@@ -31,6 +31,7 @@ pub fn run() {
             start_ephemeral_session,
             get_project,
             create_project,
+            open_project
         ])
         .on_window_event(window_event_handler)
         .setup(|app| {
