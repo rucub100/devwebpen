@@ -22,6 +22,7 @@ tauri = { version = "2", features = [] }
 tauri-plugin-opener = "2"
 tauri-plugin-dialog = "2"
 tauri-plugin-shell = "2"
+tauri-plugin-store = "2"
 tokio = { version = "1", features = ["net"] }
 tokio-tungstenite = "0.26.1"
 futures-util = "0.3.31"

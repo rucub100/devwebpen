@@ -11,6 +11,7 @@
     "shell:default",
     "shell:allow-spawn",
     "shell:allow-stdin-write",
-    "dialog:default"
+    "dialog:default",
+    "store:default"
   ]
 }
