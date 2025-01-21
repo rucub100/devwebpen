@@ -10,7 +10,7 @@ use tauri_plugin_dialog::DialogExt;
 
 #[tauri::command]
 pub async fn init_view<'a>(state: tauri::State<'a, AppState>) -> Result<PartialViewState, String> {
-    let state = state.lock().await;
+    let state = state.lock().unwrap();
     Ok(state.view.clone().into())
 }
 
@@ -19,7 +19,7 @@ pub async fn navigate_to<'a>(
     navigation: NavView,
     state: tauri::State<'a, AppState>,
 ) -> Result<PartialViewState, String> {
-    let mut state = state.lock().await;
+    let mut state = state.lock().unwrap();
     Ok(state.view.navigate_to(navigation))
 }
 
@@ -28,7 +28,7 @@ pub async fn close_tab<'a>(
     id: u64,
     state: tauri::State<'a, AppState>,
 ) -> Result<PartialViewState, String> {
-    let mut state = state.lock().await;
+    let mut state = state.lock().unwrap();
     Ok(state.view.close_tab(id))
 }
 
@@ -37,7 +37,7 @@ pub async fn select_tab<'a>(
     id: u64,
     state: tauri::State<'a, AppState>,
 ) -> Result<PartialViewState, String> {
-    let mut state = state.lock().await;
+    let mut state = state.lock().unwrap();
     Ok(state.view.select_tab(id))
 }
 
@@ -45,7 +45,7 @@ pub async fn select_tab<'a>(
 pub async fn open_welcome<'a>(
     state: tauri::State<'a, AppState>,
 ) -> Result<PartialViewState, String> {
-    let mut state = state.lock().await;
+    let mut state = state.lock().unwrap();
     Ok(state.view.open_welcome())
 }
 
@@ -53,7 +53,7 @@ pub async fn open_welcome<'a>(
 pub async fn get_ephemeral_session<'a>(
     state: tauri::State<'a, AppState>,
 ) -> Result<Option<Session>, String> {
-    let state = state.lock().await;
+    let state = state.lock().unwrap();
     Ok(state.ephemeral.clone())
 }
 
@@ -61,7 +61,7 @@ pub async fn get_ephemeral_session<'a>(
 pub async fn start_ephemeral_session<'a>(
     state: tauri::State<'a, AppState>,
 ) -> Result<Session, String> {
-    let mut state = state.lock().await;
+    let mut state = state.lock().unwrap();
     let session = state.start_ephemeral_session();
 
     if let Some(session) = session {
@@ -73,7 +73,7 @@ pub async fn start_ephemeral_session<'a>(
 
 #[tauri::command]
 pub async fn get_project<'a>(state: tauri::State<'a, AppState>) -> Result<Option<Project>, String> {
-    let state = state.lock().await;
+    let state = state.lock().unwrap();
     Ok(state.project.clone())
 }
 
@@ -92,13 +92,18 @@ pub async fn create_project(
     if let Some(file_path) = file_path {
         if let Some(path) = file_path.as_path() {
             if let Some(path) = path.to_str() {
-                let state = app_handle.state::<AppState>();
-                let mut state = state.lock().await;
-                let project = state.create_project(path.to_string());
+                let project: Project;
+                {
+                    let state = app_handle.state::<AppState>();
+                    let mut state = state.lock().unwrap();
+                    project = state.create_project(path.to_string());
+                }
 
                 let save = project.save().await;
 
                 if let Err(e) = save {
+                    let state = app_handle.state::<AppState>();
+                    let mut state = state.lock().unwrap();
                     state.discard_current_project();
                     return Err(e);
                 }
@@ -130,14 +135,14 @@ pub async fn open_project(
     if let Some(file_path) = file_path {
         if let Some(path) = file_path.as_path() {
             if let Some(path) = path.to_str() {
-                let state = app_handle.state::<AppState>();
-                let mut state = state.lock().await;
                 let project = Project::load(path.to_string()).await;
 
                 if let Err(e) = project {
                     return Err(e);
                 }
 
+                let state = app_handle.state::<AppState>();
+                let mut state = state.lock().unwrap();
                 let project = state.open_project(project.unwrap());
 
                 return Ok(Some(project));

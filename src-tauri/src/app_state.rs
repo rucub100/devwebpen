@@ -1,7 +1,8 @@
+use std::sync::Mutex;
+
 use daemon::Daemon;
 use project::Project;
 use session::Session;
-use tokio::sync::Mutex;
 use view::ViewState;
 
 pub mod daemon;
