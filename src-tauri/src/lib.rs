@@ -11,6 +11,7 @@ mod app_state;
 mod commands;
 mod daemon_connector;
 mod daemon_sidecar;
+mod store;
 mod window;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -44,6 +45,7 @@ pub fn run() {
                 }
             }
 
+            store::load(app);
             daemon_connector::start_connector(app);
             daemon_sidecar::start_sidecar(app);
             Ok(())

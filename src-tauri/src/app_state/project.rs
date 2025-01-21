@@ -54,7 +54,11 @@ impl Project {
 
         let mut file = file.unwrap();
         let mut data = String::new();
-        file.read_to_string(&mut data).await;
+        let result = file.read_to_string(&mut data).await;
+
+        if let Err(e) = result {
+            return Err(e.to_string());
+        }
 
         let project_data = serde_json::from_str::<ProjectData>(&data);
 

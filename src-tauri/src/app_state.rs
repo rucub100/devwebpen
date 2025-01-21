@@ -3,11 +3,13 @@ use std::sync::Mutex;
 use daemon::Daemon;
 use project::Project;
 use session::Session;
+use store::Store;
 use view::ViewState;
 
 pub mod daemon;
 pub mod project;
 pub mod session;
+pub mod store;
 pub mod view;
 
 #[derive(Default)]
@@ -16,6 +18,7 @@ pub struct AppStateInner {
     pub ephemeral: Option<Session>,
     pub project: Option<Project>,
     pub view: ViewState,
+    pub store: Option<Store>,
 }
 
 impl AppStateInner {
@@ -38,6 +41,10 @@ impl AppStateInner {
             session: Session::default(),
         };
         self.project = Some(project.clone());
+        self.store
+            .as_mut()
+            .unwrap()
+            .add_recent_project((&project).into());
         project
     }
 
@@ -47,6 +54,10 @@ impl AppStateInner {
 
     pub fn open_project(&mut self, project: Project) -> Project {
         self.project = Some(project.clone());
+        self.store
+            .as_mut()
+            .unwrap()
+            .add_recent_project((&project).into());
         project
     }
 }

@@ -1,8 +1,11 @@
-use crate::app_state::{
-    project::Project,
-    session::Session,
-    view::{nav::NavView, PartialViewState},
-    AppState,
+use crate::{
+    app_state::{
+        project::Project,
+        session::Session,
+        view::{nav::NavView, PartialViewState},
+        AppState,
+    },
+    store,
 };
 
 use tauri::Manager;
@@ -108,6 +111,10 @@ pub async fn create_project(
                     return Err(e);
                 }
 
+                if let Err(e) = super::store::save(&app_handle) {
+                    log::error!("Failed to save state: {}", e);
+                }
+
                 return Ok(Some(project));
             } else {
                 return Err("Path contains non-UTF8 characters".to_string());
@@ -144,6 +151,11 @@ pub async fn open_project(
                 let state = app_handle.state::<AppState>();
                 let mut state = state.lock().unwrap();
                 let project = state.open_project(project.unwrap());
+                drop(state); // drop the lock to avoid deadlock in super::store::save below
+
+                if let Err(e) = super::store::save(&app_handle) {
+                    log::error!("Failed to save state: {}", e);
+                }
 
                 return Ok(Some(project));
             } else {
