@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import RootLayout from "./components/layout/RootLayout";
 import { showWindow } from "./tauri/window";
@@ -7,6 +7,8 @@ import { useEphemeralSession } from "./hooks/useEphemeralSession";
 import { useProject } from "./hooks/useProject";
 
 function App() {
+  const [isInitialized, setInitialized] = useState(false);
+
   const { isInitialized: isViewStateInitialized } = useViewState({
     listenInit: true,
   });
@@ -23,7 +25,8 @@ function App() {
       isEphemeralSessionInitialized &&
       isProjectInitialized
     ) {
-      showWindow();
+      setInitialized(true);
+      setTimeout(showWindow);
       console.debug("Initialization complete, showing window...");
     }
   }, [
@@ -32,7 +35,7 @@ function App() {
     isProjectInitialized,
   ]);
 
-  return <RootLayout></RootLayout>;
+  return isInitialized && <RootLayout></RootLayout>;
 }
 
 export default App;
