@@ -23,18 +23,18 @@ import {
   ViewState,
 } from "../types/view-state";
 
-let globalViewState: ViewState | null = null;
+// use undefined to indicate that the view state has not been initialized
+let globalViewState: ViewState | undefined = undefined;
 
 let _init = false;
-let initListeners: Dispatch<SetStateAction<boolean>>[] = [];
-let navListeners: Dispatch<SetStateAction<NavView | null>>[] = [];
-let tabsListeners: Dispatch<SetStateAction<TabsView | null>>[] = [];
-let mainListeners: Dispatch<SetStateAction<MainView | null>>[] = [];
-let asideListeners: Dispatch<SetStateAction<AsideView | null>>[] = [];
-let bottomListeners: Dispatch<SetStateAction<BottomView | null>>[] = [];
-let statusListeners: Dispatch<SetStateAction<StatusView | null>>[] = [];
+let navListeners: Dispatch<SetStateAction<NavView | undefined>>[] = [];
+let tabsListeners: Dispatch<SetStateAction<TabsView | undefined>>[] = [];
+let mainListeners: Dispatch<SetStateAction<MainView | undefined>>[] = [];
+let asideListeners: Dispatch<SetStateAction<AsideView | undefined>>[] = [];
+let bottomListeners: Dispatch<SetStateAction<BottomView | undefined>>[] = [];
+let statusListeners: Dispatch<SetStateAction<StatusView | undefined>>[] = [];
 
-export function initializeViewState() {
+export async function initializeViewState() {
   if (_init) {
     return;
   }
@@ -43,22 +43,24 @@ export function initializeViewState() {
 
   console.debug("Initializing view state...");
 
-  if (globalViewState !== null) {
+  if (globalViewState !== undefined) {
     throw new Error("View state has already been initialized");
   }
 
-  initView()
-    .then((viewState) => {
-      globalViewState = viewState;
-      console.debug("View state initialized", globalViewState);
-      initListeners.forEach((listener) => listener(true));
-    })
-    .catch((error) => {
-      console.error("Failed to initialize view state", error);
-    });
+  try {
+    const viewState = await initView();
+    globalViewState = viewState;
+    console.debug("View state initialized", globalViewState);
+  } catch (error) {
+    console.error("Failed to initialize view state", error);
+  }
 }
 
 function updateViewState(promise: Promise<Partial<ViewState>>) {
+  if (globalViewState === undefined) {
+    console.error("Attempted to update view state before it was initialized");
+  }
+
   promise
     .then((viewState) => {
       if (!viewState) {
@@ -106,7 +108,6 @@ function updateViewState(promise: Promise<Partial<ViewState>>) {
 }
 
 interface UseViewStateProps {
-  listenInit?: boolean;
   listenNav?: boolean;
   listenTabs?: boolean;
   listenMain?: boolean;
@@ -116,7 +117,6 @@ interface UseViewStateProps {
 }
 
 export function useViewState({
-  listenInit,
   listenNav,
   listenTabs,
   listenMain,
@@ -124,37 +124,12 @@ export function useViewState({
   listenBottom,
   listenStatus,
 }: UseViewStateProps = {}) {
-  const [isInitialized, setInitialized] = useState(!!globalViewState);
-  const setInternalNavViewState = useState(globalViewState?.nav || null)[1];
-  const setInternalTabsViewState = useState(globalViewState?.tabs || null)[1];
-  const setInternalMainViewState = useState(globalViewState?.main || null)[1];
-  const setInternalAsideViewState = useState(globalViewState?.aside || null)[1];
-  const setInternalBottomViewState = useState(
-    globalViewState?.bottom || null
-  )[1];
-  const setInternalStatusViewState = useState(
-    globalViewState?.status || null
-  )[1];
-
-  useEffect(() => {
-    if (globalViewState) {
-      return;
-    }
-
-    if (!listenInit) {
-      return;
-    }
-
-    initListeners.push(setInitialized);
-
-    initializeViewState();
-
-    return () => {
-      initListeners = initListeners.filter(
-        (listener) => listener !== setInitialized
-      );
-    };
-  }, []);
+  const setInternalNavViewState = useState(globalViewState?.nav)[1];
+  const setInternalTabsViewState = useState(globalViewState?.tabs)[1];
+  const setInternalMainViewState = useState(globalViewState?.main)[1];
+  const setInternalAsideViewState = useState(globalViewState?.aside)[1];
+  const setInternalBottomViewState = useState(globalViewState?.bottom)[1];
+  const setInternalStatusViewState = useState(globalViewState?.status)[1];
 
   // register nav listeners
   useEffect(() => {
@@ -264,7 +239,6 @@ export function useViewState({
   const openWelcome = useCallback(() => updateViewState(_openWelcome()), []);
 
   return {
-    isInitialized,
     nav: globalViewState?.nav,
     tabs: globalViewState?.tabs,
     main: globalViewState?.main,

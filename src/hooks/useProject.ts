@@ -13,14 +13,14 @@ import {
 } from "../tauri/commands";
 import { Project } from "../types/project";
 
+// use undefined to indicate that the project has not been initialized
 let globalProject: Project | null | undefined = undefined;
 
 let _init = false;
-let initListeners: Dispatch<SetStateAction<boolean>>[] = [];
 let sessionListeners: Dispatch<SetStateAction<Session | null>>[] = [];
 let isActiveListeners: Dispatch<SetStateAction<boolean>>[] = [];
 
-function initializeProject() {
+export async function initializeProject() {
   if (_init) {
     return;
   }
@@ -29,76 +29,53 @@ function initializeProject() {
 
   console.debug("Initializing project...");
 
-  updateProject(getProject(), true);
+  await updateProject(getProject(), true);
 }
 
-function updateProject(promise: Promise<Project | null>, init = false) {
-  promise
-    .then((project) => {
-      const wasActive = !!globalProject;
-      globalProject = project;
-      const isActive = !!globalProject;
+async function updateProject(promise: Promise<Project | null>, init = false) {
+  if (!init && globalProject === undefined) {
+    console.error("Attempted to update project before it was initialized");
+  }
 
-      if (init) {
-        console.debug("Project initialized", globalProject);
-        initListeners.forEach((listener) => listener(true));
-      } else {
-        console.debug("Project updated", globalProject);
-      }
+  try {
+    const project = await promise;
+    const wasActive = !!globalProject;
+    globalProject = project;
+    const isActive = !!globalProject;
 
-      if (isActive !== wasActive) {
-        isActiveListeners.forEach((listener) => listener(isActive));
-      }
+    if (init) {
+      console.debug("Project initialized", globalProject);
+    } else {
+      console.debug("Project updated", globalProject);
+    }
 
-      sessionListeners.forEach((listener) =>
-        listener(project?.session || null)
-      );
-    })
-    .catch((error) => {
-      if (init) {
-        console.error("Failed to initialize ephemeral session", error);
-      } else {
-        console.error("Failed to update ephemeral session", error);
-      }
-    });
+    if (isActive !== wasActive) {
+      isActiveListeners.forEach((listener) => listener(isActive));
+    }
+
+    sessionListeners.forEach((listener) => listener(project?.session || null));
+  } catch (error) {
+    if (init) {
+      console.error("Failed to initialize ephemeral session", error);
+    } else {
+      console.error("Failed to update ephemeral session", error);
+    }
+  }
 }
 
 interface UseProjectOptions {
-  listenInit?: boolean;
   listenIsActive?: boolean;
   listenSession?: boolean;
 }
 
 export function useProject({
-  listenInit,
   listenIsActive,
   listenSession,
 }: UseProjectOptions = {}) {
-  const [isInitialized, setInitialized] = useState(globalProject !== undefined);
   const setInternalSession = useState<Session | null>(
     globalProject?.session || null
   )[1];
   const setInternalIsActive = useState<boolean>(!!globalProject)[1];
-
-  useEffect(() => {
-    if (globalProject) {
-      return;
-    }
-
-    if (!listenInit) {
-      return;
-    }
-
-    initListeners.push(setInitialized);
-
-    initializeProject();
-
-    return () => {
-      initListeners = initListeners.filter(
-        (listener) => listener !== setInitialized
-      );
-    };
-  }, []);
 
   // register isActive listeners
   useEffect(() => {
@@ -135,7 +112,6 @@ export function useProject({
   const openProject = useCallback(() => updateProject(_openProject()), []);
 
   return {
-    isInitialized,
     isActive: !!globalProject,
     path: globalProject?.path,
     name: globalProject?.name,

@@ -15,11 +15,10 @@ import {
 let globalEphemeralSession: Session | null | undefined = undefined;
 
 let _init = false;
-let initListeners: Dispatch<SetStateAction<boolean>>[] = [];
 let sessionListeners: Dispatch<SetStateAction<Session | null>>[] = [];
 let isActiveListeners: Dispatch<SetStateAction<boolean>>[] = [];
 
-function initializeEphemeralSession() {
+export async function initializeEphemeralSession() {
   if (_init) {
     return;
   }
@@ -28,81 +27,60 @@ function initializeEphemeralSession() {
 
   console.debug("Initializing ephemeral session...");
 
-  updateEphemeralSession(getEphemeralSession(), true);
+  await updateEphemeralSession(getEphemeralSession(), true);
 }
 
-function updateEphemeralSession(
+async function updateEphemeralSession(
   promise: Promise<Session | null>,
   init = false
 ) {
-  promise
-    .then((session) => {
-      const wasActive = !!globalEphemeralSession;
-      globalEphemeralSession = session;
-      const isActive = !!globalEphemeralSession;
+  if (!init && globalEphemeralSession === undefined) {
+    console.error(
+      "Attempted to update ephemeral session before it was initialized"
+    );
+  }
 
-      if (init) {
-        console.debug("Ephemeral session initialized", globalEphemeralSession);
-        initListeners.forEach((listener) => listener(true));
-      } else {
-        console.debug("Ephemeral session updated", globalEphemeralSession);
-      }
+  try {
+    const session = await promise;
+    const wasActive = !!globalEphemeralSession;
+    globalEphemeralSession = session;
+    const isActive = !!globalEphemeralSession;
 
-      sessionListeners.forEach((listener) =>
-        listener(globalEphemeralSession || null)
-      );
+    if (init) {
+      console.debug("Ephemeral session initialized", globalEphemeralSession);
+    } else {
+      console.debug("Ephemeral session updated", globalEphemeralSession);
+    }
 
-      if (isActive !== wasActive) {
-        isActiveListeners.forEach((listener) => listener(isActive));
-      }
-    })
-    .catch((error) => {
-      if (init) {
-        console.error("Failed to initialize ephemeral session", error);
-      } else {
-        console.error("Failed to update ephemeral session", error);
-      }
-    });
+    sessionListeners.forEach((listener) =>
+      listener(globalEphemeralSession || null)
+    );
+
+    if (isActive !== wasActive) {
+      isActiveListeners.forEach((listener) => listener(isActive));
+    }
+  } catch (error) {
+    if (init) {
+      console.error("Failed to initialize ephemeral session", error);
+    } else {
+      console.error("Failed to update ephemeral session", error);
+    }
+  }
 }
 
 interface UseEphemeralSessionOptions {
-  listenInit?: boolean;
   listenIsActive?: boolean;
   listenSession?: boolean;
 }
 
 export function useEphemeralSession({
-  listenInit,
   listenIsActive,
   listenSession,
 }: UseEphemeralSessionOptions = {}) {
-  const [isInitialized, setInitialized] = useState(
-    globalEphemeralSession !== undefined
-  );
   const setInternalSession = useState<Session | null>(
     globalEphemeralSession || null
   )[1];
   const setInternalIsActive = useState<boolean>(!!globalEphemeralSession)[1];
-
-  useEffect(() => {
-    if (globalEphemeralSession) {
-      return;
-    }
-
-    if (!listenInit) {
-      return;
-    }
-
-    initListeners.push(setInitialized);
-
-    initializeEphemeralSession();
-
-    return () => {
-      initListeners = initListeners.filter(
-        (listener) => listener !== setInitialized
-      );
-    };
-  }, []);
 
   // register isActive listeners
   useEffect(() => {
@@ -140,7 +118,6 @@ export function useEphemeralSession({
   );
 
   return {
-    isInitialized,
     isActive: !!globalEphemeralSession,
     session: globalEphemeralSession,
     startEphemeralSession,
