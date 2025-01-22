@@ -11,11 +11,9 @@ function App() {
 
   useEffect(() => {
     const init = async function () {
-      console.debug("Initializing app...");
       await initializeViewState();
       await initializeEphemeralSession();
       await initializeProject();
-      console.debug("App initialized");
     };
 
     init().then(() => {

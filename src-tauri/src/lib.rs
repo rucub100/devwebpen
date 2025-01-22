@@ -1,7 +1,7 @@
 use app_state::AppState;
 use commands::{
-    close_tab, create_project, get_ephemeral_session, get_project, init_view, navigate_to,
-    open_project, open_welcome, select_tab, start_ephemeral_session,
+    close_tab, create_project, get_ephemeral_session, get_project, get_recent_projects, init_view,
+    navigate_to, open_project, open_welcome, select_tab, start_ephemeral_session,
 };
 use log;
 use tauri::Manager;
@@ -32,6 +32,7 @@ pub fn run() {
             open_welcome,
             start_ephemeral_session,
             get_project,
+            get_recent_projects,
             create_project,
             open_project
         ])
@@ -45,7 +46,7 @@ pub fn run() {
                 }
             }
 
-            store::load(app);
+            store::load(app)?;
             daemon_connector::start_connector(app);
             daemon_sidecar::start_sidecar(app);
             Ok(())

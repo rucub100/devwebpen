@@ -26,7 +26,6 @@ import {
 // use undefined to indicate that the view state has not been initialized
 let globalViewState: ViewState | undefined = undefined;
 
-let _init = false;
 let navListeners: Dispatch<SetStateAction<NavView | undefined>>[] = [];
 let tabsListeners: Dispatch<SetStateAction<TabsView | undefined>>[] = [];
 let mainListeners: Dispatch<SetStateAction<MainView | undefined>>[] = [];
@@ -35,12 +34,6 @@ let bottomListeners: Dispatch<SetStateAction<BottomView | undefined>>[] = [];
 let statusListeners: Dispatch<SetStateAction<StatusView | undefined>>[] = [];
 
 export async function initializeViewState() {
-  if (_init) {
-    return;
-  }
-
-  _init = true;
-
   console.debug("Initializing view state...");
 
   if (globalViewState !== undefined) {

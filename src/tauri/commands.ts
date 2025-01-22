@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { NavView, ViewState } from "../types/view-state";
 import { Session } from "../types/session";
-import { Project } from "../types/project";
+import { Project, RecentProject } from "../types/project";
 
 export enum DevWebPenCommand {
   InitView = "init_view",
@@ -12,6 +12,7 @@ export enum DevWebPenCommand {
   GetEphemeralSession = "get_ephemeral_session",
   StartEphemeralSession = "start_ephemeral_session",
   GetProject = "get_project",
+  GetRecentProjects = "get_recent_projects",
   CreateNewProject = "create_project",
   OpenProject = "open_project",
 }
@@ -50,6 +51,10 @@ export async function startEphemeralSession(): Promise<Session> {
 
 export async function getProject(): Promise<Project | null> {
   return invoke<Project | null>(DevWebPenCommand.GetProject);
+}
+
+export async function getRecentProjects(): Promise<RecentProject[]> {
+  return invoke<RecentProject[]>(DevWebPenCommand.GetRecentProjects);
 }
 
 export async function createProject(): Promise<Project> {

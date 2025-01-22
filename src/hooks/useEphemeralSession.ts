@@ -14,19 +14,11 @@ import {
 // use undefined to indicate that the session has not been initialized
 let globalEphemeralSession: Session | null | undefined = undefined;
 
-let _init = false;
 let sessionListeners: Dispatch<SetStateAction<Session | null>>[] = [];
 let isActiveListeners: Dispatch<SetStateAction<boolean>>[] = [];
 
 export async function initializeEphemeralSession() {
-  if (_init) {
-    return;
-  }
-
-  _init = true;
-
   console.debug("Initializing ephemeral session...");
-
   await updateEphemeralSession(getEphemeralSession(), true);
 }
 
@@ -46,18 +38,17 @@ async function updateEphemeralSession(
     globalEphemeralSession = session;
     const isActive = !!globalEphemeralSession;
 
+    if (!init && isActive !== wasActive) {
+      sessionListeners.forEach((listener) =>
+        listener(globalEphemeralSession || null)
+      );
+      isActiveListeners.forEach((listener) => listener(isActive));
+    }
+
     if (init) {
       console.debug("Ephemeral session initialized", globalEphemeralSession);
     } else {
       console.debug("Ephemeral session updated", globalEphemeralSession);
-    }
-
-    sessionListeners.forEach((listener) =>
-      listener(globalEphemeralSession || null)
-    );
-
-    if (isActive !== wasActive) {
-      isActiveListeners.forEach((listener) => listener(isActive));
     }
   } catch (error) {
     if (init) {

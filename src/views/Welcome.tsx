@@ -11,10 +11,12 @@ export default function Welcome() {
 
   const {
     isActive: isProjectActive,
+    recentProjects,
     createProject,
     openProject,
   } = useProject({
     listenIsActive: true,
+    listenRecentProjects: true,
   });
 
   return (
@@ -52,6 +54,15 @@ export default function Welcome() {
           Open an existing project...
         </LinkButton>
         <h2 className="text-xl my-2">Open Recent</h2>
+        {recentProjects?.map((project) => (
+          <LinkButton
+            key={project.path}
+            className="-ml-2"
+            onClick={() => console.log("TODO: Open project")}
+          >
+            {project.path}
+          </LinkButton>
+        ))}
       </div>
     </div>
   );

@@ -6,3 +6,5 @@ export interface Project {
   description?: string;
   session: Session;
 }
+
+export interface RecentProject extends Pick<Project, "path" | "name"> {}

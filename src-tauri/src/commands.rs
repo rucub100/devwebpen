@@ -2,6 +2,7 @@ use crate::{
     app_state::{
         project::Project,
         session::Session,
+        store::RecentProject,
         view::{nav::NavView, PartialViewState},
         AppState,
     },
@@ -78,6 +79,19 @@ pub async fn start_ephemeral_session<'a>(
 pub async fn get_project<'a>(state: tauri::State<'a, AppState>) -> Result<Option<Project>, String> {
     let state = state.lock().unwrap();
     Ok(state.project.clone())
+}
+
+#[tauri::command]
+pub async fn get_recent_projects<'a>(
+    state: tauri::State<'a, AppState>,
+) -> Result<Vec<RecentProject>, String> {
+    let state = state.lock().unwrap();
+
+    if let Some(store) = &state.store {
+        Ok(store.get_recent_projects())
+    } else {
+        Ok(vec![])
+    }
 }
 
 #[tauri::command]
