@@ -1,12 +1,9 @@
-use crate::{
-    app_state::{
-        project::Project,
-        session::Session,
-        store::RecentProject,
-        view::{nav::NavView, PartialViewState},
-        AppState,
-    },
-    store,
+use crate::app_state::{
+    project::Project,
+    session::Session,
+    store::RecentProject,
+    view::{nav::NavView, PartialViewState},
+    AppState,
 };
 
 use tauri::Manager;
@@ -141,6 +138,23 @@ pub async fn create_project(
     Ok(None)
 }
 
+async fn load_project_from_path(
+    path: &str,
+    app_handle: &tauri::AppHandle,
+) -> Result<Project, String> {
+    let project = Project::load(path.to_string()).await;
+
+    if let Err(e) = project {
+        return Err(e);
+    }
+
+    let state = app_handle.state::<AppState>();
+    let mut state = state.lock().unwrap();
+    let project = state.open_project(project.unwrap());
+
+    Ok(project)
+}
+
 #[tauri::command]
 pub async fn open_project(
     app_handle: tauri::AppHandle,
@@ -156,22 +170,17 @@ pub async fn open_project(
     if let Some(file_path) = file_path {
         if let Some(path) = file_path.as_path() {
             if let Some(path) = path.to_str() {
-                let project = Project::load(path.to_string()).await;
+                let project = load_project_from_path(path, &app_handle).await;
 
                 if let Err(e) = project {
                     return Err(e);
                 }
 
-                let state = app_handle.state::<AppState>();
-                let mut state = state.lock().unwrap();
-                let project = state.open_project(project.unwrap());
-                drop(state); // drop the lock to avoid deadlock in super::store::save below
-
                 if let Err(e) = super::store::save(&app_handle) {
                     log::error!("Failed to save state: {}", e);
                 }
 
-                return Ok(Some(project));
+                return Ok(Some(project.unwrap()));
             } else {
                 return Err("Path contains non-UTF8 characters".to_string());
             }
@@ -181,4 +190,18 @@ pub async fn open_project(
     }
 
     Ok(None)
+}
+
+#[tauri::command]
+pub async fn open_recent_project(
+    path: &str,
+    app_handle: tauri::AppHandle,
+) -> Result<Option<Project>, String> {
+    let project = load_project_from_path(path, &app_handle).await;
+
+    if let Err(e) = project {
+        return Err(e);
+    }
+
+    return Ok(Some(project.unwrap()));
 }

@@ -15,6 +15,7 @@ export enum DevWebPenCommand {
   GetRecentProjects = "get_recent_projects",
   CreateNewProject = "create_project",
   OpenProject = "open_project",
+  OpenRecentProject = "open_recent_project",
 }
 
 export async function initView(): Promise<ViewState> {
@@ -63,6 +64,10 @@ export async function createProject(): Promise<Project> {
 
 export async function openProject(): Promise<Project | null> {
   return invoke<Project | null>(DevWebPenCommand.OpenProject);
+}
+
+export async function openRecentProject(path: string): Promise<Project | null> {
+  return invoke<Project | null>(DevWebPenCommand.OpenRecentProject, { path });
 }
 
 export default DevWebPenCommand;

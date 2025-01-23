@@ -14,6 +14,7 @@ export default function Welcome() {
     recentProjects,
     createProject,
     openProject,
+    openRecentProject,
   } = useProject({
     listenIsActive: true,
     listenRecentProjects: true,
@@ -58,7 +59,7 @@ export default function Welcome() {
           <LinkButton
             key={project.path}
             className="-ml-2"
-            onClick={() => console.log("TODO: Open project")}
+            onClick={() => openRecentProject(project.path)}
           >
             {project.path}
           </LinkButton>

@@ -10,6 +10,7 @@ import {
   getProject,
   createProject as _createProject,
   openProject as _openProject,
+  openRecentProject as _openRecentProject,
   getRecentProjects,
 } from "../tauri/commands";
 import { Project, RecentProject } from "../types/project";
@@ -40,7 +41,7 @@ async function updateProject(promise: Promise<Project | null>, init = false) {
     const isActive = !!globalProject;
 
     if (init) {
-      console.debug("11111 Project initialized", globalProject);
+      console.debug("Project initialized", globalProject);
     } else {
       console.debug("Project updated", globalProject);
     }
@@ -160,6 +161,10 @@ export function useProject({
   const createProject = useCallback(() => updateProject(_createProject()), []);
 
   const openProject = useCallback(() => updateProject(_openProject()), []);
+  const openRecentProject = useCallback(
+    (path: string) => updateProject(_openRecentProject(path)),
+    []
+  );
 
   return {
     isActive: !!globalProject,
@@ -170,5 +175,6 @@ export function useProject({
     recentProjects: globalRecentProjects,
     createProject,
     openProject,
+    openRecentProject,
   };
 }
