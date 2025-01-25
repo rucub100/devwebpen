@@ -11,9 +11,9 @@ use crate::app_state::{
 
 const STORE_FILE: &str = "devwebpen.store.json";
 
-pub fn load(app: &tauri::App) -> Result<(), Box<dyn Error>> {
+pub fn load(app_handle: &tauri::AppHandle) -> Result<(), Box<dyn Error>> {
     log::debug!("Loading peristent state from store...");
-    let store = app.store(STORE_FILE)?;
+    let store = app_handle.store(STORE_FILE)?;
 
     log::debug!("{:?}", store.entries());
     let open_recent = store.get("open_recent");
@@ -27,7 +27,7 @@ pub fn load(app: &tauri::App) -> Result<(), Box<dyn Error>> {
         }
     }
 
-    let state = app.state::<AppState>();
+    let state = app_handle.state::<AppState>();
     let mut state = state.lock().unwrap();
     state.store = Some(app_state_store);
 

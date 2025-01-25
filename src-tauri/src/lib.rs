@@ -10,8 +10,7 @@ use window::window_event_handler;
 
 mod app_state;
 mod commands;
-mod daemon_connector;
-mod daemon_sidecar;
+mod daemon;
 mod store;
 mod window;
 
@@ -48,9 +47,9 @@ pub fn run() {
                 }
             }
 
-            store::load(app)?;
-            daemon_connector::start_connector(app);
-            daemon_sidecar::start_sidecar(app);
+            let app_handle = app.handle();
+            store::load(app_handle)?;
+            daemon::start(app_handle);
             Ok(())
         })
         .run(tauri::generate_context!())

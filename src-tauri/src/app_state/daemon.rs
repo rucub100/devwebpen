@@ -16,17 +16,9 @@ pub struct Daemon {
     state: DaemonState,
     #[serde(skip)]
     sidecar: Option<CommandChild>,
+    #[serde(skip)]
+    token: Option<String>,
     error: Option<String>,
-}
-
-impl Clone for Daemon {
-    fn clone(&self) -> Self {
-        Daemon {
-            state: self.state.clone(),
-            sidecar: None, // Skip cloning the sidecar
-            error: self.error.clone(),
-        }
-    }
 }
 
 impl Default for Daemon {
@@ -34,12 +26,21 @@ impl Default for Daemon {
         Daemon {
             state: DaemonState::Stopped,
             sidecar: None,
+            token: None,
             error: None,
         }
     }
 }
 
 impl Daemon {
+    pub fn set_token(&mut self, token: String) {
+        self.token = Some(token);
+    }
+
+    pub fn get_token(&self) -> Option<&String> {
+        self.token.as_ref()
+    }
+
     pub fn set_starting(&mut self, sidecar: CommandChild) -> Result<(), String> {
         match self.state {
             DaemonState::Stopped => {
