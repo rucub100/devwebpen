@@ -1,20 +1,121 @@
+use std::sync::Mutex;
+
+use tauri::Manager;
+use tauri_plugin_shell::process::CommandChild;
+use tauri_plugin_shell::ShellExt;
 use uuid;
 
 use connector::start_server;
 use sidecar::{handle_daemon_stdout, send_daemon_token, set_daemon_error};
-use tauri::Manager;
-use tauri_plugin_shell::ShellExt;
-
-use crate::app_state::AppState;
 
 mod connector;
 mod sidecar;
 
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
+#[serde(rename_all = "lowercase")]
+pub enum DaemonState {
+    Stopped,
+    Starting,
+    Connecting,
+    Running,
+    Error,
+}
+
+#[derive(serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub struct DaemonInner {
+    state: DaemonState,
+    #[serde(skip)]
+    sidecar: Option<CommandChild>,
+    #[serde(skip)]
+    token: Option<String>,
+    error: Option<String>,
+}
+
+impl Default for DaemonInner {
+    fn default() -> Self {
+        DaemonInner {
+            state: DaemonState::Stopped,
+            sidecar: None,
+            token: None,
+            error: None,
+        }
+    }
+}
+
+impl DaemonInner {
+    pub fn set_token(&mut self, token: String) {
+        self.token = Some(token);
+    }
+
+    pub fn get_token(&self) -> Option<&String> {
+        self.token.as_ref()
+    }
+
+    pub fn set_starting(&mut self, sidecar: CommandChild) -> Result<(), String> {
+        match self.state {
+            DaemonState::Stopped => {
+                self.state = DaemonState::Starting;
+                self.sidecar = Some(sidecar);
+                Ok(())
+            }
+            _ => Err(format!(
+                "Invalid state transition from {:?} to Starting",
+                self.state
+            )),
+        }
+    }
+
+    pub fn set_connecting(&mut self) -> Result<(), String> {
+        match self.state {
+            DaemonState::Starting => {
+                self.state = DaemonState::Connecting;
+                Ok(())
+            }
+            _ => Err(format!(
+                "Invalid state transition from {:?} to Connecting",
+                self.state
+            )),
+        }
+    }
+
+    pub fn set_running(&mut self) -> Result<(), String> {
+        match self.state {
+            DaemonState::Connecting => {
+                self.state = DaemonState::Running;
+                Ok(())
+            }
+            _ => Err(format!(
+                "Invalid state transition from {:?} to Running",
+                self.state
+            )),
+        }
+    }
+
+    pub fn set_error(&mut self, error: String) {
+        self.state = DaemonState::Error;
+        self.error = Some(error);
+    }
+
+    pub fn stop(&mut self) -> Result<(), String> {
+        match self.sidecar.take() {
+            Some(child) => {
+                self.state = DaemonState::Stopped;
+                child.kill().map_err(|e| e.to_string())
+            }
+            None => Err(format!(
+                "Invalid state transition from {:?} to Stopped, or sidecar is not running",
+                self.state
+            )),
+        }
+    }
+}
+
 fn generate_token(app_handle: &tauri::AppHandle) {
-    let state = app_handle.state::<AppState>();
-    let mut state = state.lock().unwrap();
+    let state = app_handle.state::<Daemon>();
+    let mut daemon = state.lock().unwrap();
     let token = uuid::Uuid::new_v4().to_string();
-    state.daemon.set_token(token);
+    daemon.set_token(token);
 }
 
 fn start_sidecar(app_handle: &tauri::AppHandle) {
@@ -55,3 +156,5 @@ pub fn start(app_handle: &tauri::AppHandle) {
     start_connector(app_handle);
     start_sidecar(app_handle);
 }
+
+pub type Daemon = Mutex<DaemonInner>;

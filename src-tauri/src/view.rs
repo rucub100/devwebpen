@@ -1,3 +1,5 @@
+use std::sync::Mutex;
+
 use aside::AsideView;
 use bottom::BottomView;
 use main::MainView;
@@ -13,7 +15,7 @@ mod status;
 mod tabs;
 
 #[derive(serde::Serialize, serde::Deserialize, Clone)]
-pub struct ViewState {
+pub struct ViewStateInner {
     pub nav: NavView,
     pub tabs: TabsView,
     pub main: MainView,
@@ -32,8 +34,8 @@ pub struct PartialViewState {
     pub status: Option<StatusView>,
 }
 
-impl From<ViewState> for PartialViewState {
-    fn from(view_state: ViewState) -> Self {
+impl From<ViewStateInner> for PartialViewState {
+    fn from(view_state: ViewStateInner) -> Self {
         PartialViewState {
             nav: Some(view_state.nav),
             tabs: Some(view_state.tabs),
@@ -45,7 +47,7 @@ impl From<ViewState> for PartialViewState {
     }
 }
 
-impl Default for ViewState {
+impl Default for ViewStateInner {
     fn default() -> Self {
         let id = Tab::next_id();
         Self {
@@ -66,7 +68,7 @@ impl Default for ViewState {
     }
 }
 
-impl ViewState {
+impl ViewStateInner {
     fn update_main(&mut self) {
         match self.tabs.active_tab_id {
             Some(id) => {
@@ -198,3 +200,5 @@ impl ViewState {
         }
     }
 }
+
+pub type ViewState = Mutex<ViewStateInner>;

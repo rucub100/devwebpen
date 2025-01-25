@@ -2,20 +2,20 @@ use futures_util::StreamExt;
 use tauri::{AppHandle, Manager};
 use tokio::net::{TcpListener, TcpStream};
 
-use crate::app_state::AppState;
+use super::Daemon;
 
 fn set_daemon_error(app: &AppHandle, error: String) {
-    let state = app.state::<AppState>();
-    let mut state = state.lock().unwrap();
+    let state = app.state::<Daemon>();
+    let mut daemon = state.lock().unwrap();
 
-    state.daemon.set_error(error.to_string());
+    daemon.set_error(error.to_string());
 }
 
 fn set_daemon_connecting(app: &AppHandle) {
-    let state = app.state::<AppState>();
-    let mut state = state.lock().unwrap();
+    let state = app.state::<Daemon>();
+    let mut daemon = state.lock().unwrap();
 
-    if let Err(e) = state.daemon.set_connecting() {
+    if let Err(e) = daemon.set_connecting() {
         log::error!("{}", e);
     }
 }

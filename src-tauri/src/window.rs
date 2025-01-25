@@ -1,6 +1,6 @@
 use tauri::{Manager, Window, WindowEvent};
 
-use crate::app_state::AppState;
+use crate::daemon::Daemon;
 
 pub fn window_event_handler(window: &Window, event: &WindowEvent) {
     let app_handle = window.app_handle().clone();
@@ -9,9 +9,9 @@ pub fn window_event_handler(window: &Window, event: &WindowEvent) {
         "main" => match event {
             WindowEvent::CloseRequested { .. } => {
                 log::debug!("Close requested on main window");
-                let state = app_handle.state::<AppState>();
-                let mut state = state.lock().unwrap();
-                if let Err(e) = state.daemon.stop() {
+                let state = app_handle.state::<Daemon>();
+                let mut daemon = state.lock().unwrap();
+                if let Err(e) = daemon.stop() {
                     log::error!("Error stopping daemon: {}", e);
                 }
             }

@@ -3,15 +3,14 @@ use tauri_plugin_shell::{
     process::{CommandChild, CommandEvent},
     Error,
 };
-
 use tokio::sync::mpsc::Receiver;
 
-use crate::app_state::AppState;
+use super::Daemon;
 
 pub fn send_daemon_token(child: &mut CommandChild, app_handle: &tauri::AppHandle) {
-    let state = app_handle.state::<AppState>();
-    let state = state.lock().unwrap();
-    if let Some(token) = state.daemon.get_token() {
+    let state = app_handle.state::<Daemon>();
+    let daemon = state.lock().unwrap();
+    if let Some(token) = daemon.get_token() {
         child.write(token.as_bytes()).unwrap();
     }
 }
@@ -37,17 +36,17 @@ pub fn handle_daemon_stdout(app_handle: &tauri::AppHandle, mut rx: Receiver<Comm
 }
 
 pub fn set_daemon_error(app_handle: &tauri::AppHandle, error: Error) {
-    let state = app_handle.state::<AppState>();
-    let mut state = state.lock().unwrap();
+    let state = app_handle.state::<Daemon>();
+    let mut daemon = state.lock().unwrap();
 
-    state.daemon.set_error(error.to_string());
+    daemon.set_error(error.to_string());
 }
 
 pub fn set_daemon_starting(app_handle: &tauri::AppHandle, child: CommandChild) {
-    let state = app_handle.state::<AppState>();
-    let mut state = state.lock().unwrap();
+    let state = app_handle.state::<Daemon>();
+    let mut daemon = state.lock().unwrap();
 
-    if let Err(e) = state.daemon.set_starting(child) {
+    if let Err(e) = daemon.set_starting(child) {
         log::error!("{}", e);
     }
 }

@@ -1,53 +1,50 @@
-use crate::app_state::{
-    project::Project,
-    session::Session,
-    store::RecentProject,
-    view::{nav::NavView, PartialViewState},
-    AppState,
+use crate::{
+    app_state::{project::Project, session::Session, store::RecentProject, AppState},
+    view::{nav::NavView, PartialViewState, ViewState},
 };
 
 use tauri::Manager;
 use tauri_plugin_dialog::DialogExt;
 
 #[tauri::command]
-pub async fn init_view<'a>(state: tauri::State<'a, AppState>) -> Result<PartialViewState, String> {
-    let state = state.lock().unwrap();
-    Ok(state.view.clone().into())
+pub async fn init_view<'a>(state: tauri::State<'a, ViewState>) -> Result<PartialViewState, String> {
+    let view = state.lock().unwrap();
+    Ok(view.clone().into())
 }
 
 #[tauri::command]
 pub async fn navigate_to<'a>(
     navigation: NavView,
-    state: tauri::State<'a, AppState>,
+    state: tauri::State<'a, ViewState>,
 ) -> Result<PartialViewState, String> {
-    let mut state = state.lock().unwrap();
-    Ok(state.view.navigate_to(navigation))
+    let mut view = state.lock().unwrap();
+    Ok(view.navigate_to(navigation))
 }
 
 #[tauri::command]
 pub async fn close_tab<'a>(
     id: u64,
-    state: tauri::State<'a, AppState>,
+    state: tauri::State<'a, ViewState>,
 ) -> Result<PartialViewState, String> {
-    let mut state = state.lock().unwrap();
-    Ok(state.view.close_tab(id))
+    let mut view = state.lock().unwrap();
+    Ok(view.close_tab(id))
 }
 
 #[tauri::command]
 pub async fn select_tab<'a>(
     id: u64,
-    state: tauri::State<'a, AppState>,
+    state: tauri::State<'a, ViewState>,
 ) -> Result<PartialViewState, String> {
-    let mut state = state.lock().unwrap();
-    Ok(state.view.select_tab(id))
+    let mut view = state.lock().unwrap();
+    Ok(view.select_tab(id))
 }
 
 #[tauri::command]
 pub async fn open_welcome<'a>(
-    state: tauri::State<'a, AppState>,
+    state: tauri::State<'a, ViewState>,
 ) -> Result<PartialViewState, String> {
-    let mut state = state.lock().unwrap();
-    Ok(state.view.open_welcome())
+    let mut view = state.lock().unwrap();
+    Ok(view.open_welcome())
 }
 
 #[tauri::command]

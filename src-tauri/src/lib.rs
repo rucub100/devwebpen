@@ -1,17 +1,21 @@
+use log;
+use tauri::Manager;
+
 use app_state::AppState;
 use commands::{
     close_tab, create_project, get_ephemeral_session, get_project, get_recent_projects, init_view,
     navigate_to, open_project, open_recent_project, open_welcome, select_tab,
     start_ephemeral_session,
 };
-use log;
-use tauri::Manager;
+use daemon::Daemon;
+use view::ViewState;
 use window::window_event_handler;
 
 mod app_state;
 mod commands;
 mod daemon;
 mod store;
+mod view;
 mod window;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -19,6 +23,8 @@ pub fn run() {
     log::debug!("Starting application...");
     tauri::Builder::default()
         .manage(AppState::default())
+        .manage(ViewState::default())
+        .manage(Daemon::default())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
