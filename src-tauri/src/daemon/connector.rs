@@ -13,20 +13,38 @@ use tokio_tungstenite::{tungstenite::Message, WebSocketStream};
 
 use super::Daemon;
 
-fn set_daemon_error(app: &AppHandle, error: String) {
-    let state = app.state::<Daemon>();
+fn set_daemon_error(app_handle: &AppHandle, error: String) {
+    let state = app_handle.state::<Daemon>();
     let mut daemon = state.lock().unwrap();
 
     daemon.set_error(error.to_string());
 }
 
-fn set_daemon_connecting(app: &AppHandle) {
-    let state = app.state::<Daemon>();
+fn set_daemon_connecting(app_handle: &AppHandle) {
+    let state = app_handle.state::<Daemon>();
     let mut daemon = state.lock().unwrap();
 
     if let Err(e) = daemon.set_connecting() {
         log::error!("{}", e);
     }
+}
+
+fn set_daemon_running(app_handle: &AppHandle) {
+    let state = app_handle.state::<Daemon>();
+    let mut daemon = state.lock().unwrap();
+
+    if let Err(e) = daemon.set_running() {
+        log::error!("{}", e);
+    }
+}
+
+fn set_daemon_ws_out(
+    app_handle: &AppHandle,
+    ws_out: SplitSink<WebSocketStream<TcpStream>, Message>,
+) {
+    let state = app_handle.state::<Daemon>();
+    let mut daemon = state.lock().unwrap();
+    daemon.set_ws_out(ws_out);
 }
 
 async fn authenticate_daemon(
@@ -89,6 +107,7 @@ async fn accept_connection(app_handle: AppHandle, stream: TcpStream) {
         "Incoming TCP connection from: {}",
         stream.peer_addr().unwrap()
     );
+
     set_daemon_connecting(&app_handle);
 
     let ws_stream = tokio_tungstenite::accept_async(stream).await;
@@ -108,7 +127,33 @@ async fn accept_connection(app_handle: AppHandle, stream: TcpStream) {
         return;
     }
 
-    // TODO: loop for result read stream and store write sink in the daemon state for later use
+    set_daemon_running(&app_handle);
+
+    let (write, mut read) = result.unwrap();
+
+    set_daemon_ws_out(&app_handle, write);
+
+    loop {
+        let msg = read.next().await;
+
+        if let None = msg {
+            log::error!("Failed to receive message");
+            set_daemon_error(&app_handle, "Failed to receive message".to_string());
+            return;
+        }
+
+        let msg = msg.unwrap();
+
+        if let Err(e) = msg {
+            log::error!("Error while receiving message: {}", e);
+            set_daemon_error(&app_handle, e.to_string());
+            return;
+        }
+
+        let msg = msg.unwrap();
+        log::debug!("Received message: {:?}", msg);
+        // TODO: Handle messages
+    }
 }
 
 pub async fn start_server(app_handle: AppHandle) {

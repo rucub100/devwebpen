@@ -3,13 +3,13 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use super::nav::NavView;
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "camelCase")]
 pub enum TabName {
     Welcome,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Clone)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "camelCase")]
 pub struct TabKind {
     pub nav: NavView,
     pub name: TabName,
@@ -25,7 +25,7 @@ impl TabKind {
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Clone)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "camelCase")]
 pub struct Tab {
     pub id: u64,
     pub kind: TabKind,
@@ -40,9 +40,8 @@ impl Tab {
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Clone)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "camelCase")]
 pub struct TabsView {
     pub tabs: Vec<Tab>,
-    #[serde(rename = "activeTabId")]
     pub active_tab_id: Option<u64>,
 }

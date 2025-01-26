@@ -3,14 +3,14 @@ use super::project::Project;
 const MAX_RECENT_PROJECTS: usize = 5;
 
 #[derive(serde::Serialize, serde::Deserialize, Clone)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "camelCase")]
 pub struct RecentProject {
     path: String,
     name: Option<String>,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Default)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "camelCase")]
 pub struct Store {
     open_recent: Vec<RecentProject>,
 }

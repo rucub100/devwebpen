@@ -8,7 +8,7 @@ use tokio::{
 use super::session::{Session, SessionData};
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, Default)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "camelCase")]
 pub struct Project {
     pub path: String,
     pub name: Option<String>,
@@ -17,7 +17,7 @@ pub struct Project {
 }
 
 #[derive(serde::Serialize, serde::Deserialize)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "camelCase")]
 pub struct ProjectData {
     pub name: Option<String>,
     pub description: Option<String>,

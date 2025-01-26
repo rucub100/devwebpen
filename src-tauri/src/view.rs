@@ -115,9 +115,9 @@ impl ViewStateInner {
         let index = index.unwrap();
         self.tabs.tabs.remove(index);
         if self.tabs.active_tab_id == Some(id) {
-            if (index < self.tabs.tabs.len()) {
+            if index < self.tabs.tabs.len() {
                 self.tabs.active_tab_id = Some(self.tabs.tabs[index].id);
-            } else if (self.tabs.tabs.len() > 0) {
+            } else if self.tabs.tabs.len() > 0 {
                 self.tabs.active_tab_id = Some(self.tabs.tabs.last().unwrap().id);
             } else {
                 self.tabs.active_tab_id = None;

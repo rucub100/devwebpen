@@ -1,8 +1,11 @@
 use std::sync::Mutex;
 
+use futures_util::stream::SplitSink;
 use tauri::Manager;
 use tauri_plugin_shell::process::CommandChild;
 use tauri_plugin_shell::ShellExt;
+use tokio::net::TcpStream;
+use tokio_tungstenite::{tungstenite::Message, WebSocketStream};
 use uuid;
 
 use connector::start_server;
@@ -12,7 +15,7 @@ mod connector;
 mod sidecar;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "camelCase")]
 pub enum DaemonState {
     Stopped,
     Starting,
@@ -22,13 +25,15 @@ pub enum DaemonState {
 }
 
 #[derive(serde::Serialize, serde::Deserialize)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "camelCase")]
 pub struct DaemonInner {
     state: DaemonState,
     #[serde(skip)]
     sidecar: Option<CommandChild>,
     #[serde(skip)]
     token: Option<String>,
+    #[serde(skip)]
+    ws_out: Option<SplitSink<WebSocketStream<TcpStream>, Message>>,
     error: Option<String>,
 }
 
@@ -38,6 +43,7 @@ impl Default for DaemonInner {
             state: DaemonState::Stopped,
             sidecar: None,
             token: None,
+            ws_out: None,
             error: None,
         }
     }
@@ -50,6 +56,14 @@ impl DaemonInner {
 
     pub fn get_token(&self) -> Option<&String> {
         self.token.as_ref()
+    }
+
+    pub fn set_ws_out(&mut self, ws_out: SplitSink<WebSocketStream<TcpStream>, Message>) {
+        self.ws_out = Some(ws_out);
+    }
+
+    pub fn get_ws_out(&self) -> Option<&SplitSink<WebSocketStream<TcpStream>, Message>> {
+        self.ws_out.as_ref()
     }
 
     pub fn set_starting(&mut self, sidecar: CommandChild) -> Result<(), String> {

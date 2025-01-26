@@ -1,5 +1,5 @@
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "camelCase")]
 pub enum BottomView {
     None,
 }

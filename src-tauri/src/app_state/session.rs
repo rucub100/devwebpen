@@ -1,13 +1,13 @@
 use std::sync::atomic::{AtomicU64, Ordering};
 
 #[derive(serde::Serialize, serde::Deserialize, Clone)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "camelCase")]
 pub struct Session {
     pub id: u64,
 }
 
 #[derive(serde::Serialize, serde::Deserialize)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "camelCase")]
 pub struct SessionData {}
 
 impl From<Session> for SessionData {
