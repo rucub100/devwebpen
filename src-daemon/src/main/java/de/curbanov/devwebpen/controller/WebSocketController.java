@@ -31,6 +31,8 @@ public class WebSocketController implements WebSocket.Listener {
     @Override
     public void onOpen(WebSocket webSocket) {
         System.out.println("[" + Thread.currentThread().getName() + "]: " + "WebSocket opened");
+        // send token for authentication
+        webSocket.sendText(token, true);
         Listener.super.onOpen(webSocket);
     }
 

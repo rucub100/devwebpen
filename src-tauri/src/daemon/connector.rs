@@ -1,6 +1,15 @@
-use futures_util::StreamExt;
+use std::{error::Error, time::Duration};
+
+use futures_util::{
+    stream::{SplitSink, SplitStream},
+    StreamExt,
+};
 use tauri::{AppHandle, Manager};
-use tokio::net::{TcpListener, TcpStream};
+use tokio::{
+    net::{TcpListener, TcpStream},
+    time::timeout,
+};
+use tokio_tungstenite::{tungstenite::Message, WebSocketStream};
 
 use super::Daemon;
 
@@ -20,6 +29,61 @@ fn set_daemon_connecting(app: &AppHandle) {
     }
 }
 
+async fn authenticate_daemon(
+    ws_stream: WebSocketStream<TcpStream>,
+    app_handle: &AppHandle,
+) -> Result<
+    (
+        SplitSink<WebSocketStream<TcpStream>, Message>,
+        SplitStream<WebSocketStream<TcpStream>>,
+    ),
+    Box<dyn Error>,
+> {
+    log::debug!("Authenticating daemon...");
+    let (write, mut read) = ws_stream.split();
+
+    let msg = timeout(Duration::from_secs(30), read.next()).await;
+
+    if let Err(e) = msg {
+        return Err(Box::new(e));
+    }
+
+    let msg = msg.unwrap();
+    if let None = msg {
+        return Err(Box::<dyn Error>::from("Failed to receive message"));
+    }
+
+    let msg = msg.unwrap();
+    if let Err(e) = msg {
+        return Err(Box::new(e));
+    }
+
+    let msg = msg.unwrap();
+
+    if !msg.is_text() {
+        return Err(Box::<dyn Error>::from("Received non-text message"));
+    }
+
+    let received_token = msg.to_text().unwrap();
+    let state = app_handle.state::<Daemon>();
+    let daemon = state.lock().unwrap();
+    let token = daemon.get_token();
+
+    if let None = token {
+        return Err(Box::<dyn Error>::from("Token not set"));
+    }
+
+    let token = token.unwrap();
+
+    if token.eq(received_token) {
+        log::debug!("Daemon authenticated");
+    } else {
+        return Err(Box::<dyn Error>::from("Invalid token"));
+    }
+
+    return Ok((write, read));
+}
+
 async fn accept_connection(app_handle: AppHandle, stream: TcpStream) {
     log::debug!(
         "Incoming TCP connection from: {}",
@@ -36,13 +100,15 @@ async fn accept_connection(app_handle: AppHandle, stream: TcpStream) {
     }
 
     log::debug!("WebSocket connection established");
+    let result = authenticate_daemon(ws_stream.unwrap(), &app_handle).await;
 
-    // TODO: authenticate the connection (token)
-    // What is the protocol within websocket messages?
-    let (write, read) = ws_stream.unwrap().split();
-    if let Err(e) = read.forward(write).await {
-        log::error!("Error: {}", e);
+    if let Err(e) = result {
+        log::error!("Failed to authenticate daemon: {}", e);
+        set_daemon_error(&app_handle, e.to_string());
+        return;
     }
+
+    // TODO: loop for result read stream and store write sink in the daemon state for later use
 }
 
 pub async fn start_server(app_handle: AppHandle) {
