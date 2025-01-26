@@ -6,7 +6,7 @@ use tauri_plugin_shell::ShellExt;
 use uuid;
 
 use connector::start_server;
-use sidecar::{handle_daemon_stdout, send_daemon_token, set_daemon_error};
+use sidecar::{handle_daemon_stdout, send_daemon_init, set_daemon_error};
 
 mod connector;
 mod sidecar;
@@ -137,12 +137,12 @@ fn start_sidecar(app_handle: &tauri::AppHandle) {
     let (rx, mut child) = sidecar_command.unwrap();
     log::debug!("Sidecar started, PID: {}", child.pid());
 
-    send_daemon_token(&mut child, app_handle);
+    send_daemon_init(&mut child, app_handle);
 
     // Store the child process in the app state to ensure it is not dropped
     sidecar::set_daemon_starting(app_handle, child);
 
-    handle_daemon_stdout(app_handle, rx);
+    handle_daemon_stdout(rx);
 }
 
 fn start_connector(app_handle: &tauri::AppHandle) {

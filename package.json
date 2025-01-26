@@ -8,6 +8,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "sidecar": "node scripts/copy-sidecar.js",
+    "sidecar:debugger": "node scripts/copy-sidecar-debugger.js",
     "pretauri": "npm run sidecar",
     "tauri": "tauri",
     "tauri:dev": "cross-env RUST_LOG=debug tauri dev",
