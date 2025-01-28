@@ -5,7 +5,7 @@ use app_state::AppState;
 use commands::{
     close_tab, create_project, get_daemon_error, get_daemon_state, get_ephemeral_session,
     get_project, get_recent_projects, init_view, navigate_to, open_project, open_recent_project,
-    open_welcome, select_tab, start_ephemeral_session,
+    open_welcome, restart_daemon, select_tab, start_ephemeral_session,
 };
 use daemon::Daemon;
 use view::ViewState;
@@ -45,6 +45,7 @@ pub fn run() {
             open_recent_project,
             get_daemon_state,
             get_daemon_error,
+            restart_daemon,
         ])
         .on_window_event(window_event_handler)
         .setup(|app| {

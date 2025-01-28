@@ -205,13 +205,21 @@ pub async fn open_recent_project(
 }
 
 #[tauri::command]
-pub fn get_daemon_state(state: tauri::State<Daemon>) -> Result<DaemonState, String> {
+pub async fn get_daemon_state<'a>(state: tauri::State<'a, Daemon>) -> Result<DaemonState, String> {
     let daemon = state.lock().unwrap();
     Ok(daemon.state.clone())
 }
 
 #[tauri::command]
-pub fn get_daemon_error(state: tauri::State<Daemon>) -> Result<Option<String>, String> {
+pub async fn get_daemon_error<'a>(
+    state: tauri::State<'a, Daemon>,
+) -> Result<Option<String>, String> {
     let daemon = state.lock().unwrap();
     Ok(daemon.error.clone())
+}
+
+#[tauri::command]
+pub async fn restart_daemon(app_handle: tauri::AppHandle) -> Result<(), String> {
+    crate::daemon::restart(&app_handle);
+    Ok(())
 }

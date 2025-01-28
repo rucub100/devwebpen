@@ -1,7 +1,38 @@
 import { useDaemon } from "../../hooks/useDaemon";
+import { useContextMenu } from "../../hooks/useContextMenu";
+import { ContextMenu } from "../../types/context-menu";
+
+const restartActionRef = {
+  current: () => {
+    console.error("Restart action not set");
+  },
+};
+
+const contextMenu: ContextMenu = {
+  items: [
+    {
+      type: "item",
+      label: "Restart Daemon",
+      action: () => restartActionRef.current(),
+    },
+  ],
+};
 
 export default function Daemon() {
-  const { daemonState } = useDaemon({ listenDaemonState: true });
+  const { daemonState, daemonError, restartDaemon } = useDaemon({
+    listenDaemonState: true,
+    listenDaemonError: true,
+  });
+  restartActionRef.current = restartDaemon;
+  const showContextMenu = useContextMenu(contextMenu);
 
-  return <span className="w-[18ch]">Daemon: {daemonState}</span>;
+  return (
+    <div
+      className="w-[18ch]"
+      onContextMenu={showContextMenu}
+      title={daemonError ?? ""}
+    >
+      Daemon: {daemonState}
+    </div>
+  );
 }

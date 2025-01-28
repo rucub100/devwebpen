@@ -3,11 +3,14 @@ import { DaemonState } from "../types/daemon";
 
 export enum DevWebPenEvent {
   DaemonStateChanged = "devwebpen://daemon-state-changed",
+  DaemonError = "devwebpen://daemon-error",
 }
 
 type DevWebPenEventCallback<E extends DevWebPenEvent> =
   E extends DevWebPenEvent.DaemonStateChanged
     ? (state: DaemonState) => void
+    : E extends DevWebPenEvent.DaemonError
+    ? (error: string) => void
     : never;
 
 let listeners: Map<
@@ -42,7 +45,9 @@ Object.values(DevWebPenEvent).forEach((devWebPenEvent) => {
     (event) => {
       listeners
         .get(devWebPenEvent)
-        ?.forEach((listener) => listener(event.payload));
+        ?.forEach((listener: DevWebPenEventCallback<typeof devWebPenEvent>) =>
+          listener(event.payload as any)
+        );
     }
   );
 });

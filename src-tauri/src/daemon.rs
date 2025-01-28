@@ -1,6 +1,6 @@
 use std::sync::Mutex;
 
-use futures_util::{lock::MutexGuard, stream::SplitSink};
+use futures_util::stream::SplitSink;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_shell::process::CommandChild;
 use tauri_plugin_shell::ShellExt;
@@ -117,6 +117,7 @@ impl DaemonInner {
         match self.sidecar.take() {
             Some(child) => {
                 self.state = DaemonState::Stopped;
+                self.error = None;
                 child.kill().map_err(|e| e.to_string())
             }
             None => Err(format!(
@@ -146,6 +147,23 @@ fn set_daemon_error(app_handle: &AppHandle, error: String) {
     ) {
         log::error!("{}", e);
     }
+
+    if let Err(e) = emit_event(app_handle, DevWebPenEvent::DaemonError(error.to_string())) {
+        log::error!("{}", e);
+    }
+}
+
+fn stop_sidecar(app_handle: &tauri::AppHandle) {
+    let state = app_handle.state::<Daemon>();
+    let mut daemon = state.lock().unwrap();
+    if let Err(e) = daemon.stop() {
+        log::error!("{}", e);
+    }
+}
+
+pub fn restart(app_handle: &tauri::AppHandle) {
+    stop_sidecar(app_handle);
+    start_sidecar(app_handle);
 }
 
 fn start_sidecar(app_handle: &tauri::AppHandle) {
@@ -172,7 +190,7 @@ fn start_sidecar(app_handle: &tauri::AppHandle) {
     // Store the child process in the app state to ensure it is not dropped
     sidecar::set_daemon_starting(app_handle, child);
 
-    handle_daemon_stdout(rx);
+    handle_daemon_stdout(rx, app_handle);
 }
 
 fn start_connector(app_handle: &tauri::AppHandle) {

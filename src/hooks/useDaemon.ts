@@ -3,6 +3,7 @@ import { DaemonState } from "../types/daemon";
 import {
   getDaemonState,
   getDaemonError,
+  restartDaemon,
 } from "../tauri/commands/daemon-commands";
 import DevWebPenEvent, { subscribe } from "../tauri/events";
 
@@ -18,6 +19,9 @@ export async function initializeDaemon() {
   // no need to unsubscribe since this is a global scope
   subscribe(DevWebPenEvent.DaemonStateChanged, (state) =>
     updateDaemonState(Promise.resolve(state))
+  );
+  subscribe(DevWebPenEvent.DaemonError, (error) =>
+    updateDaemonError(Promise.resolve(error))
   );
 
   await updateDaemonState(getDaemonState(), true);
@@ -127,5 +131,6 @@ export function useDaemon({
   return {
     daemonState: globalDaemonState,
     daemonError: globalDaemonError,
+    restartDaemon,
   };
 }

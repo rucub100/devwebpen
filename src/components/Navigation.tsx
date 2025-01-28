@@ -23,6 +23,7 @@ export default function Navigation() {
           onClick={() => navigateTo(Nav.Dashboard)}
           icon={<Icon icon="dashboard" width={32}></Icon>}
           className={`${textColor} p-2`}
+          title="Dashboard"
         />
       </div>
       {/* <IconButton icon="traffic" />
