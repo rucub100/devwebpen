@@ -1,5 +1,6 @@
 use crate::{
     app_state::{project::Project, session::Session, store::RecentProject, AppState},
+    daemon::{Daemon, DaemonState},
     view::{nav::NavView, PartialViewState, ViewState},
 };
 
@@ -201,4 +202,16 @@ pub async fn open_recent_project(
     }
 
     return Ok(Some(project.unwrap()));
+}
+
+#[tauri::command]
+pub fn get_daemon_state(state: tauri::State<Daemon>) -> Result<DaemonState, String> {
+    let daemon = state.lock().unwrap();
+    Ok(daemon.state.clone())
+}
+
+#[tauri::command]
+pub fn get_daemon_error(state: tauri::State<Daemon>) -> Result<Option<String>, String> {
+    let daemon = state.lock().unwrap();
+    Ok(daemon.error.clone())
 }

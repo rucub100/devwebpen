@@ -1,3 +1,7 @@
+import { useDaemon } from "../../hooks/useDaemon";
+
 export default function StatusBar() {
-  return <>status bar</>;
+  const { daemonState } = useDaemon({ listenDaemonState: true });
+
+  return <>{daemonState}</>;
 }

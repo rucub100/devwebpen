@@ -63,7 +63,7 @@ impl Default for ViewStateInner {
             main: MainView::Welcome,
             aside: AsideView::None,
             bottom: BottomView::None,
-            status: StatusView::None,
+            status: StatusView::Show,
         }
     }
 }

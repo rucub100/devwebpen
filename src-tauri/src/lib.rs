@@ -3,9 +3,9 @@ use tauri::Manager;
 
 use app_state::AppState;
 use commands::{
-    close_tab, create_project, get_ephemeral_session, get_project, get_recent_projects, init_view,
-    navigate_to, open_project, open_recent_project, open_welcome, select_tab,
-    start_ephemeral_session,
+    close_tab, create_project, get_daemon_error, get_daemon_state, get_ephemeral_session,
+    get_project, get_recent_projects, init_view, navigate_to, open_project, open_recent_project,
+    open_welcome, select_tab, start_ephemeral_session,
 };
 use daemon::Daemon;
 use view::ViewState;
@@ -14,6 +14,7 @@ use window::window_event_handler;
 mod app_state;
 mod commands;
 mod daemon;
+mod events;
 mod store;
 mod view;
 mod window;
@@ -42,6 +43,8 @@ pub fn run() {
             create_project,
             open_project,
             open_recent_project,
+            get_daemon_state,
+            get_daemon_error,
         ])
         .on_window_event(window_event_handler)
         .setup(|app| {

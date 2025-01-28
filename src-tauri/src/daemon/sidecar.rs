@@ -5,6 +5,8 @@ use tauri_plugin_shell::{
 };
 use tokio::sync::mpsc::Receiver;
 
+use crate::events::{emit_event, DevWebPenEvent};
+
 use super::Daemon;
 
 pub fn send_daemon_init(child: &mut CommandChild, app_handle: &tauri::AppHandle) {
@@ -43,6 +45,11 @@ pub fn set_daemon_starting(app_handle: &tauri::AppHandle, child: CommandChild) {
     let mut daemon = state.lock().unwrap();
 
     if let Err(e) = daemon.set_starting(child) {
+        log::error!("{}", e);
+    } else if let Err(e) = emit_event(
+        app_handle,
+        DevWebPenEvent::DaemonStateChanged(daemon.state.clone()),
+    ) {
         log::error!("{}", e);
     }
 }

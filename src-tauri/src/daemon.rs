@@ -27,14 +27,14 @@ pub enum DaemonState {
 #[derive(serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DaemonInner {
-    state: DaemonState,
+    pub state: DaemonState,
     #[serde(skip)]
     sidecar: Option<CommandChild>,
     #[serde(skip)]
     token: Option<String>,
     #[serde(skip)]
     ws_out: Option<SplitSink<WebSocketStream<TcpStream>, Message>>,
-    error: Option<String>,
+    pub error: Option<String>,
 }
 
 impl Default for DaemonInner {

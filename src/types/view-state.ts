@@ -42,6 +42,7 @@ export enum BottomView {
 
 export enum StatusView {
   None = "none",
+  Show = "show",
 }
 
 export interface ViewState {

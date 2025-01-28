@@ -5,6 +5,7 @@ import { showWindow } from "./tauri/window";
 import { initializeViewState } from "./hooks/useViewState";
 import { initializeEphemeralSession } from "./hooks/useEphemeralSession";
 import { initializeProject } from "./hooks/useProject";
+import { initializeDaemon } from "./hooks/useDaemon";
 
 function App() {
   const [isInitialized, setInitialized] = useState(false);
@@ -14,6 +15,7 @@ function App() {
       await initializeViewState();
       await initializeEphemeralSession();
       await initializeProject();
+      await initializeDaemon();
     };
 
     init().then(() => {

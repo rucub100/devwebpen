@@ -1,12 +1,50 @@
+import { listen } from "@tauri-apps/api/event";
+import { DaemonState } from "../types/daemon";
+
 export enum DevWebPenEvent {
-  // Daemon events
-  DaemonStopped = "devwebpen://daemon-stopped",
-  DaemonStarting = "devwebpen://daemon-starting",
-  DaemonConnecting = "devwebpen://daemon-connecting",
-  DaemonRunning = "devwebpen://daemon-running",
-  DaemonError = "devwebpen://daemon-error",
-  // View events
-  // TODO: Project events
+  DaemonStateChanged = "devwebpen://daemon-state-changed",
 }
+
+type DevWebPenEventCallback<E extends DevWebPenEvent> =
+  E extends DevWebPenEvent.DaemonStateChanged
+    ? (state: DaemonState) => void
+    : never;
+
+let listeners: Map<
+  DevWebPenEvent,
+  Set<DevWebPenEventCallback<DevWebPenEvent>>
+> = new Map();
+
+interface Subscription {
+  event: DevWebPenEvent;
+  unsubscribe: () => void;
+}
+
+export function subscribe<E extends DevWebPenEvent>(
+  event: E,
+  callback: DevWebPenEventCallback<E>
+): Subscription {
+  const eventListeners =
+    listeners.get(event) ?? listeners.set(event, new Set()).get(event)!;
+
+  eventListeners.add(callback);
+
+  return {
+    event,
+    unsubscribe: () => eventListeners.delete(callback),
+  };
+}
+
+// register tauri event listeners
+Object.values(DevWebPenEvent).forEach((devWebPenEvent) => {
+  listen<Parameters<DevWebPenEventCallback<typeof devWebPenEvent>>[0]>(
+    devWebPenEvent,
+    (event) => {
+      listeners
+        .get(devWebPenEvent)
+        ?.forEach((listener) => listener(event.payload));
+    }
+  );
+});
 
 export default DevWebPenEvent;
