@@ -11,20 +11,19 @@ use tokio::{
 };
 use tokio_tungstenite::{tungstenite::Message, WebSocketStream};
 
-use super::Daemon;
-
-fn set_daemon_error(app_handle: &AppHandle, error: String) {
-    let state = app_handle.state::<Daemon>();
-    let mut daemon = state.lock().unwrap();
-
-    daemon.set_error(error.to_string());
-}
+use super::{set_daemon_error, Daemon};
+use crate::events::{emit_event, DevWebPenEvent};
 
 fn set_daemon_connecting(app_handle: &AppHandle) {
     let state = app_handle.state::<Daemon>();
     let mut daemon = state.lock().unwrap();
 
     if let Err(e) = daemon.set_connecting() {
+        log::error!("{}", e);
+    } else if let Err(e) = emit_event(
+        app_handle,
+        DevWebPenEvent::DaemonStateChanged(daemon.state.clone()),
+    ) {
         log::error!("{}", e);
     }
 }
@@ -34,6 +33,11 @@ fn set_daemon_running(app_handle: &AppHandle) {
     let mut daemon = state.lock().unwrap();
 
     if let Err(e) = daemon.set_running() {
+        log::error!("{}", e);
+    } else if let Err(e) = emit_event(
+        app_handle,
+        DevWebPenEvent::DaemonStateChanged(daemon.state.clone()),
+    ) {
         log::error!("{}", e);
     }
 }

@@ -1,7 +1,7 @@
 use std::sync::Mutex;
 
-use futures_util::stream::SplitSink;
-use tauri::Manager;
+use futures_util::{lock::MutexGuard, stream::SplitSink};
+use tauri::{AppHandle, Manager};
 use tauri_plugin_shell::process::CommandChild;
 use tauri_plugin_shell::ShellExt;
 use tokio::net::TcpStream;
@@ -9,7 +9,9 @@ use tokio_tungstenite::{tungstenite::Message, WebSocketStream};
 use uuid;
 
 use connector::start_server;
-use sidecar::{handle_daemon_stdout, send_daemon_init, set_daemon_error};
+use sidecar::{handle_daemon_stdout, send_daemon_init};
+
+use crate::events::{emit_event, DevWebPenEvent};
 
 mod connector;
 mod sidecar;
@@ -132,19 +134,33 @@ fn generate_token(app_handle: &tauri::AppHandle) {
     daemon.set_token(token);
 }
 
+fn set_daemon_error(app_handle: &AppHandle, error: String) {
+    let state = app_handle.state::<Daemon>();
+    let mut daemon = state.lock().unwrap();
+
+    daemon.set_error(error.to_string());
+
+    if let Err(e) = emit_event(
+        app_handle,
+        DevWebPenEvent::DaemonStateChanged(daemon.state.clone()),
+    ) {
+        log::error!("{}", e);
+    }
+}
+
 fn start_sidecar(app_handle: &tauri::AppHandle) {
     log::debug!("Starting sidecar (daemon)...");
     let sidecar_command = app_handle.shell().sidecar("devwebpen-daemon");
     if let Err(e) = sidecar_command {
         log::error!("Failed to create sidecar command: {}", e);
-        set_daemon_error(app_handle, e);
+        set_daemon_error(app_handle, e.to_string());
         return;
     }
 
     let sidecar_command = sidecar_command.unwrap().spawn();
     if let Err(e) = sidecar_command {
         log::error!("Failed to spawn sidecar command: {}", e);
-        set_daemon_error(app_handle, e);
+        set_daemon_error(app_handle, e.to_string());
         return;
     }
 

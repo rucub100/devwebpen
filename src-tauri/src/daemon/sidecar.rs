@@ -1,8 +1,5 @@
 use tauri::Manager;
-use tauri_plugin_shell::{
-    process::{CommandChild, CommandEvent},
-    Error,
-};
+use tauri_plugin_shell::process::{CommandChild, CommandEvent};
 use tokio::sync::mpsc::Receiver;
 
 use crate::events::{emit_event, DevWebPenEvent};
@@ -31,13 +28,6 @@ pub fn handle_daemon_stdout(mut rx: Receiver<CommandEvent>) {
             }
         }
     });
-}
-
-pub fn set_daemon_error(app_handle: &tauri::AppHandle, error: Error) {
-    let state = app_handle.state::<Daemon>();
-    let mut daemon = state.lock().unwrap();
-
-    daemon.set_error(error.to_string());
 }
 
 pub fn set_daemon_starting(app_handle: &tauri::AppHandle, child: CommandChild) {
