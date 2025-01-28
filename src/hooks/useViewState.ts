@@ -12,7 +12,7 @@ import {
   closeTab as _closeTab,
   selectTab as _selectTab,
   openWelcome as _openWelcome,
-} from "../tauri/commands";
+} from "../tauri/commands/view-commands";
 import {
   AsideView,
   BottomView,

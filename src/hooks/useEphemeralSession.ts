@@ -9,7 +9,7 @@ import { Session } from "../types/session";
 import {
   getEphemeralSession,
   startEphemeralSession as _startEphemeralSession,
-} from "../tauri/commands";
+} from "../tauri/commands/ephemeral-session-commands";
 
 // use undefined to indicate that the session has not been initialized
 let globalEphemeralSession: Session | null | undefined = undefined;

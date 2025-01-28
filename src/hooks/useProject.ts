@@ -12,7 +12,7 @@ import {
   openProject as _openProject,
   openRecentProject as _openRecentProject,
   getRecentProjects,
-} from "../tauri/commands";
+} from "../tauri/commands/project-commands";
 import { Project, RecentProject } from "../types/project";
 
 // use undefined to indicate that the project has not been initialized
