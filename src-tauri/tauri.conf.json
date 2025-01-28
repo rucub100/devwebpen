@@ -23,17 +23,7 @@
           "effects": ["mica"]
         }
       }
-    ],
-    "security": {
-      "csp": null,
-      "capabilities": [
-        {
-          "identifier": "main-window",
-          "permissions": ["core:window:allow-show"],
-          "windows": ["main"]
-        }
-      ]
-    }
+    ]
   },
   "bundle": {
     "active": false,
