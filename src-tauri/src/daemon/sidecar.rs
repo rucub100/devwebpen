@@ -2,10 +2,7 @@ use tauri::Manager;
 use tauri_plugin_shell::process::{CommandChild, CommandEvent};
 use tokio::sync::mpsc::Receiver;
 
-use crate::{
-    daemon::set_daemon_error,
-    events::{emit_event, DevWebPenEvent},
-};
+use crate::daemon::set_daemon_error;
 
 use super::Daemon;
 
@@ -20,7 +17,11 @@ pub fn send_daemon_init(child: &mut CommandChild, app_handle: &tauri::AppHandle)
     // TODO: Send also port information to daemon
 }
 
-pub fn handle_daemon_stdout(mut rx: Receiver<CommandEvent>, app_handle: &tauri::AppHandle) {
+pub fn handle_daemon_stdout(
+    mut rx: Receiver<CommandEvent>,
+    app_handle: &tauri::AppHandle,
+    daemon_pid: u32,
+) {
     let app_handle = app_handle.clone();
     tauri::async_runtime::spawn(async move {
         while let Some(event) = rx.recv().await {
@@ -32,23 +33,19 @@ pub fn handle_daemon_stdout(mut rx: Receiver<CommandEvent>, app_handle: &tauri::
                 log::error!("[DAEMON] {}", line);
             } else if let CommandEvent::Terminated(payload) = event {
                 log::error!("[DAEMON] Terminated with : {:?}", payload);
-                set_daemon_error(&app_handle, format!("Daemon terminated with {:?}", payload));
+
+                let current_daemon_pid = {
+                    let state = app_handle.state::<Daemon>();
+                    let daemon = state.lock().unwrap();
+                    daemon.sidecar.as_ref().unwrap().pid()
+                };
+
+                if current_daemon_pid == daemon_pid {
+                    set_daemon_error(&app_handle, format!("Daemon terminated unexpectedly"));
+                }
+
                 rx.close();
             }
         }
     });
-}
-
-pub fn set_daemon_starting(app_handle: &tauri::AppHandle, child: CommandChild) {
-    let state = app_handle.state::<Daemon>();
-    let mut daemon = state.lock().unwrap();
-
-    if let Err(e) = daemon.set_starting(child) {
-        log::error!("{}", e);
-    } else if let Err(e) = emit_event(
-        app_handle,
-        DevWebPenEvent::DaemonStateChanged(daemon.state.clone()),
-    ) {
-        log::error!("{}", e);
-    }
 }

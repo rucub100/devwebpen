@@ -29,7 +29,7 @@ export default function Daemon() {
   return (
     <div
       className="w-[18ch]"
-      onContextMenu={showContextMenu}
+      onContextMenu={daemonError ? showContextMenu : undefined}
       title={daemonError ?? ""}
     >
       Daemon: {daemonState}

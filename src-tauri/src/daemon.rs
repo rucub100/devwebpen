@@ -16,7 +16,7 @@ use crate::events::{emit_event, DevWebPenEvent};
 mod connector;
 mod sidecar;
 
-#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub enum DaemonState {
     Stopped,
@@ -72,6 +72,7 @@ impl DaemonInner {
         match self.state {
             DaemonState::Stopped => {
                 self.state = DaemonState::Starting;
+                self.error = None;
                 self.sidecar = Some(sidecar);
                 Ok(())
             }
@@ -86,6 +87,7 @@ impl DaemonInner {
         match self.state {
             DaemonState::Starting => {
                 self.state = DaemonState::Connecting;
+                self.error = None;
                 Ok(())
             }
             _ => Err(format!(
@@ -99,6 +101,7 @@ impl DaemonInner {
         match self.state {
             DaemonState::Connecting => {
                 self.state = DaemonState::Running;
+                self.error = None;
                 Ok(())
             }
             _ => Err(format!(
@@ -148,7 +151,61 @@ fn set_daemon_error(app_handle: &AppHandle, error: String) {
         log::error!("{}", e);
     }
 
-    if let Err(e) = emit_event(app_handle, DevWebPenEvent::DaemonError(error.to_string())) {
+    if let Err(e) = emit_event(
+        app_handle,
+        DevWebPenEvent::DaemonError(Some(error.to_string())),
+    ) {
+        log::error!("{}", e);
+    }
+}
+
+fn set_daemon_starting(app_handle: &tauri::AppHandle, child: CommandChild) {
+    let state = app_handle.state::<Daemon>();
+    let mut daemon = state.lock().unwrap();
+
+    if let Err(e) = daemon.set_starting(child) {
+        log::error!("{}", e);
+    } else {
+        if let Err(e) = emit_event(
+            app_handle,
+            DevWebPenEvent::DaemonStateChanged(daemon.state.clone()),
+        ) {
+            log::error!("{}", e);
+        }
+
+        if let Err(e) = emit_event(
+            app_handle,
+            DevWebPenEvent::DaemonError(daemon.error.clone()),
+        ) {
+            log::error!("{}", e);
+        }
+    }
+}
+
+fn set_daemon_connecting(app_handle: &AppHandle) {
+    let state = app_handle.state::<Daemon>();
+    let mut daemon = state.lock().unwrap();
+
+    if let Err(e) = daemon.set_connecting() {
+        log::error!("{}", e);
+    } else if let Err(e) = emit_event(
+        app_handle,
+        DevWebPenEvent::DaemonStateChanged(daemon.state.clone()),
+    ) {
+        log::error!("{}", e);
+    }
+}
+
+fn set_daemon_running(app_handle: &AppHandle) {
+    let state = app_handle.state::<Daemon>();
+    let mut daemon = state.lock().unwrap();
+
+    if let Err(e) = daemon.set_running() {
+        log::error!("{}", e);
+    } else if let Err(e) = emit_event(
+        app_handle,
+        DevWebPenEvent::DaemonStateChanged(daemon.state.clone()),
+    ) {
         log::error!("{}", e);
     }
 }
@@ -159,11 +216,6 @@ fn stop_sidecar(app_handle: &tauri::AppHandle) {
     if let Err(e) = daemon.stop() {
         log::error!("{}", e);
     }
-}
-
-pub fn restart(app_handle: &tauri::AppHandle) {
-    stop_sidecar(app_handle);
-    start_sidecar(app_handle);
 }
 
 fn start_sidecar(app_handle: &tauri::AppHandle) {
@@ -183,14 +235,15 @@ fn start_sidecar(app_handle: &tauri::AppHandle) {
     }
 
     let (rx, mut child) = sidecar_command.unwrap();
-    log::debug!("Sidecar started, PID: {}", child.pid());
+    let daemon_pid = child.pid();
+    log::debug!("Sidecar started, PID: {}", &daemon_pid);
 
     send_daemon_init(&mut child, app_handle);
 
     // Store the child process in the app state to ensure it is not dropped
-    sidecar::set_daemon_starting(app_handle, child);
+    set_daemon_starting(app_handle, child);
 
-    handle_daemon_stdout(rx, app_handle);
+    handle_daemon_stdout(rx, app_handle, daemon_pid);
 }
 
 fn start_connector(app_handle: &tauri::AppHandle) {
@@ -202,6 +255,11 @@ fn start_connector(app_handle: &tauri::AppHandle) {
 
 pub fn start(app_handle: &tauri::AppHandle) {
     start_connector(app_handle);
+    start_sidecar(app_handle);
+}
+
+pub fn restart(app_handle: &tauri::AppHandle) {
+    stop_sidecar(app_handle);
     start_sidecar(app_handle);
 }
 

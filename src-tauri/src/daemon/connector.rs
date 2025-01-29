@@ -12,35 +12,6 @@ use tokio::{
 use tokio_tungstenite::{tungstenite::Message, WebSocketStream};
 
 use super::{set_daemon_error, Daemon};
-use crate::events::{emit_event, DevWebPenEvent};
-
-fn set_daemon_connecting(app_handle: &AppHandle) {
-    let state = app_handle.state::<Daemon>();
-    let mut daemon = state.lock().unwrap();
-
-    if let Err(e) = daemon.set_connecting() {
-        log::error!("{}", e);
-    } else if let Err(e) = emit_event(
-        app_handle,
-        DevWebPenEvent::DaemonStateChanged(daemon.state.clone()),
-    ) {
-        log::error!("{}", e);
-    }
-}
-
-fn set_daemon_running(app_handle: &AppHandle) {
-    let state = app_handle.state::<Daemon>();
-    let mut daemon = state.lock().unwrap();
-
-    if let Err(e) = daemon.set_running() {
-        log::error!("{}", e);
-    } else if let Err(e) = emit_event(
-        app_handle,
-        DevWebPenEvent::DaemonStateChanged(daemon.state.clone()),
-    ) {
-        log::error!("{}", e);
-    }
-}
 
 fn set_daemon_ws_out(
     app_handle: &AppHandle,
@@ -112,7 +83,7 @@ async fn accept_connection(app_handle: AppHandle, stream: TcpStream) {
         stream.peer_addr().unwrap()
     );
 
-    set_daemon_connecting(&app_handle);
+    super::set_daemon_connecting(&app_handle);
 
     let ws_stream = tokio_tungstenite::accept_async(stream).await;
 
@@ -131,7 +102,13 @@ async fn accept_connection(app_handle: AppHandle, stream: TcpStream) {
         return;
     }
 
-    set_daemon_running(&app_handle);
+    let daemon_pid = {
+        let state = app_handle.state::<Daemon>();
+        let daemon = state.lock().unwrap();
+        daemon.sidecar.as_ref().unwrap().pid()
+    };
+
+    super::set_daemon_running(&app_handle);
 
     let (write, mut read) = result.unwrap();
 
@@ -140,17 +117,29 @@ async fn accept_connection(app_handle: AppHandle, stream: TcpStream) {
     loop {
         let msg = read.next().await;
 
+        let current_daemon_pid = {
+            let state = app_handle.state::<Daemon>();
+            let daemon = state.lock().unwrap();
+            daemon.sidecar.as_ref().unwrap().pid()
+        };
+
         if let None = msg {
-            log::error!("Failed to receive message");
-            set_daemon_error(&app_handle, "Failed to receive message".to_string());
+            if current_daemon_pid == daemon_pid {
+                log::error!("Failed to receive message");
+                set_daemon_error(&app_handle, "Failed to receive message".to_string());
+            }
+
             return;
         }
 
         let msg = msg.unwrap();
 
         if let Err(e) = msg {
-            log::error!("Error while receiving message: {}", e);
-            set_daemon_error(&app_handle, e.to_string());
+            if current_daemon_pid == daemon_pid {
+                log::error!("Error while receiving message: {}", e);
+                set_daemon_error(&app_handle, e.to_string());
+            }
+
             return;
         }
 

@@ -4,7 +4,7 @@ use crate::daemon::DaemonState;
 
 pub enum DevWebPenEvent {
     DaemonStateChanged(DaemonState),
-    DaemonError(String),
+    DaemonError(Option<String>),
 }
 
 impl DevWebPenEvent {
