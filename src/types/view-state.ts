@@ -1,55 +1,46 @@
-export enum NavView {
-  None = "none",
-  Dashboard = "dashboard",
-}
+const none = { None: "none" } as const;
 
-export enum TabName {
-  Welcome = "welcome",
-}
+const navView = { ...none, Dashboard: "dashboard" } as const;
+const mainView = { ...none, Welcome: "welcome" } as const;
+const asideView = { ...none } as const;
+const bottomView = { ...none } as const;
+const statusView = { ...none, Show: "show" } as const;
+type NavViewKeys = keyof typeof navView;
+type MainViewKeys = keyof typeof mainView;
+type AsideViewKeys = keyof typeof asideView;
+type BottomViewKeys = keyof typeof bottomView;
+type StatusViewKeys = keyof typeof statusView;
+export type NavView = (typeof navView)[NavViewKeys];
+export type MainView = (typeof mainView)[MainViewKeys];
+export type AsideView = (typeof asideView)[AsideViewKeys];
+export type BottomView = (typeof bottomView)[BottomViewKeys];
+export type StatusView = (typeof statusView)[StatusViewKeys];
 
-export const defaultTabNames: Record<TabName, string> = {
-  [TabName.Welcome]: "Welcome",
-};
+const tabName = { Welcome: "welcome" } as const;
+type TabNameKeys = keyof typeof tabName;
+export type TabName = (typeof tabName)[TabNameKeys];
 
-export interface TabKind {
+export type TabKind = {
   nav: NavView;
   name: TabName;
-}
+};
 
-export interface Tab {
+export type Tab = {
   id: number;
   kind: TabKind;
   label: string | null;
-}
+};
 
-export interface TabsView {
+export type TabsView = {
   tabs: Tab[];
   activeTabId: number | null;
-}
+};
 
-export enum MainView {
-  None = "none",
-  Welcome = "welcome",
-}
-
-export enum AsideView {
-  None = "none",
-}
-
-export enum BottomView {
-  None = "none",
-}
-
-export enum StatusView {
-  None = "none",
-  Show = "show",
-}
-
-export interface ViewState {
+export type ViewState = {
   nav: NavView;
   tabs: TabsView;
   main: MainView;
   aside: AsideView;
   bottom: BottomView;
   status: StatusView;
-}
+};

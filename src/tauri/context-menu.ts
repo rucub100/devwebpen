@@ -1,17 +1,13 @@
 import { isTauri } from "@tauri-apps/api/core";
 import { getCurrentWindow, LogicalPosition } from "@tauri-apps/api/window";
 import { Menu, MenuItem, Submenu } from "@tauri-apps/api/menu";
-import {
-  ContextMenu,
-  ContextMenuItem,
-  ContextSubMenu,
-} from "../types/context-menu";
+import { ContextMenu, ContextMenuItem } from "../types/context-menu";
 
 const currentWindow = getCurrentWindow();
 
 const appendItem =
   (menu: Menu | Submenu) =>
-  async (item: ContextMenuItem | ContextSubMenu): Promise<void> => {
+  async (item: ContextMenuItem): Promise<void> => {
     switch (item.type) {
       case "item":
         const menuItem = await MenuItem.new({
@@ -32,7 +28,8 @@ const appendItem =
         return;
 
       default:
-        console.error(`Unknown item type: ${item}`);
+        const _exhaustiveCheck: never = item;
+        return _exhaustiveCheck;
     }
   };
 

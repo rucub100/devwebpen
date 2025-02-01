@@ -5,8 +5,8 @@ import styles from "./Main.module.css";
 import Default from "../views/Default";
 
 const viewComponents: Record<MainView, ReactNode> = {
-  [MainView.None]: <Default></Default>,
-  [MainView.Welcome]: <Welcome></Welcome>,
+  none: <Default></Default>,
+  welcome: <Welcome></Welcome>,
 };
 
 interface MainProps {

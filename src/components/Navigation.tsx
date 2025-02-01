@@ -1,7 +1,6 @@
 import { useViewState } from "../hooks/useViewState";
 import Icon from "./common/Icon";
 import IconButton from "./common/IconButton";
-import { NavView as Nav } from "../types/view-state";
 
 export default function Navigation() {
   const { nav, navigateTo } = useViewState({ listenNav: true });
@@ -20,7 +19,7 @@ export default function Navigation() {
           className={`${displayIndicator} absolute left-0 bg-primary-600/50 h-12 w-0.5`}
         ></div>
         <IconButton
-          onClick={() => navigateTo(Nav.Dashboard)}
+          onClick={() => navigateTo("dashboard")}
           icon={<Icon icon="dashboard" width={32}></Icon>}
           className={`${textColor} p-2`}
           title="Dashboard"

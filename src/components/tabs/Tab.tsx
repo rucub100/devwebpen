@@ -1,10 +1,6 @@
 import { ReactNode, useCallback, MouseEvent } from "react";
 
-import {
-  defaultTabNames,
-  NavView,
-  Tab as TabData,
-} from "../../types/view-state";
+import { NavView, Tab as TabData } from "../../types/view-state";
 import Icon from "../common/Icon";
 import IconButton from "../common/IconButton";
 import styles from "./Tabs.module.css";
@@ -12,7 +8,8 @@ import styles from "./Tabs.module.css";
 import Logo from "../../../app-icon.svg";
 
 const tabIcons: Record<NavView, ReactNode> = {
-  [NavView.Dashboard]: (
+  none: undefined,
+  dashboard: (
     <img src={Logo} alt="Devwebpen Logo" className="h-4 aspect-square" />
   ),
 };
@@ -57,7 +54,7 @@ export default function Tab({
         className={`${displayIndicator} absolute top-0 left-0 right-0 bg-primary-600/50 h-0.5`}
       ></div>
       {tabIcons[tab.kind.nav]}
-      <span>{tab.label || defaultTabNames[tab.kind.name]}</span>
+      <span>{tab.label ?? tab.kind.name}</span>
       <IconButton
         icon={<Icon icon="close"></Icon>}
         className="hover:bg-primary-600/10 p-0.5 rounded"

@@ -172,7 +172,7 @@ export default function RootLayout() {
         className={`${styles.leftAside} border-r border-neutral-800 min-w-min max-w-full`}
         style={{
           width: leftAsideWidth,
-          display: nav && nav !== NavView.None ? "block" : "none",
+          display: nav === "none" ? "none" : "block",
         }}
       >
         <LeftAside navigation={nav}></LeftAside>
@@ -182,7 +182,7 @@ export default function RootLayout() {
           leftSplitIsResizing ? "bg-primary-500" : "bg-transparent"
         }  hover:bg-primary-500 transition-colors duration-200 delay-300`}
         style={{
-          display: nav && nav !== NavView.None ? "block" : "none",
+          display: nav === "none" ? "none" : "block",
         }}
         onMouseDown={leftSplitMouseDownHandler}
       ></div>
@@ -194,7 +194,7 @@ export default function RootLayout() {
           rightSplitIsResizing ? "bg-primary-500" : "bg-transparent"
         }  hover:bg-primary-500 transition-colors duration-200 delay-300`}
         style={{
-          display: aside && aside !== AsideView.None ? "block" : "none",
+          display: aside === "none" ? "none" : "block",
         }}
         onMouseDown={rightSplitMouseDownHandler}
       ></div>
@@ -203,7 +203,7 @@ export default function RootLayout() {
         className={`${styles.rightAside} border-l border-neutral-800 min-w-min max-w-full`}
         style={{
           width: rightAsideWidth,
-          display: aside && aside !== AsideView.None ? "block" : "none",
+          display: aside === "none" ? "none" : "block",
         }}
       >
         <RightAside></RightAside>
@@ -213,7 +213,7 @@ export default function RootLayout() {
           bottomSplitIsResizing ? "bg-primary-500" : "bg-transparent"
         }  hover:bg-primary-500 transition-colors duration-200 delay-300`}
         style={{
-          display: bottom && bottom !== BottomView.None ? "block" : "none",
+          display: bottom === "none" ? "none" : "block",
         }}
         onMouseDown={bottomSplitMouseDownHandler}
       ></div>
@@ -222,7 +222,7 @@ export default function RootLayout() {
         className={`${styles.bottomAside} border-t border-neutral-800 min-h-min max-h-full min-w-full max-w-full`}
         style={{
           height: bottomAsideHeight,
-          display: bottom && bottom !== BottomView.None ? "block" : "none",
+          display: bottom === "none" ? "none" : "block",
         }}
       >
         <BottomAside></BottomAside>
@@ -230,7 +230,7 @@ export default function RootLayout() {
       <footer
         className={`${styles.footer} border-t border-neutral-800`}
         style={{
-          display: status && status !== StatusView.None ? "block" : "none",
+          display: status === "none" ? "none" : "block",
         }}
       >
         <StatusBar></StatusBar>

@@ -1,3 +1,3 @@
-export interface Session {
+export type Session = {
   id: number;
-}
+};

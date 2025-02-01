@@ -3,8 +3,8 @@ import { NavView } from "../../types/view-state";
 import Start from "../navigation/Start";
 
 const components: Record<NavView, ReactNode> = {
-  [NavView.None]: undefined,
-  [NavView.Dashboard]: <Start></Start>,
+  none: undefined,
+  dashboard: <Start></Start>,
 };
 
 interface LeftAsideProps {
