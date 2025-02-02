@@ -1,4 +1,4 @@
-package de.curbanov.devwebpen;
+package de.curbanov.devwebpen.utils;
 
 import java.io.IOException;
 import java.io.OutputStream;

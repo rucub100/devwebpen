@@ -2,7 +2,8 @@ package de.curbanov.devwebpen;
 
 import java.util.Scanner;
 
-import de.curbanov.devwebpen.controller.WebSocketController;
+import de.curbanov.devwebpen.ipc.WebSocketController;
+import de.curbanov.devwebpen.utils.DebugServer;
 
 public class Main {
     public static void main(String[] args) {
@@ -15,6 +16,8 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         var token = scanner.nextLine();
         WebSocketController webSocketController = new WebSocketController(token);
+        Processor processor = new Processor();
+        webSocketController.start(processor);
 
         while (true) {
             var nextLine = scanner.nextLine();

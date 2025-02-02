@@ -1,4 +1,4 @@
-package de.curbanov.devwebpen.controller;
+package de.curbanov.devwebpen.ipc;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -8,14 +8,27 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
+import de.curbanov.devwebpen.ipc.request.Request;
+import de.curbanov.devwebpen.ipc.request.TextRequestHandler;
+
 public class WebSocketController implements WebSocket.Listener {
     private final String token;
+
     private final HttpClient httpClient = HttpClient.newHttpClient();
-    private final CompletableFuture<WebSocket> cfWebSocket;
+    private CompletableFuture<WebSocket> cfWebSocket;
     private WebSocket webSocket;
+
+    private TextRequestHandler textRequestHandler = null;
+
+    private StringBuilder text = new StringBuilder();
 
     public WebSocketController(String token) {
         this.token = token;
+    }
+
+    public void start(TextRequestHandler textRequestHandler) {
+        this.textRequestHandler = textRequestHandler;
+
         this.cfWebSocket = httpClient.newWebSocketBuilder().buildAsync(URI.create("ws://127.0.0.1:8080/"),
                 this);
         this.cfWebSocket.thenAccept(webSocket -> {
@@ -39,6 +52,16 @@ public class WebSocketController implements WebSocket.Listener {
     @Override
     public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
         System.out.println("[" + Thread.currentThread().getName() + "]: " + "Text message received");
+
+        text.append(data);
+        if (last) {
+            var request = Request.parseRequest(text.toString());
+            if (textRequestHandler != null) {
+                textRequestHandler.onTextRequest(request);
+            }
+            text = new StringBuilder();
+        }
+
         return Listener.super.onText(webSocket, data, last);
     }
 
