@@ -10,13 +10,15 @@ import java.util.concurrent.CompletionStage;
 
 import de.curbanov.devwebpen.ipc.request.Request;
 import de.curbanov.devwebpen.ipc.request.TextRequestHandler;
+import de.curbanov.devwebpen.ipc.response.Response;
+import de.curbanov.devwebpen.ipc.response.ResponseSender;
 
-public class WebSocketController implements WebSocket.Listener {
+public class WebSocketController implements WebSocket.Listener, ResponseSender {
     private final String token;
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private CompletableFuture<WebSocket> cfWebSocket;
-    private WebSocket webSocket;
+    private volatile WebSocket webSocket;
 
     private TextRequestHandler textRequestHandler = null;
 
@@ -100,6 +102,27 @@ public class WebSocketController implements WebSocket.Listener {
             webSocket.sendClose(WebSocket.NORMAL_CLOSURE, "Client closed").thenRun(() -> {
                 System.out.println("[" + Thread.currentThread().getName() + "]: " + "WebSocket closed");
             });
+        }
+    }
+
+    @Override
+    public void sendResponse(Response<?> response) {
+        if (webSocket != null) {
+            if (response.isBinary()) {
+                var data = response.asBinary();
+                synchronized (webSocket) {
+                    webSocket.sendBinary(data, true);
+                }
+            } else if (response.isText()) {
+                var text = response.asText();
+                synchronized (webSocket) {
+                    webSocket.sendText(text, true);
+                }
+            } else {
+                throw new IllegalArgumentException("Unsupported response body type");
+            }
+        } else {
+            throw new IllegalStateException("WebSocket is not connected");
         }
     }
 }

@@ -10,10 +10,10 @@ public class RequestHeader implements Serializable {
         final String[] headerLines = data.lines().limit(headerLinesLimit).toArray(String[]::new);
         final int bodyOffset = Stream.of(headerLines).mapToInt(line -> line.length()).sum();
 
-        final RequestType requestType = RequestType.valueOf(headerLines[0]);
-        final String uuid = headerLines[1];
+        final String uuid = headerLines[0];
+        final RequestType requestType = RequestType.valueOf(headerLines[1]);
 
-        final RequestHeader header = new RequestHeader(requestType, uuid);
+        final RequestHeader header = new RequestHeader(uuid, requestType);
 
         return new ParsedHeader(header, bodyOffset);
     }
@@ -22,12 +22,12 @@ public class RequestHeader implements Serializable {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    private final RequestType requestType;
     private final String uuid;
+    private final RequestType requestType;
 
-    private RequestHeader(RequestType requestType, String uuid) {
-        this.requestType = requestType;
+    private RequestHeader(String uuid, RequestType requestType) {
         this.uuid = uuid;
+        this.requestType = requestType;
     }
 
     public RequestType getRequestType() {

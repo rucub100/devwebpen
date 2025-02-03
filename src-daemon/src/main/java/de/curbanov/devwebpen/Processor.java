@@ -1,5 +1,6 @@
 package de.curbanov.devwebpen;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -11,6 +12,11 @@ public class Processor implements TextRequestHandler {
 
     @Override
     public void onTextRequest(Request<?> request) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        CompletableFuture.runAsync(
+                () -> {
+                    System.out.println("[" + Thread.currentThread().getName() + "]: " + "Request received");
+                    System.out.println("[" + Thread.currentThread().getName() + "]: " + "Request: " + request);
+                },
+                executor);
     }
 }

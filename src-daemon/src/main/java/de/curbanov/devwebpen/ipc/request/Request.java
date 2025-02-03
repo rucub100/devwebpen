@@ -3,7 +3,7 @@ package de.curbanov.devwebpen.ipc.request;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 
-public record Request<T>(RequestHeader header, T body) implements Serializable {
+public class Request<T> implements Serializable {
     private static Request<?> parseTextRequest(String data) {
         var result = RequestHeader.parseTextHeader(data);
         var header = result.header();
@@ -40,6 +40,14 @@ public record Request<T>(RequestHeader header, T body) implements Serializable {
 
     public static Request<?> parseRequest(ByteBuffer data) {
         return parseBinaryRequest(data);
+    }
+
+    private final RequestHeader header;
+    private final T body;
+
+    private Request(RequestHeader header, T body) {
+        this.header = header;
+        this.body = body;
     }
 
     public RequestHeader getHeader() {
