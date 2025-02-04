@@ -8,7 +8,7 @@ public class RequestHeader implements Serializable {
     public static ParsedHeader parseTextHeader(String data) {
         final int headerLinesLimit = 2;
         final String[] headerLines = data.lines().limit(headerLinesLimit).toArray(String[]::new);
-        final int bodyOffset = Stream.of(headerLines).mapToInt(line -> line.length()).sum();
+        final int bodyOffset = Stream.of(headerLines).mapToInt(line -> line.length() + 1).sum();
 
         final String uuid = headerLines[0];
         final RequestType requestType = RequestType.valueOf(headerLines[1]);

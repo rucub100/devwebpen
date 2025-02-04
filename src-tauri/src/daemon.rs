@@ -1,10 +1,10 @@
-use std::sync::Mutex;
+use std::sync::Arc;
 
 use futures_util::stream::SplitSink;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_shell::process::CommandChild;
 use tauri_plugin_shell::ShellExt;
-use tokio::net::TcpStream;
+use tokio::{net::TcpStream, sync::Mutex};
 use tokio_tungstenite::{tungstenite::Message, WebSocketStream};
 use uuid;
 
@@ -13,7 +13,9 @@ use sidecar::{handle_daemon_stdout, send_daemon_init};
 
 use crate::events::{emit_event, DevWebPenEvent};
 
+pub mod command;
 mod connector;
+pub mod request;
 mod sidecar;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq)]
@@ -35,7 +37,7 @@ pub struct DaemonInner {
     #[serde(skip)]
     token: Option<String>,
     #[serde(skip)]
-    ws_out: Option<SplitSink<WebSocketStream<TcpStream>, Message>>,
+    ws_out: Arc<Mutex<Option<SplitSink<WebSocketStream<TcpStream>, Message>>>>,
     pub error: Option<String>,
 }
 
@@ -45,7 +47,7 @@ impl Default for DaemonInner {
             state: DaemonState::Stopped,
             sidecar: None,
             token: None,
-            ws_out: None,
+            ws_out: Arc::new(Mutex::new(None)),
             error: None,
         }
     }
@@ -60,12 +62,12 @@ impl DaemonInner {
         self.token.as_ref()
     }
 
-    pub fn set_ws_out(&mut self, ws_out: SplitSink<WebSocketStream<TcpStream>, Message>) {
-        self.ws_out = Some(ws_out);
+    pub async fn set_ws_out(&mut self, ws_out: SplitSink<WebSocketStream<TcpStream>, Message>) {
+        self.ws_out.lock().await.replace(ws_out);
     }
 
-    pub fn get_ws_out(&self) -> Option<&SplitSink<WebSocketStream<TcpStream>, Message>> {
-        self.ws_out.as_ref()
+    pub fn get_ws_out(&self) -> Arc<Mutex<Option<SplitSink<WebSocketStream<TcpStream>, Message>>>> {
+        self.ws_out.clone()
     }
 
     pub fn set_starting(&mut self, sidecar: CommandChild) -> Result<(), String> {
@@ -131,16 +133,16 @@ impl DaemonInner {
     }
 }
 
-fn generate_token(app_handle: &tauri::AppHandle) {
+async fn generate_token(app_handle: &tauri::AppHandle) {
     let state = app_handle.state::<Daemon>();
-    let mut daemon = state.lock().unwrap();
+    let mut daemon = state.lock().await;
     let token = uuid::Uuid::new_v4().to_string();
     daemon.set_token(token);
 }
 
-fn set_daemon_error(app_handle: &AppHandle, error: String) {
+async fn set_daemon_error(app_handle: &AppHandle, error: String) {
     let state = app_handle.state::<Daemon>();
-    let mut daemon = state.lock().unwrap();
+    let mut daemon = state.lock().await;
 
     daemon.set_error(error.to_string());
 
@@ -159,9 +161,9 @@ fn set_daemon_error(app_handle: &AppHandle, error: String) {
     }
 }
 
-fn set_daemon_starting(app_handle: &tauri::AppHandle, child: CommandChild) {
+async fn set_daemon_starting(app_handle: &tauri::AppHandle, child: CommandChild) {
     let state = app_handle.state::<Daemon>();
-    let mut daemon = state.lock().unwrap();
+    let mut daemon = state.lock().await;
 
     if let Err(e) = daemon.set_starting(child) {
         log::error!("{}", e);
@@ -182,9 +184,9 @@ fn set_daemon_starting(app_handle: &tauri::AppHandle, child: CommandChild) {
     }
 }
 
-fn set_daemon_connecting(app_handle: &AppHandle) {
+async fn set_daemon_connecting(app_handle: &AppHandle) {
     let state = app_handle.state::<Daemon>();
-    let mut daemon = state.lock().unwrap();
+    let mut daemon = state.lock().await;
 
     if let Err(e) = daemon.set_connecting() {
         log::error!("{}", e);
@@ -196,9 +198,9 @@ fn set_daemon_connecting(app_handle: &AppHandle) {
     }
 }
 
-fn set_daemon_running(app_handle: &AppHandle) {
+async fn set_daemon_running(app_handle: &AppHandle) {
     let state = app_handle.state::<Daemon>();
-    let mut daemon = state.lock().unwrap();
+    let mut daemon = state.lock().await;
 
     if let Err(e) = daemon.set_running() {
         log::error!("{}", e);
@@ -210,27 +212,27 @@ fn set_daemon_running(app_handle: &AppHandle) {
     }
 }
 
-fn stop_sidecar(app_handle: &tauri::AppHandle) {
+async fn stop_sidecar(app_handle: &tauri::AppHandle) {
     let state = app_handle.state::<Daemon>();
-    let mut daemon = state.lock().unwrap();
+    let mut daemon = state.lock().await;
     if let Err(e) = daemon.stop() {
         log::error!("{}", e);
     }
 }
 
-fn start_sidecar(app_handle: &tauri::AppHandle) {
+async fn start_sidecar(app_handle: &tauri::AppHandle) {
     log::debug!("Starting sidecar (daemon)...");
     let sidecar_command = app_handle.shell().sidecar("devwebpen-daemon");
     if let Err(e) = sidecar_command {
         log::error!("Failed to create sidecar command: {}", e);
-        set_daemon_error(app_handle, e.to_string());
+        set_daemon_error(app_handle, e.to_string()).await;
         return;
     }
 
     let sidecar_command = sidecar_command.unwrap().spawn();
     if let Err(e) = sidecar_command {
         log::error!("Failed to spawn sidecar command: {}", e);
-        set_daemon_error(app_handle, e.to_string());
+        set_daemon_error(app_handle, e.to_string()).await;
         return;
     }
 
@@ -238,29 +240,29 @@ fn start_sidecar(app_handle: &tauri::AppHandle) {
     let daemon_pid = child.pid();
     log::debug!("Sidecar started, PID: {}", &daemon_pid);
 
-    send_daemon_init(&mut child, app_handle);
+    send_daemon_init(&mut child, app_handle).await;
 
     // Store the child process in the app state to ensure it is not dropped
-    set_daemon_starting(app_handle, child);
+    set_daemon_starting(app_handle, child).await;
 
     handle_daemon_stdout(rx, app_handle, daemon_pid);
 }
 
-fn start_connector(app_handle: &tauri::AppHandle) {
-    generate_token(app_handle);
+async fn start_connector(app_handle: &tauri::AppHandle) {
+    generate_token(app_handle).await;
 
     log::debug!("Starting daemon connector...");
     tauri::async_runtime::spawn(start_server(app_handle.clone()));
 }
 
-pub fn start(app_handle: &tauri::AppHandle) {
-    start_connector(app_handle);
-    start_sidecar(app_handle);
+pub async fn start(app_handle: tauri::AppHandle) {
+    start_connector(&app_handle).await;
+    start_sidecar(&app_handle).await;
 }
 
-pub fn restart(app_handle: &tauri::AppHandle) {
-    stop_sidecar(app_handle);
-    start_sidecar(app_handle);
+pub async fn restart(app_handle: &tauri::AppHandle) {
+    stop_sidecar(app_handle).await;
+    start_sidecar(app_handle).await;
 }
 
 pub type Daemon = Mutex<DaemonInner>;

@@ -1,11 +1,14 @@
 use crate::{
     app_state::{project::Project, session::Session, store::RecentProject, AppState},
-    daemon::{Daemon, DaemonState},
+    daemon::{command::Command, request::RequestType, Daemon, DaemonState},
+    proxy::{Proxy, ProxyInner},
     view::{nav::NavView, PartialViewState, ViewState},
 };
 
+use futures_util::SinkExt;
 use tauri::Manager;
 use tauri_plugin_dialog::DialogExt;
+use tokio_tungstenite::tungstenite::Message;
 
 #[tauri::command]
 pub async fn init_view<'a>(state: tauri::State<'a, ViewState>) -> Result<PartialViewState, String> {
@@ -206,20 +209,79 @@ pub async fn open_recent_project(
 
 #[tauri::command]
 pub async fn get_daemon_state<'a>(state: tauri::State<'a, Daemon>) -> Result<DaemonState, String> {
-    let daemon = state.lock().unwrap();
+    let daemon = state.lock().await;
     Ok(daemon.state.clone())
 }
 
 #[tauri::command]
 pub async fn get_daemon_error<'a>(
-    state: tauri::State<'a, Daemon>,
+    daemon_state: tauri::State<'a, Daemon>,
 ) -> Result<Option<String>, String> {
-    let daemon = state.lock().unwrap();
+    let daemon = daemon_state.lock().await;
     Ok(daemon.error.clone())
 }
 
 #[tauri::command]
 pub async fn restart_daemon(app_handle: tauri::AppHandle) -> Result<(), String> {
-    crate::daemon::restart(&app_handle);
+    crate::daemon::restart(&app_handle).await;
     Ok(())
+}
+
+#[tauri::command]
+pub async fn start_proxy<'a>(daemon_state: tauri::State<'a, Daemon>) -> Result<(), String> {
+    let ws_out = {
+        let daemon = daemon_state.lock().await;
+        daemon.get_ws_out()
+    };
+
+    let mut ws_out = ws_out.lock().await;
+    let ws_out = ws_out.as_mut().ok_or("Websocket not connected")?;
+
+    let uuid = uuid::Uuid::new_v4().to_string();
+    let request_type = RequestType::Command;
+    let command = Command::StartProxy;
+
+    let msg = Message::text(format!(
+        "{}\n{}\n{}",
+        uuid,
+        request_type.as_ref(),
+        command.as_ref()
+    ));
+
+    ws_out.send(msg).await.map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn stop_proxy<'a>(daemon_state: tauri::State<'a, Daemon>) -> Result<(), String> {
+    let ws_out = {
+        let daemon = daemon_state.lock().await;
+        daemon.get_ws_out()
+    };
+
+    let mut ws_out = ws_out.lock().await;
+    let ws_out = ws_out.as_mut().ok_or("Websocket not connected")?;
+
+    let uuid = uuid::Uuid::new_v4().to_string();
+    let request_type = RequestType::Command;
+    let command = Command::StopProxy;
+
+    let msg = Message::text(format!(
+        "{}\n{}\n{}",
+        uuid,
+        request_type.as_ref(),
+        command.as_ref()
+    ));
+
+    ws_out.send(msg).await.map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn get_proxy_state<'a>(
+    proxy_state: tauri::State<'a, Proxy>,
+) -> Result<ProxyInner, String> {
+    let proxy = proxy_state.lock().unwrap();
+    let proxy = proxy.clone();
+    Ok(proxy)
 }

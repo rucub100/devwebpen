@@ -1,6 +1,6 @@
 const none = { None: "none" } as const;
 
-const navView = { ...none, Dashboard: "dashboard" } as const;
+const navView = { ...none, Dashboard: "dashboard", Proxy: "proxy" } as const;
 const mainView = { ...none, Welcome: "welcome" } as const;
 const asideView = { ...none } as const;
 const bottomView = { ...none } as const;

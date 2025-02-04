@@ -25,6 +25,7 @@ export default function Navigation() {
           title="Dashboard"
         />
       </div>
+      {/* TODO: Proxy */}
       {/* <IconButton icon="traffic" />
       <IconButton icon="api" /> */}
     </div>

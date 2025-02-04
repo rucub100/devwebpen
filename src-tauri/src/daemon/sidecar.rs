@@ -6,10 +6,10 @@ use crate::daemon::set_daemon_error;
 
 use super::Daemon;
 
-pub fn send_daemon_init(child: &mut CommandChild, app_handle: &tauri::AppHandle) {
+pub async fn send_daemon_init(child: &mut CommandChild, app_handle: &tauri::AppHandle) {
     log::debug!("Sending init to daemon...");
     let state = app_handle.state::<Daemon>();
-    let daemon = state.lock().unwrap();
+    let daemon = state.lock().await;
     if let Some(token) = daemon.get_token() {
         log::debug!("Sending token to daemon...");
         child.write(format!("{}\n", token).as_bytes()).unwrap();
@@ -36,12 +36,12 @@ pub fn handle_daemon_stdout(
 
                 let current_daemon_pid = {
                     let state = app_handle.state::<Daemon>();
-                    let daemon = state.lock().unwrap();
+                    let daemon = state.lock().await;
                     daemon.sidecar.as_ref().unwrap().pid()
                 };
 
                 if current_daemon_pid == daemon_pid {
-                    set_daemon_error(&app_handle, format!("Daemon terminated unexpectedly"));
+                    set_daemon_error(&app_handle, format!("Daemon terminated unexpectedly")).await;
                 }
 
                 rx.close();

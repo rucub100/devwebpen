@@ -5,7 +5,7 @@ import {
   getDaemonError,
   restartDaemon,
 } from "../tauri/commands/daemon-commands";
-import DevWebPenEvent, { subscribe } from "../tauri/events";
+import { subscribe } from "../tauri/events";
 
 let globalDaemonState: DaemonState | undefined = undefined;
 let daemonStateListeners: Dispatch<SetStateAction<DaemonState>>[] = [];
@@ -17,10 +17,10 @@ export async function initializeDaemon() {
   console.debug("Initializing daemon...");
 
   // no need to unsubscribe since this is a global scope
-  subscribe(DevWebPenEvent.DaemonStateChanged, (state) =>
+  subscribe("devwebpen://daemon-state-changed", (state) =>
     updateDaemonState(Promise.resolve(state))
   );
-  subscribe(DevWebPenEvent.DaemonError, (error) =>
+  subscribe("devwebpen://daemon-error", (error) =>
     updateDaemonError(Promise.resolve(error))
   );
 

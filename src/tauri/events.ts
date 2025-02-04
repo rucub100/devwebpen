@@ -1,55 +1,35 @@
 import { listen } from "@tauri-apps/api/event";
-import { DaemonState } from "../types/daemon";
+import { DaemonEvent } from "../types/daemon";
 
-export enum DevWebPenEvent {
-  DaemonStateChanged = "devwebpen://daemon-state-changed",
-  DaemonError = "devwebpen://daemon-error",
-}
+export type DevWebPenEvent = DaemonEvent;
 
-type DevWebPenEventCallback<E extends DevWebPenEvent> =
-  E extends DevWebPenEvent.DaemonStateChanged
-    ? (state: DaemonState) => void
-    : E extends DevWebPenEvent.DaemonError
-    ? (error: string) => void
-    : never;
-
-let listeners: Map<
-  DevWebPenEvent,
-  Set<DevWebPenEventCallback<DevWebPenEvent>>
-> = new Map();
+let listeners: Record<DevWebPenEvent, Set<(payload: any) => void>> = {
+  "devwebpen://daemon-state-changed": new Set(),
+  "devwebpen://daemon-error": new Set(),
+};
 
 interface Subscription {
   event: DevWebPenEvent;
   unsubscribe: () => void;
 }
 
-export function subscribe<E extends DevWebPenEvent>(
-  event: E,
-  callback: DevWebPenEventCallback<E>
+export function subscribe(
+  event: DevWebPenEvent,
+  callback: (payload: any) => void
 ): Subscription {
-  const eventListeners =
-    listeners.get(event) ?? listeners.set(event, new Set()).get(event)!;
-
-  eventListeners.add(callback);
+  listeners[event].add(callback);
 
   return {
     event,
-    unsubscribe: () => eventListeners.delete(callback),
+    unsubscribe: () => listeners[event].delete(callback),
   };
 }
 
 // register tauri event listeners
-Object.values(DevWebPenEvent).forEach((devWebPenEvent) => {
-  listen<Parameters<DevWebPenEventCallback<typeof devWebPenEvent>>[0]>(
-    devWebPenEvent,
-    (event) => {
-      listeners
-        .get(devWebPenEvent)
-        ?.forEach((listener: DevWebPenEventCallback<typeof devWebPenEvent>) =>
-          listener(event.payload as any)
-        );
-    }
-  );
+(Object.keys(listeners) as DevWebPenEvent[]).forEach((event) => {
+  listen(event, ({ payload }) => {
+    listeners[event].forEach((callback) => callback(payload));
+  });
 });
 
 export default DevWebPenEvent;
