@@ -7,6 +7,8 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.Channel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
 public final class ProxyServer {
     private final int port;
@@ -25,11 +27,11 @@ public final class ProxyServer {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
+                    .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new ProxyServerInitializer())
                     .childOption(ChannelOption.AUTO_READ, false);
 
             ChannelFuture f = b.bind(port).sync();
-            System.out.println("[ProxyServer]: Proxy server started on port " + port);
             serverChannel = f.channel();
             f.channel().closeFuture().sync();
         } finally {
@@ -40,9 +42,7 @@ public final class ProxyServer {
 
     public void stop() throws InterruptedException {
         if (serverChannel != null) {
-            System.out.println("[ProxyServer]: Stopping proxy server...");
             serverChannel.close().sync();
-            System.out.println("[ProxyServer]: Proxy server stopped");
         }
     }
 }

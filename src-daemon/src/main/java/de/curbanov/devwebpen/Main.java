@@ -46,8 +46,8 @@ public class Main {
             debugWithoutParent.websocket((ws) -> {
                 try {
                     ws.sendText("FakeUUID\nCOMMAND\nSTART_PROXY");
-                    Thread.sleep(5000);
-                    ws.sendText("FakeUUID\nCOMMAND\nSTOP_PROXY");
+                    // Thread.sleep(5000);
+                    // ws.sendText("FakeUUID\nCOMMAND\nSTOP_PROXY");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
