@@ -16,14 +16,11 @@ public class TunnelHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (msg instanceof ByteBuf) {
-            ByteBuf data = (ByteBuf) msg;
-            targetChannel.writeAndFlush(data.retain()).addListener((ChannelFutureListener) future -> {
-                if (!future.isSuccess()) {
-                    ctx.channel().close();
-                }
-            });
-        } else {
+        try {
+            if (msg instanceof ByteBuf data) {
+                targetChannel.writeAndFlush(data.retain()).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
+            }
+        } finally {
             ReferenceCountUtil.release(msg);
         }
     }

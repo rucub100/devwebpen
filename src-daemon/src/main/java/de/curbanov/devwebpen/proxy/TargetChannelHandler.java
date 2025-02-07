@@ -17,14 +17,11 @@ public class TargetChannelHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (msg instanceof ByteBuf) {
-            ByteBuf backendData = (ByteBuf) msg;
-            sourceCtx.writeAndFlush(backendData.retain()).addListener((ChannelFutureListener) future -> {
-                if (!future.isSuccess()) {
-                    ctx.channel().close();
-                }
-            });
-        } else {
+        try {
+            if (msg instanceof ByteBuf data) {
+                sourceCtx.writeAndFlush(data.retain()).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
+            }
+        } finally {
             ReferenceCountUtil.release(msg);
         }
     }

@@ -12,12 +12,11 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpVersion;
+import io.netty.util.ReferenceCountUtil;
 import io.netty.handler.codec.http.DefaultHttpResponse;
 
 public class ProxyServerHandler extends ChannelInboundHandlerAdapter {
@@ -25,35 +24,37 @@ public class ProxyServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        ctx.pipeline().addBefore("proxyHandler", "httpCodec", new HttpServerCodec());
-        ctx.pipeline().addBefore("proxyHandler", "httpAggregator", new HttpObjectAggregator(0));
         ctx.channel().read();
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (msg instanceof HttpRequest httpRequest) {
-            if (httpRequest.method() == HttpMethod.CONNECT) {
-                final String[] uriParts = httpRequest.uri().split(":");
-                if (uriParts.length == 2) {
-                    final String host = uriParts[0];
-                    try {
-                        final int port = Integer.parseInt(uriParts[1]);
-                        if (port != 443) {
-                            throw new NumberFormatException("Invalid port, expected 443");
-                        }
+        try {
+            if (msg instanceof HttpRequest httpRequest) {
+                if (httpRequest.method() == HttpMethod.CONNECT) {
+                    final String[] uriParts = httpRequest.uri().split(":");
+                    if (uriParts.length == 2) {
+                        final String host = uriParts[0];
+                        try {
+                            final int port = Integer.parseInt(uriParts[1]);
+                            if (port != 443) {
+                                throw new NumberFormatException("Invalid port, expected 443");
+                            }
 
-                        bootstrapTargetConnection(ctx, host, port);
-                    } catch (NumberFormatException e) {
-                        handleBadRequest(ctx, Optional.of(e));
+                            bootstrapTargetConnection(ctx, host, port);
+                        } catch (NumberFormatException e) {
+                            handleBadRequest(ctx, Optional.of(e));
+                        }
+                    } else {
+                        handleBadRequest(ctx, Optional.of(new InvalidParameterException("Invalid URI")));
                     }
                 } else {
-                    handleBadRequest(ctx, Optional.of(new InvalidParameterException("Invalid URI")));
+                    handleBadRequest(ctx, Optional.of(new IllegalArgumentException(
+                            "Invalid HTTP method " + httpRequest.method() + httpRequest.uri())));
                 }
-            } else {
-                handleBadRequest(ctx, Optional.of(new IllegalArgumentException(
-                        "Invalid HTTP method " + httpRequest.method() + httpRequest.uri())));
             }
+        } finally {
+            ReferenceCountUtil.release(msg);
         }
     }
 
