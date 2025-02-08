@@ -4,6 +4,7 @@ import { Session } from "../../types/session";
 export enum EphemeralSessionCommand {
   GetEphemeralSession = "get_ephemeral_session",
   StartEphemeralSession = "start_ephemeral_session",
+  CloseEphemeralSession = "close_ephemeral_session",
 }
 
 export async function getEphemeralSession(): Promise<Session | null> {
@@ -12,4 +13,8 @@ export async function getEphemeralSession(): Promise<Session | null> {
 
 export async function startEphemeralSession(): Promise<Session> {
   return invoke<Session>(EphemeralSessionCommand.StartEphemeralSession);
+}
+
+export async function closeEphemeralSession(): Promise<Session> {
+  return invoke<Session>(EphemeralSessionCommand.CloseEphemeralSession);
 }

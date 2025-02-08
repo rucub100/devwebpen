@@ -1,6 +1,7 @@
 use crate::{
     app_state::{project::Project, session::Session, store::RecentProject, AppState},
     daemon::{command::Command, request::RequestType, Daemon, DaemonState},
+    events::{emit_event, DevWebPenEvent},
     proxy::{Proxy, ProxyInner},
     view::{nav::NavView, PartialViewState, ViewState},
 };
@@ -71,6 +72,67 @@ pub async fn start_ephemeral_session<'a>(
     } else {
         Err("Failed to start ephemeral session".to_string())
     }
+}
+
+async fn reset<'a>(
+    app_handle: tauri::AppHandle,
+    view_state: tauri::State<'a, ViewState>,
+    proxy: tauri::State<'a, Proxy>,
+    daemon: tauri::State<'a, Daemon>,
+) -> Result<(), String> {
+    {
+        let mut view_state = view_state.lock().unwrap();
+        let view_state = view_state.reset();
+        emit_event(&app_handle, DevWebPenEvent::ViewStateChanged(view_state))
+            .map_err(|e| e.to_string())?;
+    }
+    {
+        let mut proxy = proxy.lock().unwrap();
+        let proxy = proxy.reset();
+        emit_event(&app_handle, DevWebPenEvent::ProxyChanged(proxy)).map_err(|e| e.to_string())?;
+    }
+    {
+        let ws_out = {
+            let daemon = daemon.lock().await;
+            daemon.get_ws_out()
+        };
+
+        let mut ws_out = ws_out.lock().await;
+        let ws_out = ws_out.as_mut().ok_or("Websocket not connected")?;
+
+        let uuid = uuid::Uuid::new_v4().to_string();
+        let request_type = RequestType::Command;
+        let command = Command::Reset;
+
+        let msg = Message::text(format!(
+            "{}\n{}\n{}",
+            uuid,
+            request_type.as_ref(),
+            command.as_ref()
+        ));
+
+        ws_out.send(msg).await.map_err(|e| e.to_string())?;
+    }
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn close_ephemeral_session<'a>(
+    app_handle: tauri::AppHandle,
+    app_state: tauri::State<'a, AppState>,
+    view_state: tauri::State<'a, ViewState>,
+    proxy: tauri::State<'a, Proxy>,
+    daemon: tauri::State<'a, Daemon>,
+) -> Result<(), String> {
+    {
+        let mut app_state = app_state.lock().unwrap();
+        app_state.close_ephemeral_session();
+        emit_event(&app_handle, DevWebPenEvent::EphemeralSessionChanged(None))
+            .map_err(|e| e.to_string())?;
+    }
+
+    return reset(app_handle, view_state, proxy, daemon).await;
 }
 
 #[tauri::command]
@@ -205,6 +267,23 @@ pub async fn open_recent_project(
     }
 
     return Ok(Some(project.unwrap()));
+}
+
+#[tauri::command]
+pub async fn close_project<'a>(
+    app_handle: tauri::AppHandle,
+    app_state: tauri::State<'a, AppState>,
+    view_state: tauri::State<'a, ViewState>,
+    proxy: tauri::State<'a, Proxy>,
+    daemon: tauri::State<'a, Daemon>,
+) -> Result<(), String> {
+    {
+        let mut app_state = app_state.lock().unwrap();
+        app_state.close_project();
+        emit_event(&app_handle, DevWebPenEvent::ProjectChanged(None)).map_err(|e| e.to_string())?;
+    }
+
+    return reset(app_handle, view_state, proxy, daemon).await;
 }
 
 #[tauri::command]

@@ -3,10 +3,10 @@ use tauri::Manager;
 
 use app_state::AppState;
 use commands::{
-    close_tab, create_project, get_daemon_error, get_daemon_state, get_ephemeral_session,
-    get_project, get_proxy_state, get_recent_projects, init_view, navigate_to, open_project,
-    open_recent_project, open_welcome, restart_daemon, select_tab, start_ephemeral_session,
-    start_proxy, stop_proxy,
+    close_ephemeral_session, close_project, close_tab, create_project, get_daemon_error,
+    get_daemon_state, get_ephemeral_session, get_project, get_proxy_state, get_recent_projects,
+    init_view, navigate_to, open_project, open_recent_project, open_welcome, restart_daemon,
+    select_tab, start_ephemeral_session, start_proxy, stop_proxy,
 };
 use daemon::Daemon;
 use proxy::Proxy;
@@ -42,11 +42,13 @@ pub fn run() {
             select_tab,
             open_welcome,
             start_ephemeral_session,
+            close_ephemeral_session,
             get_project,
             get_recent_projects,
             create_project,
             open_project,
             open_recent_project,
+            close_project,
             get_daemon_state,
             get_daemon_error,
             restart_daemon,

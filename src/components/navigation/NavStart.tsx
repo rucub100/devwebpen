@@ -3,16 +3,20 @@ import { useProject } from "../../hooks/useProject";
 import Accordion, { AccordionItem } from "../common/Accordion";
 import Button from "../common/Button";
 
-export default function Start() {
-  const { isActive: isEphemeralSessionActive, startEphemeralSession } =
-    useEphemeralSession({
-      listenIsActive: true,
-    });
+export default function NavStart() {
+  const {
+    isActive: isEphemeralSessionActive,
+    startEphemeralSession,
+    closeEphemeralSession,
+  } = useEphemeralSession({
+    listenIsActive: true,
+  });
 
   const {
     isActive: isProjectActive,
     createProject,
     openProject,
+    closeProject,
   } = useProject({
     listenIsActive: true,
   });
@@ -44,6 +48,7 @@ export default function Start() {
           save your work.
         </p>
         <p>An ephemeral session will be lost when you close the application.</p>
+        <Button onClick={closeEphemeralSession}>Close Session</Button>
       </div>
     ),
   };
@@ -56,6 +61,7 @@ export default function Start() {
         <p>
           Projects are useful for organizing your work and saving your progress.
         </p>
+        <Button onClick={closeProject}>Close Project</Button>
       </div>
     ),
   };

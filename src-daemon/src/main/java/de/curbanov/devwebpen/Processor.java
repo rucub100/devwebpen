@@ -21,6 +21,14 @@ public class Processor implements TextRequestHandler {
                         case COMMAND:
                             var command = (Command) request.getBody();
                             switch (command) {
+                                case RESET:
+                                    System.out.println("[Processor]: Resetting...");
+                                    try {
+                                        proxyServer.stop();
+                                    } catch (InterruptedException e) {
+                                        Thread.currentThread().interrupt();
+                                    }
+                                    break;
                                 case START_PROXY:
                                     System.out.println("[Processor]: Starting proxy...");
                                     try {

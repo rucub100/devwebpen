@@ -1,10 +1,12 @@
 import { ReactNode } from "react";
 import { NavView } from "../../types/view-state";
-import Start from "../navigation/Start";
+import NavStart from "../navigation/NavStart";
+import NavProxy from "../navigation/NavProxy";
 
 const components: Record<NavView, ReactNode> = {
   none: undefined,
-  dashboard: <Start></Start>,
+  dashboard: <NavStart></NavStart>,
+  proxy: <NavProxy></NavProxy>,
 };
 
 interface LeftAsideProps {

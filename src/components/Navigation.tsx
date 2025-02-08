@@ -1,33 +1,26 @@
-import { useViewState } from "../hooks/useViewState";
-import Icon from "./common/Icon";
-import IconButton from "./common/IconButton";
+import { useEphemeralSession } from "../hooks/useEphemeralSession";
+import { useProject } from "../hooks/useProject";
+import NavigationItem from "./NavigationItem";
 
 export default function Navigation() {
-  const { nav, navigateTo } = useViewState({ listenNav: true });
+  const { isActive: ephemeralSessionIsActive } = useEphemeralSession({
+    listenIsActive: true,
+  });
+  const { isActive: projectIsActive } = useProject({ listenIsActive: true });
 
-  const textColor = `hover:text-neutral-200 ${
-    nav === "dashboard" ? "text-neutral-200" : "text-neutral-400"
-  }`;
-
-  const displayIndicator = nav === "dashboard" ? "block" : "hidden";
+  const isActive = ephemeralSessionIsActive || projectIsActive;
 
   return (
     <div className="flex flex-col">
       {/* Dashboard */}
-      <div className="relative">
-        <div
-          className={`${displayIndicator} absolute left-0 bg-primary-600/50 h-12 w-0.5`}
-        ></div>
-        <IconButton
-          onClick={() => navigateTo("dashboard")}
-          icon={<Icon icon="dashboard" width={32}></Icon>}
-          className={`${textColor} p-2`}
-          title="Dashboard"
-        />
-      </div>
-      {/* TODO: Proxy */}
-      {/* <IconButton icon="traffic" />
-      <IconButton icon="api" /> */}
+      <NavigationItem icon="dashboard" navView="dashboard"></NavigationItem>
+      {/* Proxy */}
+      <NavigationItem
+        icon="traffic"
+        navView="proxy"
+        disabled={!isActive}
+      ></NavigationItem>
+      {/* TODO: API Client <IconButton icon="api" /> */}
     </div>
   );
 }

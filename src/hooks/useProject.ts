@@ -10,10 +10,12 @@ import {
   getProject,
   createProject as _createProject,
   openProject as _openProject,
+  closeProject as _closeProject,
   openRecentProject as _openRecentProject,
   getRecentProjects,
 } from "../tauri/commands/project-commands";
 import { Project, RecentProject } from "../types/project";
+import { subscribe } from "../tauri/events";
 
 // use undefined to indicate that the project has not been initialized
 let globalProject: Project | null | undefined = undefined;
@@ -25,6 +27,15 @@ let recentProjectsListeners: Dispatch<SetStateAction<RecentProject[]>>[] = [];
 
 export async function initializeProject() {
   console.debug("Initializing project...");
+
+  if (globalProject !== undefined) {
+    throw new Error("Project has already been initialized");
+  }
+
+  subscribe("devwebpen://project-changed", (project) =>
+    updateProject(Promise.resolve(project))
+  );
+
   await updateProject(getProject(), true);
   await updateRecentProjects(getRecentProjects(), true);
 }
@@ -166,6 +177,8 @@ export function useProject({
     []
   );
 
+  const closeProject = useCallback(() => updateProject(_closeProject()), []);
+
   return {
     isActive: !!globalProject,
     path: globalProject?.path,
@@ -175,6 +188,7 @@ export function useProject({
     recentProjects: globalRecentProjects,
     createProject,
     openProject,
+    closeProject,
     openRecentProject,
   };
 }

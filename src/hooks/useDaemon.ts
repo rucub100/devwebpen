@@ -16,6 +16,10 @@ let daemonErrorListeners: Dispatch<SetStateAction<string | null>>[] = [];
 export async function initializeDaemon() {
   console.debug("Initializing daemon...");
 
+  if (globalDaemonState !== undefined || globalDaemonError !== undefined) {
+    throw new Error("Daemon has already been initialized");
+  }
+
   // no need to unsubscribe since this is a global scope
   subscribe("devwebpen://daemon-state-changed", (state) =>
     updateDaemonState(Promise.resolve(state))

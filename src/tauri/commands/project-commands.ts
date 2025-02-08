@@ -7,6 +7,7 @@ export enum ProjectCommand {
   CreateNewProject = "create_project",
   OpenProject = "open_project",
   OpenRecentProject = "open_recent_project",
+  CloseProject = "close_project",
 }
 
 export async function getProject(): Promise<Project | null> {
@@ -27,4 +28,8 @@ export async function openProject(): Promise<Project | null> {
 
 export async function openRecentProject(path: string): Promise<Project | null> {
   return invoke<Project | null>(ProjectCommand.OpenRecentProject, { path });
+}
+
+export async function closeProject(): Promise<Project | null> {
+  return invoke<Project | null>(ProjectCommand.CloseProject);
 }

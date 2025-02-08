@@ -8,7 +8,7 @@ import de.curbanov.devwebpen.utils.DebugWithoutParent;
 
 public class Main {
     public static void main(String[] args) {
-        debug_wihout_parent();
+        debug();
     }
 
     public static void run() {

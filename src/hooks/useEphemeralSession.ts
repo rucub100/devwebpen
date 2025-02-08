@@ -9,7 +9,9 @@ import { Session } from "../types/session";
 import {
   getEphemeralSession,
   startEphemeralSession as _startEphemeralSession,
+  closeEphemeralSession as _closeEphemeralSession,
 } from "../tauri/commands/ephemeral-session-commands";
+import { subscribe } from "../tauri/events";
 
 // use undefined to indicate that the session has not been initialized
 let globalEphemeralSession: Session | null | undefined = undefined;
@@ -19,6 +21,15 @@ let isActiveListeners: Dispatch<SetStateAction<boolean>>[] = [];
 
 export async function initializeEphemeralSession() {
   console.debug("Initializing ephemeral session...");
+
+  if (globalEphemeralSession !== undefined) {
+    throw new Error("Ephemeral session has already been initialized");
+  }
+
+  subscribe("devwebpen://ephemeral-session-changed", (session) =>
+    updateEphemeralSession(Promise.resolve(session))
+  );
+
   await updateEphemeralSession(getEphemeralSession(), true);
 }
 
@@ -108,9 +119,15 @@ export function useEphemeralSession({
     []
   );
 
+  const closeEphemeralSession = useCallback(
+    () => updateEphemeralSession(_closeEphemeralSession()),
+    []
+  );
+
   return {
     isActive: !!globalEphemeralSession,
     session: globalEphemeralSession,
     startEphemeralSession,
+    closeEphemeralSession,
   };
 }

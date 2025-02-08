@@ -1,4 +1,4 @@
-use std::sync::Mutex;
+use std::{ops::Deref, sync::Mutex};
 
 use aside::AsideView;
 use bottom::BottomView;
@@ -198,6 +198,11 @@ impl ViewStateInner {
                 };
             }
         }
+    }
+
+    pub fn reset(&mut self) -> PartialViewState {
+        *self = ViewStateInner::default();
+        self.clone().into()
     }
 }
 

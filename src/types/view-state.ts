@@ -44,3 +44,10 @@ export type ViewState = {
   bottom: BottomView;
   status: StatusView;
 };
+
+const viewStateEvents = {
+  ViewStateChanged: "devwebpen://view-state-changed",
+} as const;
+
+type ViewStateEventKeys = keyof typeof viewStateEvents;
+export type ViewStateEvent = (typeof viewStateEvents)[ViewStateEventKeys];

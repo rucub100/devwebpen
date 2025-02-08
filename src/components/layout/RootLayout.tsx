@@ -7,12 +7,6 @@ import RightAside from "./RightAside";
 import BottomAside from "./BottomAside";
 import StatusBar from "./StatusBar";
 import { useViewState } from "../../hooks/useViewState";
-import {
-  AsideView,
-  BottomView,
-  NavView,
-  StatusView,
-} from "../../types/view-state";
 
 export default function RootLayout() {
   const { nav, aside, bottom, status } = useViewState({

@@ -27,6 +27,10 @@ impl AppStateInner {
         self.ephemeral.clone()
     }
 
+    pub fn close_ephemeral_session(&mut self) {
+        self.ephemeral = None;
+    }
+
     pub fn create_project(&mut self, path: String) -> Project {
         let project = Project {
             path,
@@ -53,6 +57,10 @@ impl AppStateInner {
             .unwrap()
             .add_recent_project((&project).into());
         project
+    }
+
+    pub fn close_project(&mut self) {
+        self.project = None;
     }
 }
 

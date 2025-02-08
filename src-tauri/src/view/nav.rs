@@ -3,4 +3,5 @@
 pub enum NavView {
     None,
     Dashboard,
+    Proxy,
 }

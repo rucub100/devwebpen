@@ -22,6 +22,7 @@ import {
   TabsView,
   ViewState,
 } from "../types/view-state";
+import { subscribe } from "../tauri/events";
 
 // use undefined to indicate that the view state has not been initialized
 let globalViewState: ViewState | undefined = undefined;
@@ -39,6 +40,10 @@ export async function initializeViewState() {
   if (globalViewState !== undefined) {
     throw new Error("View state has already been initialized");
   }
+
+  subscribe("devwebpen://view-state-changed", (viewState) =>
+    updateViewState(Promise.resolve(viewState))
+  );
 
   try {
     const viewState = await initView();

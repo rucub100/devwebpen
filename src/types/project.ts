@@ -20,3 +20,10 @@ export function projectHasDescription(
 ): project is Project & { description: string } {
   return project.description !== undefined;
 }
+
+const projectEvents = {
+  ProjectChanged: "devwebpen://project-changed",
+} as const;
+
+type ProjectEventKeys = keyof typeof projectEvents;
+export type ProjectEvent = (typeof projectEvents)[ProjectEventKeys];

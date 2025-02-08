@@ -26,4 +26,11 @@ impl Default for ProxyInner {
     }
 }
 
+impl ProxyInner {
+    pub fn reset(&mut self) -> ProxyInner {
+        *self = ProxyInner::default();
+        self.clone()
+    }
+}
+
 pub type Proxy = Mutex<ProxyInner>;

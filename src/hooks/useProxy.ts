@@ -11,12 +11,22 @@ import {
   startProxy as _startProxy,
   stopProxy as _stopProxy,
 } from "../tauri/commands/proxy-commands";
+import { subscribe } from "../tauri/events";
 
 let globalProxy: Proxy | undefined = undefined;
 let proxyListeners: Dispatch<SetStateAction<Proxy>>[] = [];
 
 export async function initializeProxy() {
   console.debug("Initializing proxy...");
+
+  if (globalProxy !== undefined) {
+    throw new Error("Proxy has already been initialized");
+  }
+
+  subscribe("devwebpen://proxy-changed", (proxy) =>
+    updateProxy(Promise.resolve(proxy))
+  );
+
   await updateProxy(getProxy(), true);
 }
 
