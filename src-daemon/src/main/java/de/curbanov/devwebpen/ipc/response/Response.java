@@ -3,8 +3,15 @@ package de.curbanov.devwebpen.ipc.response;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 
+import de.curbanov.devwebpen.ipc.response.body.ProxyStatus;
+
 public class Response<T extends AsTextOrBinary> implements Serializable, AsTextOrBinary {
-    public static Response<?> create(ResponseHeader header, AsTextOrBinary body) {
+    public static <T extends AsTextOrBinary> Response<T> create(ResponseHeader header, T body) {
+        return new Response<T>(header, body);
+    }
+
+    public static Response<ProxyStatus> createProxyStatus(String requestId, ProxyStatus body) {
+        var header = new ResponseHeader(requestId, ResponseType.PROXY_STATUS);
         return new Response<>(header, body);
     }
 
@@ -36,7 +43,7 @@ public class Response<T extends AsTextOrBinary> implements Serializable, AsTextO
 
     @Override
     public String asText() {
-        return this.header.asText() + this.body.asText();
+        return this.header.asText() + "\n" + this.body.asText();
     }
 
     @Override

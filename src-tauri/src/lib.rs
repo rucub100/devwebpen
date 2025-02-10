@@ -6,7 +6,7 @@ use commands::{
     close_ephemeral_session, close_project, close_tab, create_project, get_daemon_error,
     get_daemon_state, get_ephemeral_session, get_project, get_proxy_state, get_recent_projects,
     init_view, navigate_to, open_project, open_recent_project, open_welcome, restart_daemon,
-    select_tab, start_ephemeral_session, start_proxy, stop_proxy,
+    select_tab, set_proxy_port, start_ephemeral_session, start_proxy, stop_proxy,
 };
 use daemon::Daemon;
 use proxy::Proxy;
@@ -54,7 +54,8 @@ pub fn run() {
             restart_daemon,
             start_proxy,
             stop_proxy,
-            get_proxy_state
+            get_proxy_state,
+            set_proxy_port
         ])
         .on_window_event(window_event_handler)
         .setup(|app| {

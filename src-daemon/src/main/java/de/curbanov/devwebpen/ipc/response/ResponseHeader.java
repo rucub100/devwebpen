@@ -7,7 +7,7 @@ public class ResponseHeader implements Serializable, AsTextOrBinary {
     private final String requestUuid;
     private final ResponseType responseType;
 
-    private ResponseHeader(ResponseType responseType, String requestUuid) {
+    public ResponseHeader(String requestUuid, ResponseType responseType) {
         this.requestUuid = requestUuid;
         this.responseType = responseType;
     }
@@ -27,18 +27,16 @@ public class ResponseHeader implements Serializable, AsTextOrBinary {
 
     @Override
     public boolean isBinary() {
-        // TODO: Add support for binary later
         return false;
     }
 
     @Override
     public String asText() {
-        return requestUuid + "\n" + responseType.name() + "\n";
+        return requestUuid + "\n" + responseType.name();
     }
 
     @Override
     public ByteBuffer asBinary() {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'asBinary'");
     }
 }

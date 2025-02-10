@@ -8,6 +8,17 @@ pub enum ProxyState {
     Error,
 }
 
+impl ProxyState {
+    pub fn parse(state: &str) -> Result<ProxyState, String> {
+        match state {
+            "RUNNING" => Ok(Self::Running),
+            "STOPPED" => Ok(Self::Stopped),
+            "ERROR" => Ok(Self::Error),
+            _ => Err("Failed to parse proxy state".to_string()),
+        }
+    }
+}
+
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct ProxyInner {
@@ -20,7 +31,7 @@ impl Default for ProxyInner {
     fn default() -> Self {
         ProxyInner {
             state: ProxyState::Stopped,
-            port: 8080,
+            port: 9090,
             error: None,
         }
     }
@@ -29,6 +40,26 @@ impl Default for ProxyInner {
 impl ProxyInner {
     pub fn reset(&mut self) -> ProxyInner {
         *self = ProxyInner::default();
+        self.clone()
+    }
+
+    pub fn get_port(&self) -> u16 {
+        self.port
+    }
+
+    pub fn set_port(&mut self, port: u16) -> ProxyInner {
+        self.port = port;
+        self.clone()
+    }
+
+    pub fn set_state(&mut self, state: ProxyState) -> ProxyInner {
+        self.state = state;
+        self.clone()
+    }
+
+    pub fn set_error(&mut self, error: String) -> ProxyInner {
+        self.state = ProxyState::Error;
+        self.error = Some(error);
         self.clone()
     }
 }

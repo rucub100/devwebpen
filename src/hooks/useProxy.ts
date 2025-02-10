@@ -10,6 +10,7 @@ import {
   getProxy,
   startProxy as _startProxy,
   stopProxy as _stopProxy,
+  setProxyPort as _setProxyPort,
 } from "../tauri/commands/proxy-commands";
 import { subscribe } from "../tauri/events";
 
@@ -23,9 +24,9 @@ export async function initializeProxy() {
     throw new Error("Proxy has already been initialized");
   }
 
-  subscribe("devwebpen://proxy-changed", (proxy) =>
-    updateProxy(Promise.resolve(proxy))
-  );
+  subscribe("devwebpen://proxy-changed", (proxy) => {
+    updateProxy(Promise.resolve(proxy));
+  });
 
   await updateProxy(getProxy(), true);
 }
@@ -79,12 +80,17 @@ export function useProxy({ listenProxy }: UseProxyOptioins = {}) {
     };
   }, [listenProxy, setInternalProxy]);
 
-  const startProxy = useCallback(() => updateProxy(_startProxy()), []);
-  const stopProxy = useCallback(() => updateProxy(_stopProxy()), []);
+  const startProxy = useCallback(() => _startProxy(), []);
+  const stopProxy = useCallback(() => _stopProxy(), []);
+  const setProxyPort = useCallback(
+    (port: number) => updateProxy(_setProxyPort(port)),
+    [_setProxyPort]
+  );
 
   return {
     proxy: globalProxy,
     startProxy,
     stopProxy,
+    setProxyPort,
   };
 }

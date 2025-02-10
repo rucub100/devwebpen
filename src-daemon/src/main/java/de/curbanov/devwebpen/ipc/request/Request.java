@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.nio.ByteBuffer;
 
 public class Request<T> implements Serializable {
-    private static Request<?> parseTextRequest(String data) {
+    private static <T> Request<?> parseTextRequest(String data) {
         var result = RequestHeader.parseTextHeader(data);
         var header = result.header();
         var textBody = data.substring(result.bodyOffset());
@@ -15,7 +15,18 @@ public class Request<T> implements Serializable {
     private static Object parseTextBody(RequestHeader header, String body) {
         switch (header.getRequestType()) {
             case COMMAND:
-                return Command.valueOf(body);
+                final String[] bodyParts = body.split(":");
+                final Command.CommandId commandId = Command.CommandId.valueOf(bodyParts[0]);
+                switch (commandId) {
+                    case RESET:
+                        return Command.reset();
+                    case START_PROXY:
+                        return Command.startProxy(Integer.parseInt(bodyParts[1]));
+                    case STOP_PROXY:
+                        return Command.stopProxy();
+                    default:
+                        throw new IllegalArgumentException("Unknown command: " + commandId);
+                }
             default:
                 throw new IllegalArgumentException("Unknown request type: " + header.getRequestType());
         }

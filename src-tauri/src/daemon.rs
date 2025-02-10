@@ -16,6 +16,8 @@ use crate::events::{emit_event, DevWebPenEvent};
 pub mod command;
 mod connector;
 pub mod request;
+pub mod response;
+mod response_handler;
 mod sidecar;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq)]

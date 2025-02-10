@@ -35,9 +35,9 @@ public class WebSocketController implements WebSocket.Listener, ResponseSender {
                 this);
         this.cfWebSocket.thenAccept(webSocket -> {
             this.webSocket = webSocket;
-            System.out.println("[" + Thread.currentThread().getName() + "]: " + "WebSocket connected");
+            System.out.println("[WebSocketController]: WebSocket connected");
         }).exceptionally(error -> {
-            System.err.println("[" + Thread.currentThread().getName() + "]: " + "WebSocket connection failed");
+            System.err.println("[WebSocketController]: WebSocket connection failed");
             error.printStackTrace();
             return null;
         });
@@ -45,7 +45,7 @@ public class WebSocketController implements WebSocket.Listener, ResponseSender {
 
     @Override
     public void onOpen(WebSocket webSocket) {
-        System.out.println("[" + Thread.currentThread().getName() + "]: " + "WebSocket opened");
+        System.out.println("[WebSocketController]: WebSocket opened");
         // send token for authentication
         webSocket.sendText(token, true);
         Listener.super.onOpen(webSocket);
@@ -53,54 +53,60 @@ public class WebSocketController implements WebSocket.Listener, ResponseSender {
 
     @Override
     public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
-        System.out.println("[" + Thread.currentThread().getName() + "]: " + "Text message received");
+        System.out.println("[WebSocketController]: Text message received");
 
         text.append(data);
         if (last) {
-            var request = Request.parseRequest(text.toString());
-            if (textRequestHandler != null) {
-                textRequestHandler.onTextRequest(request);
+            try {
+                var request = Request.parseRequest(text.toString());
+                if (textRequestHandler != null) {
+                    textRequestHandler.onTextRequest(request);
+                }
+            } catch (Exception e) {
+                System.err.println("[WebSocketController]: Error parsing text message");
+            } finally {
+                text = new StringBuilder();
             }
-            text = new StringBuilder();
         }
 
         return Listener.super.onText(webSocket, data, last);
+
     }
 
     @Override
     public CompletionStage<?> onBinary(WebSocket webSocket, ByteBuffer data, boolean last) {
-        System.out.println("[" + Thread.currentThread().getName() + "]: " + "Binary message received");
+        System.out.println("[WebSocketController]: Binary message received");
         return Listener.super.onBinary(webSocket, data, last);
     }
 
     @Override
     public CompletionStage<?> onClose(WebSocket webSocket, int statusCode, String reason) {
-        System.out.println("[" + Thread.currentThread().getName() + "]: " + "WebSocket closed");
+        System.out.println("[WebSocketController]: WebSocket closed");
         return Listener.super.onClose(webSocket, statusCode, reason);
     }
 
     @Override
     public void onError(WebSocket webSocket, Throwable error) {
-        System.err.println("[" + Thread.currentThread().getName() + "]: " + "WebSocket error");
+        System.err.println("[WebSocketController]: WebSocket error");
         Listener.super.onError(webSocket, error);
     }
 
     @Override
     public CompletionStage<?> onPing(WebSocket webSocket, ByteBuffer message) {
-        System.out.println("[" + Thread.currentThread().getName() + "]: " + "Ping message received");
+        System.out.println("[WebSocketController]: Ping message received");
         return Listener.super.onPing(webSocket, message);
     }
 
     @Override
     public CompletionStage<?> onPong(WebSocket webSocket, ByteBuffer message) {
-        System.out.println("[" + Thread.currentThread().getName() + "]: " + "Pong message received");
+        System.out.println("[WebSocketController]: Pong message received");
         return Listener.super.onPong(webSocket, message);
     }
 
     public void stop() {
         if (webSocket != null) {
             webSocket.sendClose(WebSocket.NORMAL_CLOSURE, "Client closed").thenRun(() -> {
-                System.out.println("[" + Thread.currentThread().getName() + "]: " + "WebSocket closed");
+                System.out.println("[WebSocketController]: WebSocket closed");
             });
         }
     }

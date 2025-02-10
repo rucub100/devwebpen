@@ -17,7 +17,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         var token = scanner.nextLine();
         WebSocketController webSocketController = new WebSocketController(token);
-        Processor processor = new Processor();
+        Processor processor = new Processor(webSocketController);
         webSocketController.start(processor);
 
         while (true) {

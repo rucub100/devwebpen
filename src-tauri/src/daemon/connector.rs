@@ -11,6 +11,8 @@ use tokio::{
 };
 use tokio_tungstenite::{tungstenite::Message, WebSocketStream};
 
+use crate::daemon::{response::Response, response_handler::handle_daemon_response};
+
 use super::{set_daemon_error, Daemon};
 
 async fn set_daemon_ws_out(
@@ -127,29 +129,42 @@ async fn accept_connection(app_handle: AppHandle, stream: TcpStream) {
             daemon.sidecar.as_ref().unwrap().pid()
         };
 
-        if let None = msg {
-            if current_daemon_pid == daemon_pid {
-                log::error!("Failed to receive message");
-                set_daemon_error(&app_handle, "Failed to receive message".to_string()).await;
-            }
+        if current_daemon_pid != daemon_pid {
+            return;
+        }
 
+        if let None = msg {
+            log::error!("Failed to receive message");
+            set_daemon_error(&app_handle, "Failed to receive message".to_string()).await;
             return;
         }
 
         let msg = msg.unwrap();
 
         if let Err(e) = msg {
-            if current_daemon_pid == daemon_pid {
-                log::error!("Error while receiving message: {}", e);
-                set_daemon_error(&app_handle, e.to_string()).await;
-            }
-
-            return;
+            log::error!("Error while receiving message: {}", e);
+            set_daemon_error(&app_handle, e.to_string()).await;
+            continue;
         }
 
         let msg = msg.unwrap();
         log::debug!("Received message: {:?}", msg);
-        // TODO: Handle messages
+        let res = Response::parse(msg);
+
+        if let Err(e) = res {
+            log::error!("Failed to parse response: {}", e);
+            set_daemon_error(&app_handle, e.to_string()).await;
+            continue;
+        }
+
+        let res = res.unwrap();
+
+        if let None = res {
+            continue;
+        }
+
+        let res = res.unwrap();
+        handle_daemon_response(&app_handle, res);
     }
 }
 
