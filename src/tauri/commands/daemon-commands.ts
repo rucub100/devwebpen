@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { DaemonState } from "../../types/daemon";
 
-export enum DaemonCommand {
+enum DaemonCommand {
   GetDaemonState = "get_daemon_state",
   GetDaemonError = "get_daemon_error",
   RestartDaemon = "restart_daemon",

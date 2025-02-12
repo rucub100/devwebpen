@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { Project, RecentProject } from "../../types/project";
 
-export enum ProjectCommand {
+enum ProjectCommand {
   GetProject = "get_project",
   GetRecentProjects = "get_recent_projects",
   CreateNewProject = "create_project",

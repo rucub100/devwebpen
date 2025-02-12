@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { NavView, ViewState } from "../../types/view-state";
 
-export enum ViewCommand {
+enum ViewCommand {
   InitView = "init_view",
   NavigateTo = "navigate_to",
   CloseTab = "close_tab",
