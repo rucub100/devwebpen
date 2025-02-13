@@ -14,7 +14,11 @@ export default function ApiRequestStartLine() {
         <option value="TRACE">TRACE</option>
         <option value="PATCH">PATCH</option>
       </select>
-      <input className="p-1 flex-grow" type="url"></input>
+      <input
+        className="p-1 flex-grow"
+        type="url"
+        placeholder="https://example.com/api/v2/foo"
+      ></input>
       <Button className="rounded-l-none">Send</Button>
     </div>
   );

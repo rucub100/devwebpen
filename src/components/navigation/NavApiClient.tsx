@@ -19,15 +19,21 @@ export default function NavApiClient() {
             <Button onClick={() => newApiClientRequest(collection.name)}>
               Add Request
             </Button>
-            {collection.requests.map((request) => (
-              <div
-                key={request.id}
-                className="w-full cursor-pointer hover:bg-neutral-800 p-1 rounded"
-                onClick={() => openApiClientRequest(request.id)}
-              >
-                {request.method}
-              </div>
-            ))}
+            <div>
+              {collection.requests.map((request) => (
+                <div
+                  key={request.id}
+                  className="w-full cursor-pointer hover:bg-neutral-800 p-1 rounded"
+                  onClick={() => openApiClientRequest(request.id)}
+                >
+                  <span className="text-xs border rounded p-1">
+                    {request.method}
+                  </span>
+                  &ensp;
+                  <span className="text-sm">New Request</span>
+                </div>
+              ))}
+            </div>
           </div>
         ),
       };

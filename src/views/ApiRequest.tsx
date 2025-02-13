@@ -9,7 +9,7 @@ import ApiRequestBody from "../components/api/request/ApiRequestBody";
 
 export default function ApiRequest() {
   const [selectedTab, setSelectedTab] =
-    useState<ApiRequestNavigationItem>("headers");
+    useState<ApiRequestNavigationItem>("params");
 
   return (
     <div className="flex flex-col w-full h-full">

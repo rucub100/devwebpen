@@ -1,3 +1,8 @@
 export default function ApiRequestParams() {
-  return <div>Params</div>;
+  return (
+    <div>
+      <div>Path Params</div>
+      <div>Query Params</div>
+    </div>
+  );
 }

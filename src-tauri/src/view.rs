@@ -58,7 +58,7 @@ impl Default for ViewStateInner {
                 tabs: vec![Tab {
                     id,
                     kind: TabKind::welcome(),
-                    label: None,
+                    label: Some("Welcome".to_string()),
                     data: None,
                 }],
                 active_tab_id: Some(id),
