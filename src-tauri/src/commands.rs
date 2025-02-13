@@ -1,5 +1,5 @@
 use crate::{
-    api_client::{self, ApiClient, ApiClientInner, HttpRequest},
+    api_client::{ApiClient, ApiClientInner, HttpRequest},
     app_state::{project::Project, session::Session, store::RecentProject, AppState},
     daemon::{
         command::Command,
