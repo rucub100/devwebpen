@@ -7,6 +7,7 @@ import { initializeEphemeralSession } from "./hooks/useEphemeralSession";
 import { initializeProject } from "./hooks/useProject";
 import { initializeDaemon } from "./hooks/useDaemon";
 import { initializeProxy } from "./hooks/useProxy";
+import { initializeApiClient } from "./hooks/useApiClient";
 
 function App() {
   const [isInitialized, setInitialized] = useState(false);
@@ -18,6 +19,7 @@ function App() {
       await initializeProject();
       await initializeDaemon();
       await initializeProxy();
+      await initializeApiClient();
     };
 
     init().then(() => {

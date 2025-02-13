@@ -1,7 +1,16 @@
 const none = { None: "none" } as const;
 
-const navView = { ...none, Dashboard: "dashboard", Proxy: "proxy" } as const;
-const mainView = { ...none, Welcome: "welcome" } as const;
+const navView = {
+  ...none,
+  Dashboard: "dashboard",
+  Proxy: "proxy",
+  ApiClient: "apiClient",
+} as const;
+const mainView = {
+  ...none,
+  Welcome: "welcome",
+  ApiRequest: "apiRequest",
+} as const;
 const asideView = { ...none } as const;
 const bottomView = { ...none } as const;
 const statusView = { ...none, Show: "show" } as const;
@@ -29,6 +38,7 @@ export type Tab = {
   id: number;
   kind: TabKind;
   label: string | null;
+  data: string | null;
 };
 
 export type TabsView = {

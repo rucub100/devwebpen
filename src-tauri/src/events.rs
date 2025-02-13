@@ -1,6 +1,7 @@
 use tauri::{AppHandle, Emitter};
 
 use crate::{
+    api_client::ApiClientInner,
     app_state::{project::Project, session::Session},
     daemon::DaemonState,
     proxy::ProxyInner,
@@ -14,6 +15,7 @@ pub enum DevWebPenEvent {
     EphemeralSessionChanged(Option<Session>),
     ProjectChanged(Option<Project>),
     ProxyChanged(ProxyInner),
+    ApiClientChanged(ApiClientInner),
 }
 
 impl DevWebPenEvent {
@@ -25,6 +27,7 @@ impl DevWebPenEvent {
             DevWebPenEvent::EphemeralSessionChanged(_) => "devwebpen://ephemeral-session-changed",
             DevWebPenEvent::ProjectChanged(_) => "devwebpen://project-changed",
             DevWebPenEvent::ProxyChanged(_) => "devwebpen://proxy-changed",
+            DevWebPenEvent::ApiClientChanged(_) => "devwebpen://api-client-changed",
         }
     }
 }
@@ -38,5 +41,6 @@ pub fn emit_event(app_handle: &AppHandle, event: DevWebPenEvent) -> Result<(), t
         DevWebPenEvent::EphemeralSessionChanged(payload) => app_handle.emit(event_name, payload),
         DevWebPenEvent::ProjectChanged(payload) => app_handle.emit(event_name, payload),
         DevWebPenEvent::ProxyChanged(payload) => app_handle.emit(event_name, payload),
+        DevWebPenEvent::ApiClientChanged(payload) => app_handle.emit(event_name, payload),
     }
 }

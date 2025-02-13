@@ -4,13 +4,15 @@ import { ViewStateEvent } from "../types/view-state";
 import { EphemeralSessionEvent } from "../types/session";
 import { ProjectEvent } from "../types/project";
 import { ProxyEvent } from "../types/proxy";
+import { ApiClientEvent } from "../types/api-client";
 
 export type DevWebPenEvent =
   | DaemonEvent
   | ViewStateEvent
   | EphemeralSessionEvent
   | ProjectEvent
-  | ProxyEvent;
+  | ProxyEvent
+  | ApiClientEvent;
 
 let listeners: Record<DevWebPenEvent, Set<(payload: any) => void>> = {
   "devwebpen://view-state-changed": new Set(),
@@ -19,6 +21,7 @@ let listeners: Record<DevWebPenEvent, Set<(payload: any) => void>> = {
   "devwebpen://ephemeral-session-changed": new Set(),
   "devwebpen://project-changed": new Set(),
   "devwebpen://proxy-changed": new Set(),
+  "devwebpen://api-client-changed": new Set(),
 };
 
 interface Subscription {

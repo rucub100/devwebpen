@@ -7,6 +7,8 @@ use nav::NavView;
 use status::StatusView;
 use tabs::{Tab, TabKind, TabName, TabsView};
 
+use crate::api_client::HttpRequest;
+
 mod aside;
 mod bottom;
 mod main;
@@ -57,6 +59,7 @@ impl Default for ViewStateInner {
                     id,
                     kind: TabKind::welcome(),
                     label: None,
+                    data: None,
                 }],
                 active_tab_id: Some(id),
             },
@@ -69,7 +72,7 @@ impl Default for ViewStateInner {
 }
 
 impl ViewStateInner {
-    fn update_main(&mut self) {
+    fn _update_main(&mut self) {
         match self.tabs.active_tab_id {
             Some(id) => {
                 let tab = self.tabs.tabs.iter().find(|tab| tab.id == id);
@@ -81,12 +84,43 @@ impl ViewStateInner {
                 let tab = tab.unwrap();
                 self.main = match tab.kind.name {
                     TabName::Welcome => MainView::Welcome,
+                    TabName::ApiRequest => MainView::ApiRequest,
                 };
             }
             None => {
                 self.main = MainView::None;
             }
         }
+    }
+
+    fn _partial_tabs_main(&self) -> PartialViewState {
+        PartialViewState {
+            tabs: Some(self.tabs.clone()),
+            main: Some(self.main.clone()),
+            ..Default::default()
+        }
+    }
+
+    fn _select_tab(&mut self, id: u64) -> PartialViewState {
+        let prev_active_tab_id = self.tabs.active_tab_id;
+        self.tabs.active_tab_id = Some(id);
+
+        self._update_main();
+
+        if prev_active_tab_id == self.tabs.active_tab_id {
+            return PartialViewState::default();
+        }
+
+        return self._partial_tabs_main();
+    }
+
+    fn _new_tab(&mut self, tab: Tab) -> PartialViewState {
+        let id = tab.id;
+        self.tabs.tabs.push(tab);
+        self.tabs.active_tab_id = Some(id);
+        self._update_main();
+
+        return self._partial_tabs_main();
     }
 
     pub fn navigate_to(&mut self, nav: NavView) -> PartialViewState {
@@ -124,13 +158,9 @@ impl ViewStateInner {
             }
         }
 
-        self.update_main();
+        self._update_main();
 
-        return PartialViewState {
-            tabs: Some(self.tabs.clone()),
-            main: Some(self.main.clone()),
-            ..Default::default()
-        };
+        return self._partial_tabs_main();
     }
 
     pub fn select_tab(&mut self, id: u64) -> PartialViewState {
@@ -141,20 +171,7 @@ impl ViewStateInner {
         }
 
         let tab = tab.unwrap();
-        let prev_active_tab_id = self.tabs.active_tab_id;
-        self.tabs.active_tab_id = Some(tab.id);
-
-        self.update_main();
-
-        if prev_active_tab_id == self.tabs.active_tab_id {
-            return PartialViewState::default();
-        }
-
-        return PartialViewState {
-            tabs: Some(self.tabs.clone()),
-            main: Some(self.main.clone()),
-            ..Default::default()
-        };
+        return self._select_tab(tab.id);
     }
 
     pub fn open_welcome(&mut self) -> PartialViewState {
@@ -165,38 +182,23 @@ impl ViewStateInner {
             .find(|tab| tab.kind.name == TabName::Welcome);
 
         match tab {
-            None => {
-                let id = Tab::next_id();
-                self.tabs.tabs.push(Tab {
-                    id,
-                    kind: TabKind::welcome(),
-                    label: None,
-                });
-                self.tabs.active_tab_id = Some(id);
-                self.update_main();
+            None => self._new_tab(Tab::new_welcome()),
+            Some(tab) => self._select_tab(tab.id),
+        }
+    }
 
-                return PartialViewState {
-                    tabs: Some(self.tabs.clone()),
-                    main: Some(self.main.clone()),
-                    ..Default::default()
-                };
-            }
-            Some(tab) => {
-                let prev_active_tab_id = self.tabs.active_tab_id;
-                self.tabs.active_tab_id = Some(tab.id);
+    pub fn open_api_client_request(&mut self, req: HttpRequest) -> PartialViewState {
+        let tab = self.tabs.tabs.iter().find(|tab| {
+            tab.kind.name == TabName::ApiRequest
+                && tab
+                    .data
+                    .as_ref()
+                    .is_some_and(|data| req.id.to_string().as_str() == data)
+        });
 
-                self.update_main();
-
-                if prev_active_tab_id == self.tabs.active_tab_id {
-                    return PartialViewState::default();
-                }
-
-                return PartialViewState {
-                    tabs: Some(self.tabs.clone()),
-                    main: Some(self.main.clone()),
-                    ..Default::default()
-                };
-            }
+        match tab {
+            None => self._new_tab(Tab::new_api_request(req)),
+            Some(tab) => self._select_tab(tab.id),
         }
     }
 

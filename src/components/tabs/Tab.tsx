@@ -12,6 +12,8 @@ const tabIcons: Record<NavView, ReactNode> = {
   dashboard: (
     <img src={Logo} alt="Devwebpen Logo" className="h-4 aspect-square" />
   ),
+  proxy: <Icon icon="traffic"></Icon>,
+  apiClient: <Icon icon="api"></Icon>,
 };
 
 interface TabProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -48,6 +50,7 @@ export default function Tab({
       key={tab.id}
       className={`${styles.tab} relative hover:bg-neutral-800/25 border-r border-neutral-800 ${isActiveClass} ${className}`}
       onAuxClick={(event) => closeTabHandler(event, tab.id)}
+      onClick={() => onSelectTab(tab.id)}
       {...props}
     >
       <div

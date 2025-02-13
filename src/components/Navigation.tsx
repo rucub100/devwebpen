@@ -13,14 +13,25 @@ export default function Navigation() {
   return (
     <div className="flex flex-col">
       {/* Dashboard */}
-      <NavigationItem icon="dashboard" navView="dashboard"></NavigationItem>
+      <NavigationItem
+        icon="dashboard"
+        title="Dashboard"
+        navView="dashboard"
+      ></NavigationItem>
       {/* Proxy */}
       <NavigationItem
         icon="traffic"
+        title="Proxy"
         navView="proxy"
         disabled={!isActive}
       ></NavigationItem>
-      {/* TODO: API Client <IconButton icon="api" /> */}
+      {/* API Client */}
+      <NavigationItem
+        icon="api"
+        title="HTTP API Client"
+        navView="apiClient"
+        disabled={!isActive}
+      ></NavigationItem>
     </div>
   );
 }

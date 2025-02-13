@@ -5,12 +5,14 @@ import IconButton from "./common/IconButton";
 
 interface NavigationItemProps {
   icon: Parameters<typeof Icon>[0]["icon"];
+  title: string;
   navView: NavView;
   disabled?: boolean;
 }
 
 export default function NavigationItem({
   icon,
+  title,
   navView,
   disabled,
 }: NavigationItemProps) {
@@ -31,11 +33,11 @@ export default function NavigationItem({
         className={`${displayIndicator} absolute left-0 bg-primary-600/50 h-12 w-0.5`}
       ></div>
       <IconButton
+        icon={<Icon icon={icon} width={32}></Icon>}
+        title={title}
+        className={`${textColor} p-2`}
         disabled={disabled}
         onClick={() => navigateTo(navView)}
-        icon={<Icon icon={icon} width={32}></Icon>}
-        className={`${textColor} p-2`}
-        title={navView.substring(0, 1).toUpperCase() + navView.substring(1)}
       />
     </div>
   );

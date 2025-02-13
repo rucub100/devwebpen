@@ -1,18 +1,21 @@
+use api_client::ApiClient;
 use log;
 use tauri::Manager;
 
 use app_state::AppState;
 use commands::{
-    close_ephemeral_session, close_project, close_tab, create_project, get_daemon_error,
-    get_daemon_state, get_ephemeral_session, get_project, get_proxy_state, get_recent_projects,
-    init_view, navigate_to, open_project, open_recent_project, open_welcome, restart_daemon,
-    select_tab, set_proxy_port, start_ephemeral_session, start_proxy, stop_proxy,
+    close_ephemeral_session, close_project, close_tab, create_project, get_api_client,
+    get_daemon_error, get_daemon_state, get_ephemeral_session, get_project, get_proxy_state,
+    get_recent_projects, init_view, navigate_to, new_api_client_request, open_api_client_request,
+    open_project, open_recent_project, open_welcome, restart_daemon, select_tab,
+    send_api_client_request, set_proxy_port, start_ephemeral_session, start_proxy, stop_proxy,
 };
 use daemon::Daemon;
 use proxy::Proxy;
 use view::ViewState;
 use window::window_event_handler;
 
+mod api_client;
 mod app_state;
 mod commands;
 mod daemon;
@@ -30,6 +33,7 @@ pub fn run() {
         .manage(ViewState::default())
         .manage(Daemon::default())
         .manage(Proxy::default())
+        .manage(ApiClient::default())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
@@ -55,7 +59,11 @@ pub fn run() {
             start_proxy,
             stop_proxy,
             get_proxy_state,
-            set_proxy_port
+            set_proxy_port,
+            get_api_client,
+            send_api_client_request,
+            new_api_client_request,
+            open_api_client_request
         ])
         .on_window_event(window_event_handler)
         .setup(|app| {
