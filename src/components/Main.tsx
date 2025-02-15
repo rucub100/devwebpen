@@ -1,22 +1,25 @@
 import { ReactNode } from "react";
-import { MainView } from "../types/view-state";
+import { MainView, TabData } from "../types/view-state";
 import Welcome from "../views/Welcome";
 import styles from "./Main.module.css";
 import Default from "../views/Default";
 import ApiRequest from "../views/ApiRequest";
 
-const viewComponents: Record<MainView, ReactNode> = {
-  none: <Default></Default>,
-  welcome: <Welcome></Welcome>,
-  apiRequest: <ApiRequest></ApiRequest>,
+const viewComponents: Record<MainView, (data?: TabData | null) => ReactNode> = {
+  none: () => <Default></Default>,
+  welcome: () => <Welcome></Welcome>,
+  apiRequest: (data) => <ApiRequest data={data}></ApiRequest>,
 };
 
 interface MainProps {
   view: MainView;
+  data?: TabData | null;
 }
 
-export default function Main({ view }: MainProps) {
+export default function Main({ view, data }: MainProps) {
   return (
-    <div className={`@container ${styles.main}`}>{viewComponents[view]}</div>
+    <div className={`@container ${styles.main}`}>
+      {viewComponents[view](data)}
+    </div>
   );
 }

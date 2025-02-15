@@ -1,6 +1,6 @@
 import { ReactNode, useCallback, MouseEvent } from "react";
 
-import { NavView, Tab as TabData } from "../../types/view-state";
+import { NavView, TabData, Tab as TabState } from "../../types/view-state";
 import Icon from "../common/Icon";
 import IconButton from "../common/IconButton";
 import styles from "./Tabs.module.css";
@@ -17,7 +17,7 @@ const tabIcons: Record<NavView, ReactNode> = {
 };
 
 interface TabProps extends React.HTMLAttributes<HTMLDivElement> {
-  tab: TabData;
+  tab: TabState<TabData>;
   isActive: boolean;
   className?: string;
   onCloseTab: (id: number) => void;

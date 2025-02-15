@@ -1,4 +1,8 @@
-export default function ApiRequestBody() {
+interface ApiRequestBodyProps {
+  body: string | ArrayBuffer | null;
+}
+
+export default function ApiRequestBody({ body }: ApiRequestBodyProps) {
   return (
     <div className="flex flex-col">
       <select className="py-1 cursor-pointer self-end mr-2 my-1">

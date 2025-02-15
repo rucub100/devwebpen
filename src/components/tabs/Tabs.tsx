@@ -12,6 +12,10 @@ export default function Tabs({}: TabsProps) {
     listenMain: true,
   });
 
+  const activeTabData = tabs?.tabs.find(
+    (tab) => tab.id === tabs.activeTabId
+  )?.data;
+
   return (
     <div className={styles.tabs}>
       <header className={`${styles.header}`}>
@@ -29,7 +33,7 @@ export default function Tabs({}: TabsProps) {
       <div
         className={`${styles.content} bg-gradient-to-b from-neutral-800/25 to-25% to-transparent`}
       >
-        {main && <Main view={main}></Main>}
+        {main && <Main view={main} data={activeTabData}></Main>}
       </div>
     </div>
   );

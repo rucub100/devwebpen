@@ -25,6 +25,14 @@ export type AsideView = (typeof asideView)[AsideViewKeys];
 export type BottomView = (typeof bottomView)[BottomViewKeys];
 export type StatusView = (typeof statusView)[StatusViewKeys];
 
+export type ApiRequestTabData = {
+  apiRequest: {
+    requestId: string;
+  };
+};
+
+export type TabData = ApiRequestTabData;
+
 const tabName = { Welcome: "welcome" } as const;
 type TabNameKeys = keyof typeof tabName;
 export type TabName = (typeof tabName)[TabNameKeys];
@@ -34,15 +42,15 @@ export type TabKind = {
   name: TabName;
 };
 
-export type Tab = {
+export type Tab<D extends TabData> = {
   id: number;
   kind: TabKind;
   label: string | null;
-  data: string | null;
+  data: D | null;
 };
 
 export type TabsView = {
-  tabs: Tab[];
+  tabs: Tab<TabData>[];
   activeTabId: number | null;
 };
 

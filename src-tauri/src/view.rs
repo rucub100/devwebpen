@@ -5,7 +5,7 @@ use bottom::BottomView;
 use main::MainView;
 use nav::NavView;
 use status::StatusView;
-use tabs::{Tab, TabKind, TabName, TabsView};
+use tabs::{Tab, TabData, TabKind, TabName, TabsView};
 
 use crate::api_client::HttpRequest;
 
@@ -190,10 +190,10 @@ impl ViewStateInner {
     pub fn open_api_client_request(&mut self, req: HttpRequest) -> PartialViewState {
         let tab = self.tabs.tabs.iter().find(|tab| {
             tab.kind.name == TabName::ApiRequest
-                && tab
-                    .data
-                    .as_ref()
-                    .is_some_and(|data| req.id.to_string().as_str() == data)
+                && tab.data.as_ref().is_some_and(|data| match data {
+                    TabData::ApiRequest(id) => id.request_id == req.id,
+                    _ => false,
+                })
         });
 
         match tab {

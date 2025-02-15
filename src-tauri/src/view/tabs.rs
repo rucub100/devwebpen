@@ -1,8 +1,22 @@
 use std::sync::atomic::{AtomicU64, Ordering};
 
+use uuid::Uuid;
+
 use crate::api_client::HttpRequest;
 
 use super::nav::NavView;
+
+#[derive(serde::Serialize, serde::Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct ApiRequestTabData {
+    pub request_id: Uuid,
+}
+
+#[derive(serde::Serialize, serde::Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub enum TabData {
+    ApiRequest(ApiRequestTabData),
+}
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
@@ -40,7 +54,7 @@ pub struct Tab {
     pub id: u64,
     pub kind: TabKind,
     pub label: Option<String>,
-    pub data: Option<String>,
+    pub data: Option<TabData>,
 }
 
 impl Tab {
@@ -63,7 +77,9 @@ impl Tab {
             id: Self::next_id(),
             kind: TabKind::api_request(),
             label: Some(req.method),
-            data: Some(req.id.to_string()),
+            data: Some(TabData::ApiRequest(ApiRequestTabData {
+                request_id: req.id,
+            })),
         }
     }
 }

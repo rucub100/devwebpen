@@ -1,8 +1,8 @@
 import NavigationTabs from "../../common/NavigationTabs";
 
 const apiRequestNavigationItem = {
-  Params: "params",
   Headers: "headers",
+  Params: "params",
   Body: "body",
 } as const;
 type ApiRequestNavigationItemKeys = keyof typeof apiRequestNavigationItem;
