@@ -1,8 +1,9 @@
+import SplitPane from "../../common/SplitPane";
+
 export default function ApiRequestParams() {
   return (
-    <div>
-      <div>Path Params</div>
-      <div>Query Params</div>
+    <div className="relative w-full h-full overflow-hidden">
+      <SplitPane orientation="vertical"></SplitPane>
     </div>
   );
 }
