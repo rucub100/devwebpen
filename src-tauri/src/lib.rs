@@ -4,11 +4,17 @@ use tauri::Manager;
 
 use app_state::AppState;
 use commands::{
-    close_ephemeral_session, close_project, close_tab, create_project, get_api_client,
-    get_daemon_error, get_daemon_state, get_ephemeral_session, get_project, get_proxy_state,
-    get_recent_projects, init_view, navigate_to, new_api_client_request, open_api_client_request,
-    open_project, open_recent_project, open_welcome, restart_daemon, select_tab,
-    send_api_client_request, set_proxy_port, start_ephemeral_session, start_proxy, stop_proxy,
+    api_client::{
+        get_api_client, new_api_client_request, open_api_client_request, send_api_client_request,
+    },
+    daemon::{get_daemon_error, get_daemon_state, restart_daemon},
+    ephemeral_session::{close_ephemeral_session, get_ephemeral_session, start_ephemeral_session},
+    project::{
+        close_project, create_project, get_project, get_recent_projects, open_project,
+        open_recent_project,
+    },
+    proxy::{get_proxy_state, set_proxy_port, start_proxy, stop_proxy},
+    view::{close_tab, init_view, navigate_to, open_welcome, select_tab},
 };
 use daemon::Daemon;
 use proxy::Proxy;
