@@ -11,6 +11,7 @@ interface ApiRequestHeadersProps {
   onAuthorityChange: (authority: string) => void;
   onPathChange: (path: string) => void;
   onAddHeader: () => void;
+  onDeleteHeader: (key: string) => void;
 }
 export default function ApiRequestHeaders({
   scheme,
@@ -21,6 +22,7 @@ export default function ApiRequestHeaders({
   onAuthorityChange,
   onPathChange,
   onAddHeader,
+  onDeleteHeader,
 }: ApiRequestHeadersProps) {
   const data = Object.entries(headers).reduce(
     (acc, [key, { name, value }]) => ({ ...acc, [key]: [name, value] }),
@@ -59,7 +61,16 @@ export default function ApiRequestHeaders({
       <Button className="self-end" onClick={onAddHeader}>
         Add
       </Button>
-      <NameValueTable data={data}></NameValueTable>
+      <NameValueTable
+        data={data}
+        onNameChange={() => {
+          console.log("TODO: onNameChange");
+        }}
+        onValueChange={() => {
+          console.log("TODO: onValueChange");
+        }}
+        onDelete={onDeleteHeader}
+      ></NameValueTable>
     </div>
   );
 }

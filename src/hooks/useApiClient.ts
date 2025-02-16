@@ -16,6 +16,7 @@ import {
   setApiClientRequestAuthority as _setApiClientRequestAuthority,
   setApiClientRequestPath as _setApiClientRequestPath,
   addApiClientRequestHeader as _addApiClientRequestHeader,
+  deleteApiClientRequestHeader as _deleteApiClientRequestHeader,
 } from "../tauri/commands/api-client-commands";
 import { subscribe } from "../tauri/events";
 
@@ -133,6 +134,12 @@ export function useApiClient({ listenApiClient }: UseApiClientOptioins = {}) {
     []
   );
 
+  const deleteApiClientRequestHeader = useCallback(
+    (requestId: string, headerId: string) =>
+      updateApiClient(_deleteApiClientRequestHeader(requestId, headerId)),
+    []
+  );
+
   return {
     apiClient: globalApiClient!,
     sendApiClientRequest,
@@ -143,5 +150,6 @@ export function useApiClient({ listenApiClient }: UseApiClientOptioins = {}) {
     setApiClientRequestAuthority,
     setApiClientRequestPath,
     addApiClientRequestHeader,
+    deleteApiClientRequestHeader,
   };
 }

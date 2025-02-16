@@ -190,6 +190,17 @@ impl ApiClientInner {
         );
         Ok(())
     }
+
+    pub fn delete_request_header(
+        &mut self,
+        request_id: &str,
+        header_id: &str,
+    ) -> Result<(), String> {
+        let req = self._find_request_mut(request_id)?;
+        req.headers
+            .remove(&Uuid::parse_str(header_id).map_err(|e| e.to_string())?);
+        Ok(())
+    }
 }
 
 pub type ApiClient = Mutex<ApiClientInner>;

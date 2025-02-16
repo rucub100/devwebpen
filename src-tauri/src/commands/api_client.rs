@@ -147,3 +147,19 @@ pub async fn add_api_client_request_header<'a>(
 
     Ok(api_client.clone())
 }
+
+#[tauri::command]
+pub async fn delete_api_client_request_header<'a>(
+    request_id: &str,
+    header_id: &str,
+    api_client: tauri::State<'a, ApiClient>,
+) -> Result<ApiClientInner, String> {
+    let mut api_client = api_client.lock().unwrap();
+    let result = api_client.delete_request_header(request_id, header_id);
+
+    if let Err(e) = result {
+        return Err(e);
+    }
+
+    Ok(api_client.clone())
+}

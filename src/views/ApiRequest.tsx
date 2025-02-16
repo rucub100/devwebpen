@@ -17,8 +17,15 @@ export default function ApiRequest({ data }: ApiRequestProps) {
   const [selectedTab, setSelectedTab] =
     useState<ApiRequestNavigationItem>("headers");
 
-  const { request, setMethod, setScheme, setAuthority, setPath, addHeader } =
-    useApiRequest(data?.apiRequest.requestId);
+  const {
+    request,
+    setMethod,
+    setScheme,
+    setAuthority,
+    setPath,
+    addHeader,
+    deleteHeader,
+  } = useApiRequest(data?.apiRequest.requestId);
 
   if (!request) {
     return null;
@@ -68,6 +75,7 @@ export default function ApiRequest({ data }: ApiRequestProps) {
           onAuthorityChange={setAuthority}
           onPathChange={setPath}
           onAddHeader={addHeader}
+          onDeleteHeader={deleteHeader}
         ></ApiRequestHeaders>
       )}
       {selectedTab === "params" && (

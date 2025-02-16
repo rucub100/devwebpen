@@ -11,6 +11,7 @@ export function useApiRequest(requestId: string | undefined | null) {
     setApiClientRequestAuthority,
     setApiClientRequestPath,
     addApiClientRequestHeader,
+    deleteApiClientRequestHeader,
   } = useApiClient({
     listenApiClient: true,
   });
@@ -75,6 +76,15 @@ export function useApiRequest(requestId: string | undefined | null) {
     }
   }, [requestId, addApiClientRequestHeader]);
 
+  const deleteHeader = useCallback(
+    (headerId: string) => {
+      if (requestId) {
+        deleteApiClientRequestHeader(requestId, headerId);
+      }
+    },
+    [requestId, deleteApiClientRequestHeader]
+  );
+
   return {
     request,
     setMethod,
@@ -82,5 +92,6 @@ export function useApiRequest(requestId: string | undefined | null) {
     setAuthority,
     setPath,
     addHeader,
+    deleteHeader,
   };
 }

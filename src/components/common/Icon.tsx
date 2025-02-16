@@ -1,6 +1,6 @@
 import { SVGAttributes } from "react";
 
-type IconString = "dashboard" | "traffic" | "api" | "close";
+type IconString = "dashboard" | "traffic" | "api" | "close" | "delete";
 
 /**
  * https://fonts.google.com/icons
@@ -18,6 +18,8 @@ const IconData: Record<IconString, string> = {
   api: "M480-388.85 388.85-480 480-571.92 571.92-480 480-388.85Zm-85-247.84-59.92-59.93L480-841.54l144.92 144.92L565-636.69l-85-85-85 85ZM263.38-335.08 118.46-480l144.92-144.92L323.31-565l-85 85 85 85-59.93 59.92Zm433.24 0L636.69-395l85-85-85-85 59.93-59.92L841.54-480 696.62-335.08ZM480-118.46 335.08-263.38 395-323.31l85 85 85-85 59.92 59.93L480-118.46Z",
   close:
     "M256-227.69 227.69-256l224-224-224-224L256-732.31l224 224 224-224L732.31-704l-224 224 224 224L704-227.69l-224-224-224 224Z",
+  delete:
+    "M240.23-160v-573.85H200v-30.77h154.15v-26.15h251.7v26.15H760v30.77h-40.23V-160H240.23ZM271-190.77h418v-543.08H271v543.08Zm124.46-82.92h30.77v-378.23h-30.77v378.23Zm138.31 0h30.77v-378.23h-30.77v378.23ZM271-733.85v543.08-543.08Z",
 };
 
 export interface IconProps extends SVGAttributes<SVGElement> {

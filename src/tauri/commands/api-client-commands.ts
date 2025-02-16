@@ -11,6 +11,7 @@ enum ApiClientCommand {
   SetApiClientRequestAuthority = "set_api_client_request_authority",
   SetApiClientRequestPath = "set_api_client_request_path",
   AddApiClientRequestHeader = "add_api_client_request_header",
+  DeleteApiClientRequestHeader = "delete_api_client_request_header",
 }
 
 export async function getApiClient(): Promise<ApiClient> {
@@ -78,5 +79,15 @@ export async function addApiClientRequestHeader(
 ): Promise<ApiClient> {
   return invoke(ApiClientCommand.AddApiClientRequestHeader, {
     requestId,
+  });
+}
+
+export async function deleteApiClientRequestHeader(
+  requestId: string,
+  headerId: string
+): Promise<ApiClient> {
+  return invoke(ApiClientCommand.DeleteApiClientRequestHeader, {
+    requestId,
+    headerId,
   });
 }
