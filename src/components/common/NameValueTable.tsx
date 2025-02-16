@@ -15,14 +15,15 @@ export default function NameValueTable({
   ...props
 }: NameValueTableProps) {
   return (
-    <table
-      className={`border-separate border-spacing-2 w-full ${className}`}
-      {...props}
-    >
-      <tbody className="">
+    <table className={`w-full ${className}`} {...props}>
+      <colgroup>
+        <col className="w-[30%] @7xl:w-[42ch]"></col>
+        <col className="w-4"></col>
+      </colgroup>
+      <tbody>
         {Object.entries(data).map(([key, [name, value]]) => (
           <tr key={key}>
-            <td className="">
+            <td>
               <input
                 type="text"
                 value={name}
@@ -30,7 +31,8 @@ export default function NameValueTable({
                 onChange={() => onNameChange?.(key, name)}
               ></input>
             </td>
-            <td className="">
+            <td>:</td>
+            <td>
               <input
                 type="text"
                 value={value}

@@ -17,7 +17,7 @@ export default function ApiRequest({ data }: ApiRequestProps) {
   const [selectedTab, setSelectedTab] =
     useState<ApiRequestNavigationItem>("headers");
 
-  const { request } = useApiRequest(data?.apiRequest.requestId);
+  const { request, setMethod } = useApiRequest(data?.apiRequest.requestId);
 
   if (!request) {
     return null;
@@ -46,7 +46,11 @@ export default function ApiRequest({ data }: ApiRequestProps) {
 
   return (
     <div className="flex flex-col w-full h-full">
-      <ApiRequestStartLine method={method} url={url}></ApiRequestStartLine>
+      <ApiRequestStartLine
+        method={method}
+        url={url}
+        onMethodChange={setMethod}
+      ></ApiRequestStartLine>
       <div className="h-0 w-full border-b border-neutral-800"></div>
       <ApiRequestNavigation
         selectedTab={selectedTab}
@@ -54,7 +58,10 @@ export default function ApiRequest({ data }: ApiRequestProps) {
       ></ApiRequestNavigation>
       <div className="h-0 w-full border-b border-neutral-800"></div>
       {selectedTab === "headers" && (
-        <ApiRequestHeaders headers={headers}></ApiRequestHeaders>
+        <ApiRequestHeaders
+          scheme={scheme}
+          headers={headers}
+        ></ApiRequestHeaders>
       )}
       {selectedTab === "params" && (
         <ApiRequestParams

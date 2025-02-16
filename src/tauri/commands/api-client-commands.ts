@@ -6,6 +6,7 @@ enum ApiClientCommand {
   SendApiClientRequest = "send_api_client_request",
   NewApiClientRequest = "new_api_client_request",
   OpenApiClientRequest = "open_api_client_request",
+  SetApiClientRequestMethod = "set_api_client_request_method",
 }
 
 export async function getApiClient(): Promise<ApiClient> {
@@ -26,4 +27,14 @@ export async function openApiClientRequest(
   requestId: String
 ): Promise<ApiClient> {
   return invoke(ApiClientCommand.OpenApiClientRequest, { requestId });
+}
+
+export async function setApiClientRequestMethod(
+  requestId: string,
+  method: string
+): Promise<ApiClient> {
+  return invoke(ApiClientCommand.SetApiClientRequestMethod, {
+    requestId,
+    method,
+  });
 }

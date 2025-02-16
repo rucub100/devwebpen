@@ -129,6 +129,22 @@ impl ApiClientInner {
             })
             .ok_or_else(|| "Request not found".to_string())
     }
+
+    pub fn set_request_method(&mut self, request_id: &str, method: &str) -> Result<(), String> {
+        let req = self
+            .collections
+            .iter_mut()
+            .find_map(|c| {
+                c.requests
+                    .iter_mut()
+                    .find(|r| r.id.to_string() == request_id)
+            })
+            .ok_or_else(|| "Request not found".to_string())?;
+
+        req.method = method.to_string();
+
+        Ok(())
+    }
 }
 
 pub type ApiClient = Mutex<ApiClientInner>;

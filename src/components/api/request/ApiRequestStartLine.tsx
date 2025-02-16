@@ -3,15 +3,21 @@ import Button from "../../common/Button";
 interface ApiRequestStartLineProps {
   method: string;
   url: string;
+  onMethodChange: (method: string) => void;
 }
 
 export default function ApiRequestStartLine({
   method,
   url,
+  onMethodChange,
 }: ApiRequestStartLineProps) {
   return (
     <div className="flex flex-row items-center w-full p-2">
-      <select className="py-1 rounded-l cursor-pointer" value={method} disabled>
+      <select
+        className="py-1 rounded-l cursor-pointer"
+        value={method}
+        onChange={(event) => onMethodChange(event.target.value)}
+      >
         <option value="GET">GET</option>
         <option value="HEAD">HEAD</option>
         <option value="POST">POST</option>

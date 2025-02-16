@@ -68,3 +68,19 @@ pub async fn open_api_client_request<'a>(
 
     Ok(())
 }
+
+#[tauri::command]
+pub async fn set_api_client_request_method<'a>(
+    request_id: &str,
+    method: &str,
+    api_client: tauri::State<'a, ApiClient>,
+) -> Result<ApiClientInner, String> {
+    let mut api_client = api_client.lock().unwrap();
+    let result = api_client.set_request_method(request_id, method);
+
+    if let Err(e) = result {
+        return Err(e);
+    }
+
+    Ok(api_client.clone())
+}

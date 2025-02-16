@@ -11,6 +11,7 @@ import {
   sendApiClientRequest as _sendApiClientRequest,
   newApiClientRequest as _newApiClientRequest,
   openApiClientRequest as _openApiClientRequest,
+  setApiClientRequestMethod as _setApiClientRequestMethod,
 } from "../tauri/commands/api-client-commands";
 import { subscribe } from "../tauri/events";
 
@@ -98,10 +99,17 @@ export function useApiClient({ listenApiClient }: UseApiClientOptioins = {}) {
     []
   );
 
+  const setApiClientRequestMethod = useCallback(
+    (requestId: string, method: string) =>
+      updateApiClient(_setApiClientRequestMethod(requestId, method)),
+    []
+  );
+
   return {
     apiClient: globalApiClient!,
     sendApiClientRequest,
     newApiClientRequest,
     openApiClientRequest,
+    setApiClientRequestMethod,
   };
 }
