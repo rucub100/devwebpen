@@ -7,6 +7,10 @@ enum ApiClientCommand {
   NewApiClientRequest = "new_api_client_request",
   OpenApiClientRequest = "open_api_client_request",
   SetApiClientRequestMethod = "set_api_client_request_method",
+  SetApiClientRequestScheme = "set_api_client_request_scheme",
+  SetApiClientRequestAuthority = "set_api_client_request_authority",
+  SetApiClientRequestPath = "set_api_client_request_path",
+  AddApiClientRequestHeader = "add_api_client_request_header",
 }
 
 export async function getApiClient(): Promise<ApiClient> {
@@ -36,5 +40,43 @@ export async function setApiClientRequestMethod(
   return invoke(ApiClientCommand.SetApiClientRequestMethod, {
     requestId,
     method,
+  });
+}
+
+export async function setApiClientRequestScheme(
+  requestId: string,
+  scheme: string
+): Promise<ApiClient> {
+  return invoke(ApiClientCommand.SetApiClientRequestScheme, {
+    requestId,
+    scheme,
+  });
+}
+
+export async function setApiClientRequestAuthority(
+  requestId: string,
+  authority: string
+): Promise<ApiClient> {
+  return invoke(ApiClientCommand.SetApiClientRequestAuthority, {
+    requestId,
+    authority,
+  });
+}
+
+export async function setApiClientRequestPath(
+  requestId: string,
+  path: string
+): Promise<ApiClient> {
+  return invoke(ApiClientCommand.SetApiClientRequestPath, {
+    requestId,
+    path,
+  });
+}
+
+export async function addApiClientRequestHeader(
+  requestId: string
+): Promise<ApiClient> {
+  return invoke(ApiClientCommand.AddApiClientRequestHeader, {
+    requestId,
   });
 }

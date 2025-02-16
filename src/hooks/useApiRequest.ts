@@ -4,7 +4,14 @@ import { HttpRequest } from "../types/api-client";
 
 export function useApiRequest(requestId: string | undefined | null) {
   const [request, setRequest] = useState<HttpRequest | undefined>(undefined);
-  const { apiClient, setApiClientRequestMethod } = useApiClient({
+  const {
+    apiClient,
+    setApiClientRequestMethod,
+    setApiClientRequestScheme,
+    setApiClientRequestAuthority,
+    setApiClientRequestPath,
+    addApiClientRequestHeader,
+  } = useApiClient({
     listenApiClient: true,
   });
 
@@ -35,8 +42,45 @@ export function useApiRequest(requestId: string | undefined | null) {
     [requestId, setApiClientRequestMethod]
   );
 
+  const setScheme = useCallback(
+    (scheme: string) => {
+      if (requestId) {
+        setApiClientRequestScheme(requestId, scheme);
+      }
+    },
+    [requestId, setApiClientRequestScheme]
+  );
+
+  const setAuthority = useCallback(
+    (authority: string) => {
+      if (requestId) {
+        setApiClientRequestAuthority(requestId, authority);
+      }
+    },
+    [requestId, setApiClientRequestAuthority]
+  );
+
+  const setPath = useCallback(
+    (path: string) => {
+      if (requestId) {
+        setApiClientRequestPath(requestId, path);
+      }
+    },
+    [requestId, setApiClientRequestPath]
+  );
+
+  const addHeader = useCallback(() => {
+    if (requestId) {
+      addApiClientRequestHeader(requestId);
+    }
+  }, [requestId, addApiClientRequestHeader]);
+
   return {
     request,
     setMethod,
+    setScheme,
+    setAuthority,
+    setPath,
+    addHeader,
   };
 }

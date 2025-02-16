@@ -27,7 +27,7 @@ export default function NameValueTable({
               <input
                 type="text"
                 value={name}
-                className="w-full"
+                className="w-full px-1"
                 onChange={() => onNameChange?.(key, name)}
               ></input>
             </td>
@@ -36,7 +36,7 @@ export default function NameValueTable({
               <input
                 type="text"
                 value={value}
-                className="w-full"
+                className="w-full px-1"
                 onChange={() => onValueChange?.(key, value)}
               ></input>
             </td>

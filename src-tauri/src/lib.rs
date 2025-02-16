@@ -5,8 +5,9 @@ use tauri::Manager;
 use app_state::AppState;
 use commands::{
     api_client::{
-        get_api_client, new_api_client_request, open_api_client_request, send_api_client_request,
-        set_api_client_request_method,
+        add_api_client_request_header, get_api_client, new_api_client_request,
+        open_api_client_request, send_api_client_request, set_api_client_request_authority,
+        set_api_client_request_method, set_api_client_request_path, set_api_client_request_scheme,
     },
     daemon::{get_daemon_error, get_daemon_state, restart_daemon},
     ephemeral_session::{close_ephemeral_session, get_ephemeral_session, start_ephemeral_session},
@@ -71,7 +72,11 @@ pub fn run() {
             send_api_client_request,
             new_api_client_request,
             open_api_client_request,
-            set_api_client_request_method
+            set_api_client_request_method,
+            set_api_client_request_scheme,
+            set_api_client_request_authority,
+            set_api_client_request_path,
+            add_api_client_request_header
         ])
         .on_window_event(window_event_handler)
         .setup(|app| {

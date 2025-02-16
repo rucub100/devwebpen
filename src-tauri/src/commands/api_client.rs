@@ -84,3 +84,66 @@ pub async fn set_api_client_request_method<'a>(
 
     Ok(api_client.clone())
 }
+
+#[tauri::command]
+pub async fn set_api_client_request_scheme<'a>(
+    request_id: &str,
+    scheme: &str,
+    api_client: tauri::State<'a, ApiClient>,
+) -> Result<ApiClientInner, String> {
+    let mut api_client = api_client.lock().unwrap();
+    let result = api_client.set_request_scheme(request_id, scheme);
+
+    if let Err(e) = result {
+        return Err(e);
+    }
+
+    Ok(api_client.clone())
+}
+
+#[tauri::command]
+pub async fn set_api_client_request_authority<'a>(
+    request_id: &str,
+    authority: &str,
+    api_client: tauri::State<'a, ApiClient>,
+) -> Result<ApiClientInner, String> {
+    let mut api_client = api_client.lock().unwrap();
+    let result = api_client.set_request_authority(request_id, authority);
+
+    if let Err(e) = result {
+        return Err(e);
+    }
+
+    Ok(api_client.clone())
+}
+
+#[tauri::command]
+pub async fn set_api_client_request_path<'a>(
+    request_id: &str,
+    path: &str,
+    api_client: tauri::State<'a, ApiClient>,
+) -> Result<ApiClientInner, String> {
+    let mut api_client = api_client.lock().unwrap();
+    let result = api_client.set_request_path(request_id, path);
+
+    if let Err(e) = result {
+        return Err(e);
+    }
+
+    Ok(api_client.clone())
+}
+
+#[tauri::command]
+pub async fn add_api_client_request_header<'a>(
+    request_id: &str,
+    api_client: tauri::State<'a, ApiClient>,
+) -> Result<ApiClientInner, String> {
+    let mut api_client = api_client.lock().unwrap();
+    let result = api_client.add_request_header(request_id);
+
+    if let Err(e) = result {
+        return Err(e);
+    }
+
+    Ok(api_client.clone())
+}

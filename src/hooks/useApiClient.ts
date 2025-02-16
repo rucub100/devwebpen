@@ -12,6 +12,10 @@ import {
   newApiClientRequest as _newApiClientRequest,
   openApiClientRequest as _openApiClientRequest,
   setApiClientRequestMethod as _setApiClientRequestMethod,
+  setApiClientRequestScheme as _setApiClientRequestScheme,
+  setApiClientRequestAuthority as _setApiClientRequestAuthority,
+  setApiClientRequestPath as _setApiClientRequestPath,
+  addApiClientRequestHeader as _addApiClientRequestHeader,
 } from "../tauri/commands/api-client-commands";
 import { subscribe } from "../tauri/events";
 
@@ -105,11 +109,39 @@ export function useApiClient({ listenApiClient }: UseApiClientOptioins = {}) {
     []
   );
 
+  const setApiClientRequestScheme = useCallback(
+    (requestId: string, scheme: string) =>
+      updateApiClient(_setApiClientRequestScheme(requestId, scheme)),
+    []
+  );
+
+  const setApiClientRequestAuthority = useCallback(
+    (requestId: string, authority: string) =>
+      updateApiClient(_setApiClientRequestAuthority(requestId, authority)),
+    []
+  );
+
+  const setApiClientRequestPath = useCallback(
+    (requestId: string, path: string) =>
+      updateApiClient(_setApiClientRequestPath(requestId, path)),
+    []
+  );
+
+  const addApiClientRequestHeader = useCallback(
+    (requestId: string) =>
+      updateApiClient(_addApiClientRequestHeader(requestId)),
+    []
+  );
+
   return {
     apiClient: globalApiClient!,
     sendApiClientRequest,
     newApiClientRequest,
     openApiClientRequest,
     setApiClientRequestMethod,
+    setApiClientRequestScheme,
+    setApiClientRequestAuthority,
+    setApiClientRequestPath,
+    addApiClientRequestHeader,
   };
 }
