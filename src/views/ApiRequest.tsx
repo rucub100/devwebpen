@@ -24,6 +24,8 @@ export default function ApiRequest({ data }: ApiRequestProps) {
     setScheme,
     setAuthority,
     setPath,
+    addQueryParameter,
+    deleteQueryParameter,
     addHeader,
     deleteHeader,
     setHeaderName,
@@ -78,6 +80,8 @@ export default function ApiRequest({ data }: ApiRequestProps) {
         <ApiRequestParams
           pathParams={pathParams}
           queryParams={queryParams}
+          onAddQueryParam={addQueryParameter}
+          onDeleteQueryParam={deleteQueryParameter}
         ></ApiRequestParams>
       )}
       {selectedTab === "body" && <ApiRequestBody body={body}></ApiRequestBody>}

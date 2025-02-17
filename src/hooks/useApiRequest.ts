@@ -15,6 +15,8 @@ export function useApiRequest(requestId: string | undefined | null) {
     deleteApiClientRequestHeader,
     setApiClientRequestHeaderName,
     setApiClientRequestHeaderValue,
+    addApiClientRequestQueryParameter,
+    deleteApiClientRequestQueryParameter,
   } = useApiClient({
     listenApiClient: true,
   });
@@ -115,6 +117,21 @@ export function useApiRequest(requestId: string | undefined | null) {
     [requestId, setApiClientRequestHeaderValue]
   );
 
+  const addQueryParameter = useCallback(() => {
+    if (requestId) {
+      addApiClientRequestQueryParameter(requestId);
+    }
+  }, [requestId, addApiClientRequestQueryParameter]);
+
+  const deleteQueryParameter = useCallback(
+    (id: string) => {
+      if (requestId) {
+        deleteApiClientRequestQueryParameter(requestId, id);
+      }
+    },
+    [requestId, deleteApiClientRequestQueryParameter]
+  );
+
   return {
     request,
     setMethod,
@@ -122,6 +139,8 @@ export function useApiRequest(requestId: string | undefined | null) {
     setScheme,
     setAuthority,
     setPath,
+    addQueryParameter,
+    deleteQueryParameter,
     addHeader,
     deleteHeader,
     setHeaderName,

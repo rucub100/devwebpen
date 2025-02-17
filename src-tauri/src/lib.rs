@@ -5,7 +5,8 @@ use tauri::Manager;
 use app_state::AppState;
 use commands::{
     api_client::{
-        add_api_client_request_header, delete_api_client_request_header, get_api_client,
+        add_api_client_request_header, add_api_client_request_query_param,
+        delete_api_client_request_header, delete_api_client_request_query_param, get_api_client,
         new_api_client_request, open_api_client_request, send_api_client_request,
         set_api_client_request_authority, set_api_client_request_header_name,
         set_api_client_request_header_value, set_api_client_request_method,
@@ -79,6 +80,8 @@ pub fn run() {
             set_api_client_request_scheme,
             set_api_client_request_authority,
             set_api_client_request_path,
+            add_api_client_request_query_param,
+            delete_api_client_request_query_param,
             add_api_client_request_header,
             delete_api_client_request_header,
             set_api_client_request_header_name,

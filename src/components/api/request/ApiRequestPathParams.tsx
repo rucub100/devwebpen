@@ -23,6 +23,9 @@ export default function ApiRequestPathParams({
         readonlyName={true}
         canDelete={false}
         data={data}
+        onValueChange={() => {
+          console.log("TODO: onValueChange");
+        }}
       ></NameValueTable>
     </div>
   );

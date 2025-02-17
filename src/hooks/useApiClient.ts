@@ -20,6 +20,8 @@ import {
   deleteApiClientRequestHeader as _deleteApiClientRequestHeader,
   setApiClientRequestHeaderName as _setApiClientRequestHeaderName,
   setApiClientRequestHeaderValue as _setApiClientRequestHeaderValue,
+  addApiClientRequestQueryParameter as _addApiClientRequestQueryParameter,
+  deleteApiClientRequestQueryParameter as _deleteApiClientRequestQueryParameter,
 } from "../tauri/commands/api-client-commands";
 import { subscribe } from "../tauri/events";
 
@@ -167,6 +169,18 @@ export function useApiClient({ listenApiClient }: UseApiClientOptioins = {}) {
     []
   );
 
+  const addApiClientRequestQueryParameter = useCallback(
+    (requestId: string) =>
+      updateApiClient(_addApiClientRequestQueryParameter(requestId)),
+    []
+  );
+
+  const deleteApiClientRequestQueryParameter = useCallback(
+    (requestId: string, id: string) =>
+      updateApiClient(_deleteApiClientRequestQueryParameter(requestId, id)),
+    []
+  );
+
   return {
     apiClient: globalApiClient!,
     sendApiClientRequest,
@@ -181,5 +195,7 @@ export function useApiClient({ listenApiClient }: UseApiClientOptioins = {}) {
     deleteApiClientRequestHeader,
     setApiClientRequestHeaderName,
     setApiClientRequestHeaderValue,
+    addApiClientRequestQueryParameter,
+    deleteApiClientRequestQueryParameter,
   };
 }

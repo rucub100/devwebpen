@@ -217,3 +217,34 @@ pub async fn set_api_client_request_header_value<'a>(
 
     Ok(api_client.clone())
 }
+
+#[tauri::command]
+pub async fn add_api_client_request_query_param<'a>(
+    request_id: &str,
+    api_client: tauri::State<'a, ApiClient>,
+) -> Result<ApiClientInner, String> {
+    let mut api_client = api_client.lock().unwrap();
+    let result = api_client.add_request_query_param(request_id);
+
+    if let Err(e) = result {
+        return Err(e);
+    }
+
+    Ok(api_client.clone())
+}
+
+#[tauri::command]
+pub async fn delete_api_client_request_query_param<'a>(
+    request_id: &str,
+    param_id: &str,
+    api_client: tauri::State<'a, ApiClient>,
+) -> Result<ApiClientInner, String> {
+    let mut api_client = api_client.lock().unwrap();
+    let result = api_client.delete_request_query_param(request_id, param_id);
+
+    if let Err(e) = result {
+        return Err(e);
+    }
+
+    Ok(api_client.clone())
+}

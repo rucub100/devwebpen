@@ -259,6 +259,41 @@ impl ApiClientInner {
         Ok(())
     }
 
+    pub fn add_request_query_param(&mut self, request_id: &str) -> Result<(), String> {
+        let req = self._find_request_mut(request_id)?;
+
+        if req.query_params.is_none() {
+            req.query_params = Some(Vec::new());
+        }
+
+        req.query_params.as_mut().unwrap().push(HttpQueryParameter {
+            id: Uuid::new_v4(),
+            name: "".to_string(),
+            value: "".to_string(),
+        });
+
+        Ok(())
+    }
+
+    pub fn delete_request_query_param(
+        &mut self,
+        request_id: &str,
+        param_id: &str,
+    ) -> Result<(), String> {
+        let req = self._find_request_mut(request_id)?;
+
+        if req.query_params.is_none() {
+            return Err("Query parameters not found".to_string());
+        }
+
+        req.query_params
+            .as_mut()
+            .unwrap()
+            .retain(|param| param.id.to_string() != param_id);
+
+        Ok(())
+    }
+
     pub fn add_request_header(&mut self, request_id: &str) -> Result<(), String> {
         let req = self._find_request_mut(request_id)?;
         req.headers.push(HttpHeader {

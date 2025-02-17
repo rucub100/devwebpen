@@ -4,10 +4,14 @@ import NameValueTable from "../../common/NameValueTable";
 
 interface ApiRequestQueryParamsProps {
   queryParams: HttpQueryParameter[];
+  onAddQueryParam: () => void;
+  onDeleteQueryParam: (id: string) => void;
 }
 
 export default function ApiRequestQueryParams({
   queryParams,
+  onAddQueryParam,
+  onDeleteQueryParam,
 }: ApiRequestQueryParamsProps) {
   const data: Record<string, [string, string]> = queryParams.reduce(
     (acc: Record<string, [string, string]>, queryParam) => {
@@ -18,12 +22,23 @@ export default function ApiRequestQueryParams({
   );
 
   return (
-    <div>
-      <div className="flex flex-row p-2 items-center w-full">
+    <div className="p-2 w-full">
+      <div className="flex flex-row items-center pb-2">
         <h3 className="text-sm font-semibold">Query Params</h3>
-        <Button className="ml-auto">Add</Button>
+        <Button className="ml-auto" onClick={onAddQueryParam}>
+          Add
+        </Button>
       </div>
-      <NameValueTable data={data}></NameValueTable>
+      <NameValueTable
+        data={data}
+        onNameChange={() => {
+          console.log("TODO: onNameChange");
+        }}
+        onValueChange={() => {
+          console.log("TODO: onValueChange");
+        }}
+        onDelete={onDeleteQueryParam}
+      ></NameValueTable>
     </div>
   );
 }

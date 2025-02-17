@@ -9,11 +9,15 @@ import ApiRequestQueryParams from "./ApiRequestQueryParams";
 interface ApiRequestParamsProps {
   pathParams: HttpPathParameter[];
   queryParams: HttpQueryParameter[];
+  onAddQueryParam: () => void;
+  onDeleteQueryParam: (id: string) => void;
 }
 
 export default function ApiRequestParams({
   pathParams,
   queryParams,
+  onAddQueryParam,
+  onDeleteQueryParam,
 }: ApiRequestParamsProps) {
   return (
     <div className="relative w-full h-full overflow-hidden">
@@ -25,6 +29,8 @@ export default function ApiRequestParams({
         secondPaneChildren={
           <ApiRequestQueryParams
             queryParams={queryParams}
+            onAddQueryParam={onAddQueryParam}
+            onDeleteQueryParam={onDeleteQueryParam}
           ></ApiRequestQueryParams>
         }
       ></SplitPane>
