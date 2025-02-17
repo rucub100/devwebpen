@@ -12,6 +12,8 @@ export function useApiRequest(requestId: string | undefined | null) {
     setApiClientRequestPath,
     addApiClientRequestHeader,
     deleteApiClientRequestHeader,
+    setApiClientRequestHeaderName,
+    setApiClientRequestHeaderValue,
   } = useApiClient({
     listenApiClient: true,
   });
@@ -85,6 +87,24 @@ export function useApiRequest(requestId: string | undefined | null) {
     [requestId, deleteApiClientRequestHeader]
   );
 
+  const setHeaderName = useCallback(
+    (headerId: string, headerName: string) => {
+      if (requestId) {
+        setApiClientRequestHeaderName(requestId, headerId, headerName);
+      }
+    },
+    [requestId, setApiClientRequestHeaderName]
+  );
+
+  const setHeaderValue = useCallback(
+    (headerId: string, headerValue: string) => {
+      if (requestId) {
+        setApiClientRequestHeaderValue(requestId, headerId, headerValue);
+      }
+    },
+    [requestId, setApiClientRequestHeaderValue]
+  );
+
   return {
     request,
     setMethod,
@@ -93,5 +113,7 @@ export function useApiRequest(requestId: string | undefined | null) {
     setPath,
     addHeader,
     deleteHeader,
+    setHeaderName,
+    setHeaderValue,
   };
 }

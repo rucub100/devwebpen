@@ -34,7 +34,7 @@ export default function NameValueTable({
                 type="text"
                 value={name}
                 className="w-full px-1"
-                onChange={() => onNameChange?.(key, name)}
+                onChange={(event) => onNameChange(key, event.target.value)}
               ></input>
             </td>
             <td>:</td>
@@ -43,7 +43,7 @@ export default function NameValueTable({
                 type="text"
                 value={value}
                 className="w-full px-1"
-                onChange={() => onValueChange?.(key, value)}
+                onChange={(event) => onValueChange(key, event.target.value)}
               ></input>
             </td>
             <td>

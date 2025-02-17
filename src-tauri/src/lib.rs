@@ -7,7 +7,8 @@ use commands::{
     api_client::{
         add_api_client_request_header, delete_api_client_request_header, get_api_client,
         new_api_client_request, open_api_client_request, send_api_client_request,
-        set_api_client_request_authority, set_api_client_request_method,
+        set_api_client_request_authority, set_api_client_request_header_name,
+        set_api_client_request_header_value, set_api_client_request_method,
         set_api_client_request_path, set_api_client_request_scheme,
     },
     daemon::{get_daemon_error, get_daemon_state, restart_daemon},
@@ -78,7 +79,9 @@ pub fn run() {
             set_api_client_request_authority,
             set_api_client_request_path,
             add_api_client_request_header,
-            delete_api_client_request_header
+            delete_api_client_request_header,
+            set_api_client_request_header_name,
+            set_api_client_request_header_value
         ])
         .on_window_event(window_event_handler)
         .setup(|app| {

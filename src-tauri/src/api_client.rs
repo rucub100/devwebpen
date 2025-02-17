@@ -1,4 +1,4 @@
-use std::{collections::HashMap, sync::Mutex};
+use std::sync::Mutex;
 
 use uuid::Uuid;
 
@@ -23,7 +23,8 @@ impl HttpVersion {
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
-pub struct HeaderValue {
+pub struct HttpHeader {
+    pub id: Uuid,
     pub name: String,
     pub value: String,
 }
@@ -37,9 +38,9 @@ pub struct HttpRequest {
     pub authority: String,
     pub path: String,
     pub version: HttpVersion,
-    pub query_params: Option<HashMap<String, String>>,
-    pub path_params: Option<HashMap<String, String>>,
-    pub headers: HashMap<Uuid, HeaderValue>,
+    pub query_params: Option<Vec<(String, String)>>,
+    pub path_params: Option<Vec<(String, String)>>,
+    pub headers: Vec<HttpHeader>,
     pub body: Option<Vec<u8>>,
 }
 
@@ -48,7 +49,7 @@ pub struct HttpRequest {
 pub struct HttpResponse {
     pub version: HttpVersion,
     pub status: u16,
-    pub headers: HashMap<Uuid, HeaderValue>,
+    pub headers: Vec<HttpHeader>,
     pub body: Option<Vec<u8>>,
     pub request_id: Uuid,
     pub response_time_ms: u64,
@@ -61,7 +62,7 @@ pub struct ApiCollection {
     pub name: String,
     pub description: Option<String>,
     pub requests: Vec<HttpRequest>,
-    pub variables: Option<HashMap<String, String>>,
+    pub variables: Option<Vec<(String, String)>>,
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
@@ -69,7 +70,7 @@ pub struct ApiCollection {
 pub struct ApiEnvironment {
     pub name: String,
     pub description: Option<String>,
-    pub variables: HashMap<String, String>,
+    pub variables: Vec<(String, String)>,
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
@@ -110,6 +111,20 @@ impl ApiClientInner {
         Ok(req)
     }
 
+    fn _find_request_header_mut(
+        &mut self,
+        request_id: &str,
+        header_id: &str,
+    ) -> Result<&mut HttpHeader, String> {
+        let req = self._find_request_mut(request_id)?;
+        let header = req
+            .headers
+            .iter_mut()
+            .find(|header| header.id.to_string() == header_id)
+            .ok_or_else(|| "Header not found".to_string())?;
+        Ok(header)
+    }
+
     pub fn add_request(&mut self, collection_name: &str) -> Result<HttpRequest, String> {
         let collection = self
             .collections
@@ -129,7 +144,7 @@ impl ApiClientInner {
             path_params: None,
             query_params: None,
             version: HttpVersion::Http_1_1,
-            headers: HashMap::new(),
+            headers: Vec::new(),
             body: None,
         };
 
@@ -181,13 +196,11 @@ impl ApiClientInner {
 
     pub fn add_request_header(&mut self, request_id: &str) -> Result<(), String> {
         let req = self._find_request_mut(request_id)?;
-        req.headers.insert(
-            Uuid::new_v4(),
-            HeaderValue {
-                name: "".to_string(),
-                value: "".to_string(),
-            },
-        );
+        req.headers.push(HttpHeader {
+            id: Uuid::new_v4(),
+            name: "".to_string(),
+            value: "".to_string(),
+        });
         Ok(())
     }
 
@@ -198,7 +211,29 @@ impl ApiClientInner {
     ) -> Result<(), String> {
         let req = self._find_request_mut(request_id)?;
         req.headers
-            .remove(&Uuid::parse_str(header_id).map_err(|e| e.to_string())?);
+            .retain(|header| header.id.to_string() != header_id);
+        Ok(())
+    }
+
+    pub fn set_request_header_name(
+        &mut self,
+        request_id: &str,
+        header_id: &str,
+        header_name: String,
+    ) -> Result<(), String> {
+        let header = self._find_request_header_mut(request_id, header_id)?;
+        header.name = header_name;
+        Ok(())
+    }
+
+    pub fn set_request_header_value(
+        &mut self,
+        request_id: &str,
+        header_id: &str,
+        header_value: String,
+    ) -> Result<(), String> {
+        let header = self._find_request_header_mut(request_id, header_id)?;
+        header.value = header_value;
         Ok(())
     }
 }

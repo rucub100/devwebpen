@@ -25,6 +25,8 @@ export default function ApiRequest({ data }: ApiRequestProps) {
     setPath,
     addHeader,
     deleteHeader,
+    setHeaderName,
+    setHeaderValue,
   } = useApiRequest(data?.apiRequest.requestId);
 
   if (!request) {
@@ -76,6 +78,8 @@ export default function ApiRequest({ data }: ApiRequestProps) {
           onPathChange={setPath}
           onAddHeader={addHeader}
           onDeleteHeader={deleteHeader}
+          onSetHeaderName={setHeaderName}
+          onSetHeaderValue={setHeaderValue}
         ></ApiRequestHeaders>
       )}
       {selectedTab === "params" && (

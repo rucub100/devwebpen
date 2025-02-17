@@ -6,12 +6,14 @@ interface ApiRequestHeadersProps {
   scheme: string;
   authority: string;
   path: string;
-  headers: Record<string, HttpHeader>;
+  headers: HttpHeader[];
   onSchemeChange: (scheme: string) => void;
   onAuthorityChange: (authority: string) => void;
   onPathChange: (path: string) => void;
   onAddHeader: () => void;
   onDeleteHeader: (key: string) => void;
+  onSetHeaderName: (key: string, name: string) => void;
+  onSetHeaderValue: (key: string, value: string) => void;
 }
 export default function ApiRequestHeaders({
   scheme,
@@ -23,11 +25,17 @@ export default function ApiRequestHeaders({
   onPathChange,
   onAddHeader,
   onDeleteHeader,
+  onSetHeaderName,
+  onSetHeaderValue,
 }: ApiRequestHeadersProps) {
-  const data = Object.entries(headers).reduce(
-    (acc, [key, { name, value }]) => ({ ...acc, [key]: [name, value] }),
+  const data: Record<string, [string, string]> = headers.reduce(
+    (acc: Record<string, [string, string]>, header) => {
+      acc[header.id] = [header.name, header.value];
+      return acc;
+    },
     {}
   );
+
   return (
     <div className="flex flex-col items-start p-2 gap-4">
       <div
@@ -63,12 +71,8 @@ export default function ApiRequestHeaders({
       </Button>
       <NameValueTable
         data={data}
-        onNameChange={() => {
-          console.log("TODO: onNameChange");
-        }}
-        onValueChange={() => {
-          console.log("TODO: onValueChange");
-        }}
+        onNameChange={onSetHeaderName}
+        onValueChange={onSetHeaderValue}
         onDelete={onDeleteHeader}
       ></NameValueTable>
     </div>
