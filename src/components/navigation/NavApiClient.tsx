@@ -1,4 +1,6 @@
+import { useMemo } from "react";
 import { useApiClient } from "../../hooks/useApiClient";
+import { useViewState } from "../../hooks/useViewState";
 import Accordion, { AccordionItem } from "../common/Accordion";
 import Button from "../common/Button";
 
@@ -9,13 +11,20 @@ export default function NavApiClient() {
     }
   );
 
+  const { tabs } = useViewState({ listenTabs: true });
+
+  const requestId = useMemo(() => {
+    const activeTab = tabs?.tabs.find((tab) => tab.id === tabs?.activeTabId);
+    return activeTab?.data?.apiRequest.requestId;
+  }, [tabs]);
+
   const collections: AccordionItem[] = apiClient.collections.map(
     (collection) => {
       const collectionItem: AccordionItem = {
         key: collection.name,
         title: collection.name,
         content: (
-          <div className="flex flex-col p-4 gap-2 text-neutral-300">
+          <div className="flex flex-col p-4 gap-2 text-neutral-300 h-full overflow-auto">
             <Button onClick={() => newApiClientRequest(collection.name)}>
               Add Request
             </Button>
@@ -23,14 +32,18 @@ export default function NavApiClient() {
               {collection.requests.map((request) => (
                 <div
                   key={request.id}
-                  className="w-full cursor-pointer hover:bg-neutral-800 p-1 rounded"
+                  className={`flex flex-row w-full cursor-pointer hover:bg-neutral-800 ${
+                    request.id === requestId ? "bg-neutral-800" : ""
+                  } p-2 rounded`}
                   onClick={() => openApiClientRequest(request.id)}
                 >
-                  <span className="text-xs border rounded p-1">
+                  <span className="text-xs font-thin border rounded p-1">
                     {request.method}
                   </span>
                   &ensp;
-                  <span className="text-sm">New Request</span>
+                  <span className="text-sm text-nowrap text-ellipsis">
+                    New Request
+                  </span>
                 </div>
               ))}
             </div>

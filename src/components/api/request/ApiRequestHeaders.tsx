@@ -37,7 +37,7 @@ export default function ApiRequestHeaders({
   );
 
   return (
-    <div className="flex flex-col items-start p-2 gap-4">
+    <div className="flex flex-col items-start p-2 gap-4 overflow-y-auto">
       <div
         className="grid grid-cols-2 gap-x-4 gap-y-2 w-full"
         style={{ gridTemplateColumns: "max-content minmax(0px, 1fr)" }}

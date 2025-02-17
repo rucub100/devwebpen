@@ -163,7 +163,7 @@ export default function RootLayout() {
       </nav>
       <header
         ref={leftAsideRef}
-        className={`${styles.leftAside} border-r border-neutral-800 min-w-min max-w-full`}
+        className={`${styles.leftAside} border-r border-neutral-800 min-w-min max-w-full min-h-min max-h-full`}
         style={{
           width: leftAsideWidth,
           display: nav === "none" ? "none" : "block",
@@ -194,7 +194,7 @@ export default function RootLayout() {
       ></div>
       <aside
         ref={rightAsideRef}
-        className={`${styles.rightAside} border-l border-neutral-800 min-w-min max-w-full`}
+        className={`${styles.rightAside} border-l border-neutral-800 min-w-min max-w-full min-h-min max-h-full`}
         style={{
           width: rightAsideWidth,
           display: aside === "none" ? "none" : "block",

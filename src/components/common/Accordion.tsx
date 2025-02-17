@@ -16,9 +16,16 @@ export default function Accordion({
   ...props
 }: AccordionProps) {
   return (
-    <div className={`h-full w-full overflow-hidden ${className}`} {...props}>
+    <div
+      className={`flex flex-col h-full w-full overflow-hidden ${className}`}
+      {...props}
+    >
       {items.map((item, index) => (
-        <details key={item.key} open={index === 0}>
+        <details
+          key={item.key}
+          open={index === 0}
+          className="h-full overflow-auto"
+        >
           <summary className="cursor-pointer">{item.title}</summary>
           {item.content}
         </details>
