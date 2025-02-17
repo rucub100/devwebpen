@@ -40,8 +40,8 @@ export default function ApiRequest({ data }: ApiRequestProps) {
   const path = request.path;
   const headers = request.headers;
   const body = request.body;
-  const pathParams = request.pathParams || {};
-  const queryParams = request.queryParams || {};
+  const pathParams = request.pathParams || [];
+  const queryParams = request.queryParams || [];
 
   return (
     <div className="flex flex-col w-full h-full">

@@ -6,6 +6,18 @@ const httpVersion = {
 type HttpVersionKeys = keyof typeof httpVersion;
 export type HttpVersion = (typeof httpVersion)[HttpVersionKeys];
 
+export type HttpPathParameter = {
+  id: string;
+  name: string;
+  value: string;
+};
+
+export type HttpQueryParameter = {
+  id: string;
+  name: string;
+  value: string;
+};
+
 export type HttpHeader = {
   id: string;
   name: string;
@@ -19,8 +31,8 @@ export type HttpRequest = {
   authority: string;
   path: string;
   version: HttpVersion;
-  queryParams?: Record<string, string | number | boolean>;
-  pathParams?: Record<string, string | number | boolean>;
+  queryParams?: HttpQueryParameter[];
+  pathParams?: HttpPathParameter[];
   headers: HttpHeader[];
   body: null | string | ArrayBuffer;
 };

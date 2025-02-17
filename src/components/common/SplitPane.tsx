@@ -3,18 +3,20 @@ import styles from "./SplitPane.module.css";
 
 interface SplitPaneProps {
   orientation: "horizontal" | "vertical";
+  firstPaneSize?: number;
   firstPaneChildren: React.ReactNode;
   secondPaneChildren: React.ReactNode;
 }
 
 export default function SplitPane({
   orientation,
+  firstPaneSize = 200,
   firstPaneChildren,
   secondPaneChildren,
 }: SplitPaneProps) {
   const firstPaneRef = useRef<HTMLDivElement>(null);
   const [splitIsResizing, setSplitIsResizing] = useState(false);
-  const [firstPlaneSize, setFirstPlaneSize] = useState(100);
+  const [firstPlaneSize, setFirstPlaneSize] = useState(firstPaneSize);
 
   const splitMouseDownHandler = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {

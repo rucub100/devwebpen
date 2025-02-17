@@ -40,6 +40,7 @@
         grid-area: first;
         min-width: 50px;
         min-height: 50px;
+        overflow: auto;
     }
 
     .split {
@@ -66,5 +67,6 @@
         grid-area: second;
         min-width: 50px;
         min-height: 50px;
+        overflow: auto;
     }
 }

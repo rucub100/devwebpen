@@ -1,10 +1,14 @@
+import {
+  HttpPathParameter,
+  HttpQueryParameter,
+} from "../../../types/api-client";
 import SplitPane from "../../common/SplitPane";
 import ApiRequestPathParams from "./ApiRequestPathParams";
 import ApiRequestQueryParams from "./ApiRequestQueryParams";
 
 interface ApiRequestParamsProps {
-  pathParams: Record<string, string | number | boolean>;
-  queryParams: Record<string, string | number | boolean>;
+  pathParams: HttpPathParameter[];
+  queryParams: HttpQueryParameter[];
 }
 
 export default function ApiRequestParams({

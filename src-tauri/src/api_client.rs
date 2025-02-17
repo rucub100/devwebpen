@@ -23,6 +23,22 @@ impl HttpVersion {
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
+pub struct HttpPathParameter {
+    pub id: Uuid,
+    pub name: String,
+    pub value: String,
+}
+
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct HttpQueryParameter {
+    pub id: Uuid,
+    pub name: String,
+    pub value: String,
+}
+
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct HttpHeader {
     pub id: Uuid,
     pub name: String,
@@ -38,8 +54,8 @@ pub struct HttpRequest {
     pub authority: String,
     pub path: String,
     pub version: HttpVersion,
-    pub query_params: Option<Vec<(String, String)>>,
-    pub path_params: Option<Vec<(String, String)>>,
+    pub query_params: Option<Vec<HttpQueryParameter>>,
+    pub path_params: Option<Vec<HttpPathParameter>>,
     pub headers: Vec<HttpHeader>,
     pub body: Option<Vec<u8>>,
 }
@@ -125,6 +141,39 @@ impl ApiClientInner {
         Ok(header)
     }
 
+    fn _update_request_path_params(req: &mut HttpRequest) {
+        let path = match req.path.find("?") {
+            Some(index) => &req.path[0..index],
+            None => &req.path,
+        };
+
+        let path_params: Vec<String> = path
+            .split("/")
+            .filter(|segment| segment.starts_with(":"))
+            .map(|segment| segment.to_string())
+            .collect();
+
+        if path_params.len() > 0 {
+            if req.path_params.is_none() {
+                req.path_params = Some(Vec::new());
+            }
+        }
+
+        // Remove path params that are no longer in the path
+        let req_path_params = req.path_params.as_mut().unwrap();
+        req_path_params.retain(|path_param| path_params.contains(&path_param.name));
+
+        for path_param in path_params {
+            if !req_path_params.iter().any(|p| p.name == path_param) {
+                req_path_params.push(HttpPathParameter {
+                    id: Uuid::new_v4(),
+                    name: path_param,
+                    value: String::new(),
+                });
+            }
+        }
+    }
+
     pub fn add_request(&mut self, collection_name: &str) -> Result<HttpRequest, String> {
         let collection = self
             .collections
@@ -183,6 +232,7 @@ impl ApiClientInner {
         req.scheme = scheme.to_string();
         req.authority = authority.to_string();
         req.path = path.to_string();
+        Self::_update_request_path_params(req);
         Ok(())
     }
 
@@ -205,6 +255,7 @@ impl ApiClientInner {
     pub fn set_request_path(&mut self, request_id: &str, path: &str) -> Result<(), String> {
         let req = self._find_request_mut(request_id)?;
         req.path = path.to_string();
+        Self::_update_request_path_params(req);
         Ok(())
     }
 
