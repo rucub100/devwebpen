@@ -172,6 +172,20 @@ impl ApiClientInner {
         Ok(())
     }
 
+    pub fn set_request_url(
+        &mut self,
+        request_id: &str,
+        scheme: &str,
+        authority: &str,
+        path: &str,
+    ) -> Result<(), String> {
+        let req = self._find_request_mut(request_id)?;
+        req.scheme = scheme.to_string();
+        req.authority = authority.to_string();
+        req.path = path.to_string();
+        Ok(())
+    }
+
     pub fn set_request_scheme(&mut self, request_id: &str, scheme: &str) -> Result<(), String> {
         let req = self._find_request_mut(request_id)?;
         req.scheme = scheme.to_string();

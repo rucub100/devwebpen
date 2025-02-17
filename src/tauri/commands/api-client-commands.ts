@@ -7,6 +7,7 @@ enum ApiClientCommand {
   NewApiClientRequest = "new_api_client_request",
   OpenApiClientRequest = "open_api_client_request",
   SetApiClientRequestMethod = "set_api_client_request_method",
+  SetApiClientRequestUrl = "set_api_client_request_url",
   SetApiClientRequestScheme = "set_api_client_request_scheme",
   SetApiClientRequestAuthority = "set_api_client_request_authority",
   SetApiClientRequestPath = "set_api_client_request_path",
@@ -43,6 +44,20 @@ export async function setApiClientRequestMethod(
   return invoke(ApiClientCommand.SetApiClientRequestMethod, {
     requestId,
     method,
+  });
+}
+
+export async function setApiClientRequestUrl(
+  requestId: string,
+  scheme: string,
+  authority: string,
+  path: string
+): Promise<ApiClient> {
+  return invoke(ApiClientCommand.SetApiClientRequestUrl, {
+    requestId,
+    scheme,
+    authority,
+    path,
   });
 }
 

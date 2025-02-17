@@ -20,6 +20,7 @@ export default function ApiRequest({ data }: ApiRequestProps) {
   const {
     request,
     setMethod,
+    setUrl,
     setScheme,
     setAuthority,
     setPath,
@@ -42,24 +43,15 @@ export default function ApiRequest({ data }: ApiRequestProps) {
   const pathParams = request.pathParams || {};
   const queryParams = request.queryParams || {};
 
-  const url = (() => {
-    let url = "";
-
-    try {
-      url = new URL(`${scheme}://${authority}${path}`).href;
-    } catch (e) {
-      // ignore
-    }
-
-    return url;
-  })();
-
   return (
     <div className="flex flex-col w-full h-full">
       <ApiRequestStartLine
         method={method}
-        url={url}
+        scheme={scheme}
+        authority={authority}
+        path={path}
         onMethodChange={setMethod}
+        onUrlChange={setUrl}
       ></ApiRequestStartLine>
       <div className="h-0 w-full border-b border-neutral-800"></div>
       <ApiRequestNavigation

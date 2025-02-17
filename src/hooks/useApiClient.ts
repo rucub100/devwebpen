@@ -12,6 +12,7 @@ import {
   newApiClientRequest as _newApiClientRequest,
   openApiClientRequest as _openApiClientRequest,
   setApiClientRequestMethod as _setApiClientRequestMethod,
+  setApiClientRequestUrl as _setApiClientRequestUrl,
   setApiClientRequestScheme as _setApiClientRequestScheme,
   setApiClientRequestAuthority as _setApiClientRequestAuthority,
   setApiClientRequestPath as _setApiClientRequestPath,
@@ -112,6 +113,14 @@ export function useApiClient({ listenApiClient }: UseApiClientOptioins = {}) {
     []
   );
 
+  const setApiClientRequestUrl = useCallback(
+    (requestId: string, scheme: string, authority: string, path: string) =>
+      updateApiClient(
+        _setApiClientRequestUrl(requestId, scheme, authority, path)
+      ),
+    []
+  );
+
   const setApiClientRequestScheme = useCallback(
     (requestId: string, scheme: string) =>
       updateApiClient(_setApiClientRequestScheme(requestId, scheme)),
@@ -164,6 +173,7 @@ export function useApiClient({ listenApiClient }: UseApiClientOptioins = {}) {
     newApiClientRequest,
     openApiClientRequest,
     setApiClientRequestMethod,
+    setApiClientRequestUrl,
     setApiClientRequestScheme,
     setApiClientRequestAuthority,
     setApiClientRequestPath,

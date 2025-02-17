@@ -7,6 +7,7 @@ export function useApiRequest(requestId: string | undefined | null) {
   const {
     apiClient,
     setApiClientRequestMethod,
+    setApiClientRequestUrl,
     setApiClientRequestScheme,
     setApiClientRequestAuthority,
     setApiClientRequestPath,
@@ -43,6 +44,15 @@ export function useApiRequest(requestId: string | undefined | null) {
       }
     },
     [requestId, setApiClientRequestMethod]
+  );
+
+  const setUrl = useCallback(
+    (scheme: string, authority: string, path: string) => {
+      if (requestId) {
+        setApiClientRequestUrl(requestId, scheme, authority, path);
+      }
+    },
+    [requestId, setApiClientRequestScheme]
   );
 
   const setScheme = useCallback(
@@ -108,6 +118,7 @@ export function useApiRequest(requestId: string | undefined | null) {
   return {
     request,
     setMethod,
+    setUrl,
     setScheme,
     setAuthority,
     setPath,

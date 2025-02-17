@@ -1,16 +1,66 @@
+import { useCallback, useEffect, useRef, useState } from "react";
 import Button from "../../common/Button";
 
 interface ApiRequestStartLineProps {
   method: string;
-  url: string;
+  scheme: string;
+  authority: string;
+  path: string;
   onMethodChange: (method: string) => void;
+  onUrlChange: (scheme: string, authority: string, path: string) => void;
 }
 
 export default function ApiRequestStartLine({
   method,
-  url,
+  scheme,
+  authority,
+  path,
   onMethodChange,
+  onUrlChange,
 }: ApiRequestStartLineProps) {
+  const [url, setUrl] = useState<string>("");
+
+  useEffect(() => {
+    let url = "";
+
+    try {
+      url = decodeURIComponent(new URL(`${scheme}://${authority}${path}`).href);
+    } catch (e) {
+      // ignore
+    }
+
+    setUrl((prevUrl) => {
+      if (prevUrl === url) {
+        return prevUrl;
+      }
+
+      return url;
+    });
+  }, [method, scheme, authority, path]);
+
+  const urlChangeHandler = useCallback(
+    (url: string) => {
+      try {
+        const parsedUrl = new URL(url);
+
+        const newScheme = parsedUrl.protocol.replace(":", "");
+        const newAuthority = parsedUrl.host;
+        const newPath =
+          decodeURIComponent(parsedUrl.pathname) +
+          decodeURIComponent(parsedUrl.search);
+
+        if (newScheme !== "http" && newScheme !== "https") {
+          return;
+        }
+
+        onUrlChange(newScheme, newAuthority, newPath);
+      } catch (e) {
+        // ignore
+      }
+    },
+    [onUrlChange]
+  );
+
   return (
     <div className="flex flex-row items-center w-full p-2">
       <select
@@ -32,9 +82,13 @@ export default function ApiRequestStartLine({
         className="p-1 flex-grow"
         type="url"
         value={url}
-        title={url || "Readonly URL"}
-        readOnly={true}
-        disabled
+        onChange={(event) => setUrl(event.target.value)}
+        onBlur={(event) => urlChangeHandler(event.target.value)}
+        onPaste={(event) =>
+          urlChangeHandler(event.clipboardData.getData("text"))
+        }
+        onFocus={(event) => event.target.select()}
+        title={url}
         placeholder="https://example.com/api/v2/foo"
       ></input>
       <Button className="rounded-l-none">Send</Button>

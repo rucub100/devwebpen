@@ -1,3 +1,5 @@
+use std::path;
+
 use crate::{
     api_client::{ApiClient, ApiClientInner, HttpRequest},
     events::{emit_event, DevWebPenEvent},
@@ -77,6 +79,24 @@ pub async fn set_api_client_request_method<'a>(
 ) -> Result<ApiClientInner, String> {
     let mut api_client = api_client.lock().unwrap();
     let result = api_client.set_request_method(request_id, method);
+
+    if let Err(e) = result {
+        return Err(e);
+    }
+
+    Ok(api_client.clone())
+}
+
+#[tauri::command]
+pub async fn set_api_client_request_url<'a>(
+    request_id: &str,
+    scheme: &str,
+    authority: &str,
+    path: &str,
+    api_client: tauri::State<'a, ApiClient>,
+) -> Result<ApiClientInner, String> {
+    let mut api_client = api_client.lock().unwrap();
+    let result = api_client.set_request_url(request_id, scheme, authority, path);
 
     if let Err(e) = result {
         return Err(e);
