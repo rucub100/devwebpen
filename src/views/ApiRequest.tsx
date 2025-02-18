@@ -30,6 +30,9 @@ export default function ApiRequest({ data }: ApiRequestProps) {
     deleteHeader,
     setHeaderName,
     setHeaderValue,
+    setQueryParamName,
+    setQueryParamValue,
+    setPathParamValue,
   } = useApiRequest(data?.apiRequest.requestId);
 
   if (!request) {
@@ -82,6 +85,9 @@ export default function ApiRequest({ data }: ApiRequestProps) {
           queryParams={queryParams}
           onAddQueryParam={addQueryParameter}
           onDeleteQueryParam={deleteQueryParameter}
+          onSetQueryParamName={setQueryParamName}
+          onSetQueryParamValue={setQueryParamValue}
+          onSetPathParamValue={setPathParamValue}
         ></ApiRequestParams>
       )}
       {selectedTab === "body" && <ApiRequestBody body={body}></ApiRequestBody>}

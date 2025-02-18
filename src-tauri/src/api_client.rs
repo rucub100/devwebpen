@@ -141,6 +141,38 @@ impl ApiClientInner {
         Ok(header)
     }
 
+    fn _find_request_query_param_mut(
+        &mut self,
+        request_id: &str,
+        param_id: &str,
+    ) -> Result<&mut HttpQueryParameter, String> {
+        let req = self._find_request_mut(request_id)?;
+        let param = req
+            .query_params
+            .as_mut()
+            .ok_or_else(|| "Query parameters not found".to_string())?
+            .iter_mut()
+            .find(|param| param.id.to_string() == param_id)
+            .ok_or_else(|| "Query parameter not found".to_string())?;
+        Ok(param)
+    }
+
+    fn _find_request_path_param_mut(
+        &mut self,
+        request_id: &str,
+        param_id: &str,
+    ) -> Result<&mut HttpPathParameter, String> {
+        let req = self._find_request_mut(request_id)?;
+        let param = req
+            .path_params
+            .as_mut()
+            .ok_or_else(|| "Path parameters not found".to_string())?
+            .iter_mut()
+            .find(|param| param.id.to_string() == param_id)
+            .ok_or_else(|| "Path parameter not found".to_string())?;
+        Ok(param)
+    }
+
     fn _update_request_path_params(req: &mut HttpRequest) {
         let path = match req.path.find("?") {
             Some(index) => &req.path[0..index],
@@ -272,6 +304,39 @@ impl ApiClientInner {
             value: "".to_string(),
         });
 
+        Ok(())
+    }
+
+    pub fn set_request_query_param_name(
+        &mut self,
+        request_id: &str,
+        param_id: &str,
+        name: String,
+    ) -> Result<(), String> {
+        let param = self._find_request_query_param_mut(request_id, param_id)?;
+        param.name = name;
+        Ok(())
+    }
+
+    pub fn set_request_query_param_value(
+        &mut self,
+        request_id: &str,
+        param_id: &str,
+        value: String,
+    ) -> Result<(), String> {
+        let param = self._find_request_query_param_mut(request_id, param_id)?;
+        param.value = value;
+        Ok(())
+    }
+
+    pub fn set_request_path_param_value(
+        &mut self,
+        request_id: &str,
+        param_id: &str,
+        value: String,
+    ) -> Result<(), String> {
+        let param = self._find_request_path_param_mut(request_id, param_id)?;
+        param.value = value;
         Ok(())
     }
 

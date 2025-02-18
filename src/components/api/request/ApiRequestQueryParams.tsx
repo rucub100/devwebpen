@@ -6,12 +6,16 @@ interface ApiRequestQueryParamsProps {
   queryParams: HttpQueryParameter[];
   onAddQueryParam: () => void;
   onDeleteQueryParam: (id: string) => void;
+  onSetQueryParamName: (id: string, name: string) => void;
+  onSetQueryParamValue: (id: string, value: string) => void;
 }
 
 export default function ApiRequestQueryParams({
   queryParams,
   onAddQueryParam,
   onDeleteQueryParam,
+  onSetQueryParamName,
+  onSetQueryParamValue,
 }: ApiRequestQueryParamsProps) {
   const data: Record<string, [string, string]> = queryParams.reduce(
     (acc: Record<string, [string, string]>, queryParam) => {
@@ -31,12 +35,8 @@ export default function ApiRequestQueryParams({
       </div>
       <NameValueTable
         data={data}
-        onNameChange={() => {
-          console.log("TODO: onNameChange");
-        }}
-        onValueChange={() => {
-          console.log("TODO: onValueChange");
-        }}
+        onNameChange={onSetQueryParamName}
+        onValueChange={onSetQueryParamValue}
         onDelete={onDeleteQueryParam}
       ></NameValueTable>
     </div>

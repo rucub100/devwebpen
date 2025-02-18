@@ -7,6 +7,8 @@ interface NameValueTableProps extends HTMLAttributes<HTMLTableElement> {
   readonlyName?: boolean;
   readonlyValue?: boolean;
   canDelete?: boolean;
+  namePlaceholder?: string;
+  valuePlaceholder?: string;
   className?: string;
   onNameChange?: (key: string, name: string) => void;
   onValueChange?: (key: string, value: string) => void;
@@ -17,6 +19,8 @@ export default function NameValueTable({
   data,
   readonlyName = false,
   readonlyValue = false,
+  namePlaceholder = "Name",
+  valuePlaceholder = "Value",
   canDelete = true,
   className,
   onNameChange,
@@ -41,6 +45,7 @@ export default function NameValueTable({
                 value={name}
                 className="w-full px-1"
                 readOnly={readonlyName}
+                placeholder={namePlaceholder}
                 onChange={(event) => onNameChange?.(key, event.target.value)}
               ></input>
             </td>
@@ -51,6 +56,7 @@ export default function NameValueTable({
                 value={value}
                 className="w-full px-1"
                 readOnly={readonlyValue}
+                placeholder={valuePlaceholder}
                 onChange={(event) => onValueChange?.(key, event.target.value)}
               ></input>
             </td>

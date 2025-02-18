@@ -17,6 +17,9 @@ enum ApiClientCommand {
   SetApiClientRequestHeaderValue = "set_api_client_request_header_value",
   AddApiClientRequestQueryParam = "add_api_client_request_query_param",
   DeleteApiClientRequestQueryParam = "delete_api_client_request_query_param",
+  SetApiClientRequestQueryParamName = "set_api_client_request_query_param_name",
+  SetApiClientRequestQueryParamValue = "set_api_client_request_query_param_value",
+  SetApiClientRequestPathParamValue = "set_api_client_request_path_param_value",
 }
 
 export async function getApiClient(): Promise<ApiClient> {
@@ -150,5 +153,41 @@ export async function deleteApiClientRequestQueryParameter(
   return invoke(ApiClientCommand.DeleteApiClientRequestQueryParam, {
     requestId,
     paramId,
+  });
+}
+
+export async function setApiClientRequestQueryParamName(
+  requestId: string,
+  paramId: string,
+  name: string
+): Promise<ApiClient> {
+  return invoke(ApiClientCommand.SetApiClientRequestQueryParamName, {
+    requestId,
+    paramId,
+    name,
+  });
+}
+
+export async function setApiClientRequestQueryParamValue(
+  requestId: string,
+  paramId: string,
+  value: string
+): Promise<ApiClient> {
+  return invoke(ApiClientCommand.SetApiClientRequestQueryParamValue, {
+    requestId,
+    paramId,
+    value,
+  });
+}
+
+export async function setApiClientRequestPathParamValue(
+  requestId: string,
+  paramId: string,
+  value: string
+): Promise<ApiClient> {
+  return invoke(ApiClientCommand.SetApiClientRequestPathParamValue, {
+    requestId,
+    paramId,
+    value,
   });
 }

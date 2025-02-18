@@ -3,14 +3,16 @@ import NameValueTable from "../../common/NameValueTable";
 
 interface ApiRequestPathParamsProps {
   pathParams: HttpPathParameter[];
+  onSetPathParamValue: (id: string, value: string) => void;
 }
 
 export default function ApiRequestPathParams({
   pathParams,
+  onSetPathParamValue,
 }: ApiRequestPathParamsProps) {
   const data: Record<string, [string, string]> = pathParams.reduce(
     (acc: Record<string, [string, string]>, pathParam) => {
-      acc[pathParam.name] = [pathParam.name, pathParam.value];
+      acc[pathParam.id] = [pathParam.name, pathParam.value];
       return acc;
     },
     {}
@@ -23,9 +25,7 @@ export default function ApiRequestPathParams({
         readonlyName={true}
         canDelete={false}
         data={data}
-        onValueChange={() => {
-          console.log("TODO: onValueChange");
-        }}
+        onValueChange={onSetPathParamValue}
       ></NameValueTable>
     </div>
   );

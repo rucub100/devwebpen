@@ -248,3 +248,54 @@ pub async fn delete_api_client_request_query_param<'a>(
 
     Ok(api_client.clone())
 }
+
+#[tauri::command]
+pub async fn set_api_client_request_query_param_name<'a>(
+    request_id: &str,
+    param_id: &str,
+    name: String,
+    api_client: tauri::State<'a, ApiClient>,
+) -> Result<ApiClientInner, String> {
+    let mut api_client = api_client.lock().unwrap();
+    let result = api_client.set_request_query_param_name(request_id, param_id, name);
+
+    if let Err(e) = result {
+        return Err(e);
+    }
+
+    Ok(api_client.clone())
+}
+
+#[tauri::command]
+pub async fn set_api_client_request_query_param_value<'a>(
+    request_id: &str,
+    param_id: &str,
+    value: String,
+    api_client: tauri::State<'a, ApiClient>,
+) -> Result<ApiClientInner, String> {
+    let mut api_client = api_client.lock().unwrap();
+    let result = api_client.set_request_query_param_value(request_id, param_id, value);
+
+    if let Err(e) = result {
+        return Err(e);
+    }
+
+    Ok(api_client.clone())
+}
+
+#[tauri::command]
+pub async fn set_api_client_request_path_param_value<'a>(
+    request_id: &str,
+    param_id: &str,
+    value: String,
+    api_client: tauri::State<'a, ApiClient>,
+) -> Result<ApiClientInner, String> {
+    let mut api_client = api_client.lock().unwrap();
+    let result = api_client.set_request_path_param_value(request_id, param_id, value);
+
+    if let Err(e) = result {
+        return Err(e);
+    }
+
+    Ok(api_client.clone())
+}

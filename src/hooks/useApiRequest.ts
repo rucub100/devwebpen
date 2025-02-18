@@ -17,6 +17,9 @@ export function useApiRequest(requestId: string | undefined | null) {
     setApiClientRequestHeaderValue,
     addApiClientRequestQueryParameter,
     deleteApiClientRequestQueryParameter,
+    setApiClientRequestQueryParamName,
+    setApiClientRequestQueryParamValue,
+    setApiClientRequestPathParamValue,
   } = useApiClient({
     listenApiClient: true,
   });
@@ -132,6 +135,33 @@ export function useApiRequest(requestId: string | undefined | null) {
     [requestId, deleteApiClientRequestQueryParameter]
   );
 
+  const setQueryParamName = useCallback(
+    (id: string, name: string) => {
+      if (requestId) {
+        setApiClientRequestQueryParamName(requestId, id, name);
+      }
+    },
+    [requestId, setApiClientRequestQueryParamName]
+  );
+
+  const setQueryParamValue = useCallback(
+    (id: string, value: string) => {
+      if (requestId) {
+        setApiClientRequestQueryParamValue(requestId, id, value);
+      }
+    },
+    [requestId, setApiClientRequestQueryParamValue]
+  );
+
+  const setPathParamValue = useCallback(
+    (id: string, value: string) => {
+      if (requestId) {
+        setApiClientRequestPathParamValue(requestId, id, value);
+      }
+    },
+    [requestId, setApiClientRequestPathParamValue]
+  );
+
   return {
     request,
     setMethod,
@@ -145,5 +175,8 @@ export function useApiRequest(requestId: string | undefined | null) {
     deleteHeader,
     setHeaderName,
     setHeaderValue,
+    setQueryParamName,
+    setQueryParamValue,
+    setPathParamValue,
   };
 }
