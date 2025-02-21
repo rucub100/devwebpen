@@ -1,13 +1,19 @@
+use std::fmt;
+
 use uuid::Uuid;
+
+use crate::api_client::HttpRequest;
 
 pub enum RequestType {
     Command,
+    HttpRequest,
 }
 
-impl AsRef<str> for RequestType {
-    fn as_ref(&self) -> &str {
+impl fmt::Display for RequestType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            RequestType::Command => "COMMAND",
+            RequestType::Command => write!(f, "COMMAND"),
+            RequestType::HttpRequest => write!(f, "HTTP_REQUEST"),
         }
     }
 }
@@ -17,30 +23,97 @@ pub struct RequestHeader {
     pub request_type: RequestType,
 }
 
+pub enum RequestBody {
+    Text(String),
+    Binary(Vec<u8>),
+}
+
 pub struct Request {
     pub header: RequestHeader,
-    pub body: String,
+    pub body: RequestBody,
 }
 
 impl Request {
-    pub fn new(request_type: RequestType, body: String) -> Request {
+    pub fn new_text(request_type: RequestType, body: String) -> Request {
         Request {
             header: RequestHeader {
                 request_id: Uuid::new_v4(),
                 request_type,
             },
-            body,
+            body: RequestBody::Text(body),
+        }
+    }
+
+    pub fn new_binary(request_type: RequestType, body: Vec<u8>) -> Request {
+        Request {
+            header: RequestHeader {
+                request_id: Uuid::new_v4(),
+                request_type,
+            },
+            body: RequestBody::Binary(body),
         }
     }
 }
 
-impl ToString for Request {
-    fn to_string(&self) -> String {
-        format!(
-            "{}\n{}\n{}",
-            self.header.request_id,
-            self.header.request_type.as_ref(),
-            self.body
-        )
+impl From<&HttpRequest> for Request {
+    fn from(http_request: &HttpRequest) -> Self {
+        let mut path_params = String::new();
+        let path_params_count = if http_request.path_params.is_some() {
+            let params = http_request.path_params.as_ref().unwrap();
+
+            path_params = params.iter().fold(String::new(), |acc, param| {
+                format!("{}\n{}:{}:{}", acc, param.id, param.name, param.value)
+            });
+
+            params.len()
+        } else {
+            0
+        };
+
+        let mut query_params = String::new();
+        let query_params_count = if http_request.query_params.is_some() {
+            let params = http_request.query_params.as_ref().unwrap();
+
+            query_params = params.iter().fold(String::new(), |acc, param| {
+                format!("{}\n{}:{}:{}", acc, param.id, param.name, param.value)
+            });
+
+            params.len()
+        } else {
+            0
+        };
+
+        let http_body = http_request.body.as_ref();
+        let http_body = if http_body.is_some() {
+            http_body.unwrap().clone()
+        } else {
+            Vec::new()
+        };
+        // TODO: Unwrap is not safe here; send http request always as binary via websocket or use base64 encoding
+        let http_body = String::from_utf8(http_body).unwrap_or_else(|_| String::from(""));
+
+        let body = format!(
+            "{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}",
+            http_request.id,
+            http_request.method,
+            http_request.scheme,
+            http_request.authority,
+            http_request.path,
+            http_request.version,
+            path_params_count,
+            path_params,
+            query_params_count,
+            query_params,
+            http_request.headers.len(),
+            http_request
+                .headers
+                .iter()
+                .fold(String::new(), |acc, header| {
+                    format!("{}\n{}:{}:{}", acc, header.id, header.name, header.value)
+                }),
+            http_body
+        );
+
+        return Request::new_text(RequestType::HttpRequest, body);
     }
 }

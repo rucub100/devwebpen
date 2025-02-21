@@ -33,6 +33,7 @@ export default function ApiRequest({ data }: ApiRequestProps) {
     setQueryParamName,
     setQueryParamValue,
     setPathParamValue,
+    sendRequest,
   } = useApiRequest(data?.apiRequest.requestId);
 
   if (!request) {
@@ -57,6 +58,7 @@ export default function ApiRequest({ data }: ApiRequestProps) {
         path={path}
         onMethodChange={setMethod}
         onUrlChange={setUrl}
+        onSend={sendRequest}
       ></ApiRequestStartLine>
       <div className="h-0 w-full border-b border-neutral-800"></div>
       <ApiRequestNavigation

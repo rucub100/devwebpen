@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useApiClient } from "./useApiClient";
 import { HttpRequest } from "../types/api-client";
+import { sendApiClientRequest } from "../tauri/commands/api-client-commands";
 
 export function useApiRequest(requestId: string | undefined | null) {
   const [request, setRequest] = useState<HttpRequest | undefined>(undefined);
@@ -162,6 +163,12 @@ export function useApiRequest(requestId: string | undefined | null) {
     [requestId, setApiClientRequestPathParamValue]
   );
 
+  const sendRequest = useCallback(() => {
+    if (requestId) {
+      sendApiClientRequest(requestId);
+    }
+  }, [requestId, sendApiClientRequest]);
+
   return {
     request,
     setMethod,
@@ -178,5 +185,6 @@ export function useApiRequest(requestId: string | undefined | null) {
     setQueryParamName,
     setQueryParamValue,
     setPathParamValue,
+    sendRequest,
   };
 }

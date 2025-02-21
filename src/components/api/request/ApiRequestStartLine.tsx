@@ -8,6 +8,7 @@ interface ApiRequestStartLineProps {
   path: string;
   onMethodChange: (method: string) => void;
   onUrlChange: (scheme: string, authority: string, path: string) => void;
+  onSend: () => void;
 }
 
 export default function ApiRequestStartLine({
@@ -17,6 +18,7 @@ export default function ApiRequestStartLine({
   path,
   onMethodChange,
   onUrlChange,
+  onSend,
 }: ApiRequestStartLineProps) {
   const [url, setUrl] = useState<string>("");
 
@@ -91,7 +93,9 @@ export default function ApiRequestStartLine({
         title={url}
         placeholder="https://example.com/api/v2/foo"
       ></input>
-      <Button className="rounded-l-none">Send</Button>
+      <Button className="rounded-l-none" onClick={onSend}>
+        Send
+      </Button>
     </div>
   );
 }

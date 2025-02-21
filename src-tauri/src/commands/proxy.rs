@@ -7,53 +7,34 @@ use crate::{
     proxy::{Proxy, ProxyInner},
 };
 
-use futures_util::SinkExt;
-use tokio_tungstenite::tungstenite::Message;
+use super::send_daemon_request;
 
 #[tauri::command]
 pub async fn start_proxy<'a>(
     daemon_state: tauri::State<'a, Daemon>,
     proxy_state: tauri::State<'a, Proxy>,
 ) -> Result<(), String> {
-    let ws_out = {
-        let daemon = daemon_state.lock().await;
-        daemon.get_ws_out()
-    };
     let port = {
         let proxy = proxy_state.lock().unwrap();
         proxy.get_port()
     };
 
-    let mut ws_out = ws_out.lock().await;
-    let ws_out = ws_out.as_mut().ok_or("Websocket not connected")?;
-
-    let req = Request::new(
+    let req = Request::new_text(
         RequestType::Command,
-        format!("{}:{}", Command::StartProxy.as_ref(), port),
+        format!("{}:{}", Command::StartProxy, port),
     );
-    let msg = Message::text(req.to_string());
 
-    ws_out.send(msg).await.map_err(|e| e.to_string())?;
+    send_daemon_request(daemon_state, req).await?;
+
     Ok(())
 }
 
 #[tauri::command]
 pub async fn stop_proxy<'a>(daemon_state: tauri::State<'a, Daemon>) -> Result<(), String> {
-    let ws_out = {
-        let daemon = daemon_state.lock().await;
-        daemon.get_ws_out()
-    };
+    let req = Request::new_text(RequestType::Command, Command::StopProxy.to_string());
 
-    let mut ws_out = ws_out.lock().await;
-    let ws_out = ws_out.as_mut().ok_or("Websocket not connected")?;
+    send_daemon_request(daemon_state, req).await?;
 
-    let req = Request::new(
-        RequestType::Command,
-        Command::StopProxy.as_ref().to_string(),
-    );
-    let msg = Message::text(req.to_string());
-
-    ws_out.send(msg).await.map_err(|e| e.to_string())?;
     Ok(())
 }
 

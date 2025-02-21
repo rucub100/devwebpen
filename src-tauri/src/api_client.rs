@@ -1,4 +1,4 @@
-use std::sync::Mutex;
+use std::{fmt, sync::Mutex};
 
 use uuid::Uuid;
 
@@ -17,6 +17,16 @@ impl HttpVersion {
             "HTTP/2" => Ok(Self::Http_2),
             "HTTP/3" => Ok(Self::Http_3),
             _ => Err("Failed to parse HTTP version".to_string()),
+        }
+    }
+}
+
+impl fmt::Display for HttpVersion {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Http_1_1 => write!(f, "HTTP/1.1"),
+            Self::Http_2 => write!(f, "HTTP/2"),
+            Self::Http_3 => write!(f, "HTTP/3"),
         }
     }
 }
@@ -57,7 +67,7 @@ pub struct HttpRequest {
     pub query_params: Option<Vec<HttpQueryParameter>>,
     pub path_params: Option<Vec<HttpPathParameter>>,
     pub headers: Vec<HttpHeader>,
-    pub body: Option<Vec<u8>>,
+    pub body: Option<Vec<u8>>, //TODO: need better reprsentation for body?!
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]

@@ -1,10 +1,11 @@
-use std::path;
-
 use crate::{
-    api_client::{ApiClient, ApiClientInner, HttpRequest},
+    api_client::{ApiClient, ApiClientInner},
+    daemon::{request::Request, Daemon},
     events::{emit_event, DevWebPenEvent},
     view::ViewState,
 };
+
+use super::send_daemon_request;
 
 #[tauri::command]
 pub async fn get_api_client<'a>(
@@ -17,10 +18,26 @@ pub async fn get_api_client<'a>(
 
 #[tauri::command]
 pub async fn send_api_client_request<'a>(
-    req: HttpRequest,
+    request_id: &str,
     api_client: tauri::State<'a, ApiClient>,
-) -> Result<ApiClientInner, String> {
-    todo!("send");
+    daemon_state: tauri::State<'a, Daemon>,
+) -> Result<(), String> {
+    let req = {
+        let api_client = api_client.lock().unwrap();
+        let result = api_client.get_request(request_id);
+
+        if let Err(e) = result {
+            return Err(e);
+        }
+
+        let http_request = &result.unwrap();
+
+        Request::from(http_request)
+    };
+
+    send_daemon_request(daemon_state, req).await?;
+
+    Ok(())
 }
 
 #[tauri::command]
@@ -54,7 +71,7 @@ pub async fn open_api_client_request<'a>(
     view_state: tauri::State<'a, ViewState>,
     api_client: tauri::State<'a, ApiClient>,
 ) -> Result<(), String> {
-    let mut api_client = api_client.lock().unwrap();
+    let api_client = api_client.lock().unwrap();
     let result = api_client.get_request(request_id);
 
     if let Err(e) = result {

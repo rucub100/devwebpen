@@ -1,15 +1,17 @@
+use std::fmt;
+
 pub enum Command {
     Reset,
     StartProxy,
     StopProxy,
 }
 
-impl AsRef<str> for Command {
-    fn as_ref(&self) -> &str {
+impl fmt::Display for Command {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Command::Reset => "RESET",
-            Command::StartProxy => "START_PROXY",
-            Command::StopProxy => "STOP_PROXY",
+            Command::Reset => write!(f, "RESET"),
+            Command::StartProxy => write!(f, "START_PROXY"),
+            Command::StopProxy => write!(f, "STOP_PROXY"),
         }
     }
 }

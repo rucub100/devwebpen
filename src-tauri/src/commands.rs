@@ -6,7 +6,11 @@ pub mod proxy;
 pub mod view;
 
 use crate::{
-    daemon::{command::Command, request::RequestType, Daemon},
+    daemon::{
+        command::Command,
+        request::{Request, RequestBody, RequestType},
+        Daemon,
+    },
     events::{emit_event, DevWebPenEvent},
     proxy::Proxy,
     view::ViewState,
@@ -45,15 +49,34 @@ pub async fn reset<'a>(
         let request_type = RequestType::Command;
         let command = Command::Reset;
 
-        let msg = Message::text(format!(
-            "{}\n{}\n{}",
-            uuid,
-            request_type.as_ref(),
-            command.as_ref()
-        ));
+        let msg = Message::text(format!("{}\n{}\n{}", uuid, request_type, command));
 
         ws_out.send(msg).await.map_err(|e| e.to_string())?;
     }
 
+    Ok(())
+}
+
+pub async fn send_daemon_request<'a>(
+    daemon_state: tauri::State<'a, Daemon>,
+    req: Request,
+) -> Result<(), String> {
+    let ws_out = {
+        let daemon = daemon_state.lock().await;
+        daemon.get_ws_out()
+    };
+
+    let mut ws_out = ws_out.lock().await;
+    let ws_out = ws_out.as_mut().ok_or("Websocket not connected")?;
+
+    let msg = match req.body {
+        RequestBody::Text(ref body) => Message::text(format!(
+            "{}\n{}\n{}",
+            req.header.request_id, req.header.request_type, body
+        )),
+        RequestBody::Binary(ref body) => todo!("Not supported yet"),
+    };
+
+    ws_out.send(msg).await.map_err(|e| e.to_string())?;
     Ok(())
 }
