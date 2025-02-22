@@ -12,6 +12,12 @@ pub fn handle_daemon_response(app_handle: &AppHandle, res: Response) {
         ResponseType::ProxyStatus => {
             handle_proxy_status_response(app_handle, res.body);
         }
+        ResponseType::HttpRequestError => {
+            todo!("TODO: Handle http request error");
+        }
+        ResponseType::HttpResponse => {
+            todo!("TODO: Handle http response");
+        }
     }
 }
 

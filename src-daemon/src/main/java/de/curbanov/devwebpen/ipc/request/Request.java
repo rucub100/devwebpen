@@ -27,6 +27,8 @@ public class Request<T> implements Serializable {
                     default:
                         throw new IllegalArgumentException("Unknown command: " + commandId);
                 }
+            case HTTP_REQUEST:
+                return HttpRequest.parse(body);
             default:
                 throw new IllegalArgumentException("Unknown request type: " + header.getRequestType());
         }

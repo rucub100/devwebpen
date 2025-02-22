@@ -1,5 +1,6 @@
 use std::fmt;
 
+use base64::prelude::*;
 use uuid::Uuid;
 
 use crate::api_client::HttpRequest;
@@ -89,8 +90,7 @@ impl From<&HttpRequest> for Request {
         } else {
             Vec::new()
         };
-        // TODO: Unwrap is not safe here; send http request always as binary via websocket or use base64 encoding
-        let http_body = String::from_utf8(http_body).unwrap_or_else(|_| String::from(""));
+        let http_body = BASE64_STANDARD.encode(&http_body);
 
         let body = format!(
             "{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}",

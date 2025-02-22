@@ -3,14 +3,8 @@ use uuid::Uuid;
 
 pub enum ResponseType {
     ProxyStatus,
-}
-
-impl AsRef<str> for ResponseType {
-    fn as_ref(&self) -> &str {
-        match self {
-            ResponseType::ProxyStatus => "PROXY_STATUS",
-        }
-    }
+    HttpResponse,
+    HttpRequestError,
 }
 
 pub struct ResponseHeader {
@@ -56,6 +50,8 @@ impl Response {
         let request_type_line = request_type_line.unwrap();
         let request_type = match request_type_line {
             "PROXY_STATUS" => ResponseType::ProxyStatus,
+            "HTTP_RESPONSE" => ResponseType::HttpResponse,
+            "HTTP_REQUEST_ERROR" => ResponseType::HttpRequestError,
             _ => return Err("Invalid request type".to_string()),
         };
 

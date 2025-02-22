@@ -67,7 +67,7 @@ pub struct HttpRequest {
     pub query_params: Option<Vec<HttpQueryParameter>>,
     pub path_params: Option<Vec<HttpPathParameter>>,
     pub headers: Vec<HttpHeader>,
-    pub body: Option<Vec<u8>>, //TODO: need better reprsentation for body?!
+    pub body: Option<Vec<u8>>,
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
