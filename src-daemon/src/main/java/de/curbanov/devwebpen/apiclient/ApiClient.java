@@ -8,6 +8,8 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -121,11 +123,8 @@ public class ApiClient {
             // build response
             final String requestId = request.getId();
             final int status = clientResponse.statusCode();
-            final de.curbanov.devwebpen.ipc.response.body.HttpResponse.IdNameValue[] headers = clientResponse.headers()
-                    .map().entrySet().stream()
-                    .map(entry -> new de.curbanov.devwebpen.ipc.response.body.HttpResponse.IdNameValue(
-                            entry.getKey(), entry.getKey(), entry.getValue().get(0)))
-                    .toArray(de.curbanov.devwebpen.ipc.response.body.HttpResponse.IdNameValue[]::new);
+            final LinkedHashMap<String, List<String>> headers = new LinkedHashMap<>(clientResponse.headers().map());
+
             final long responseSizeBytes = clientResponse.body().length;
             final Optional<byte[]> body = clientResponse.body().length == 0 ? Optional.empty()
                     : Optional.of(clientResponse.body());

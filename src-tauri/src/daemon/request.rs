@@ -99,7 +99,7 @@ impl From<&HttpRequest> for Request {
             http_request.scheme,
             http_request.authority,
             http_request.path,
-            http_request.version,
+            http_request.http_version,
             path_params_count,
             path_params,
             query_params_count,

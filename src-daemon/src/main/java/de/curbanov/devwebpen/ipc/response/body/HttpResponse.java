@@ -2,6 +2,8 @@ package de.curbanov.devwebpen.ipc.response.body;
 
 import java.nio.ByteBuffer;
 import java.util.Base64;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -12,7 +14,7 @@ public class HttpResponse implements AsTextOrBinary {
     private final String requestId;
     private final int status;
     private final String httpVersion;
-    private final IdNameValue[] headers;
+    private final LinkedHashMap<String, List<String>> headers;
     private final long responseTimeMs;
     private final long responseSizeBytes;
     private final Optional<byte[]> body;
@@ -24,7 +26,7 @@ public class HttpResponse implements AsTextOrBinary {
             String requestId,
             int status,
             String httpVersion,
-            IdNameValue[] headers,
+            LinkedHashMap<String, List<String>> headers,
             long responseTimeMs,
             long responseSizeBytes,
             Optional<byte[]> body) {
@@ -54,10 +56,12 @@ public class HttpResponse implements AsTextOrBinary {
         text.append(requestId).append("\n");
         text.append(status).append("\n");
         text.append(httpVersion).append("\n");
-        text.append(headers.length).append("\n");
+        text.append(headers.size()).append("\n");
 
-        final String headersText = Stream.of(headers)
-                .map(header -> header.id + ":" + header.name + ":" + header.value + "\n")
+        final String headersText = headers.entrySet().stream()
+                .map((entry) -> entry.getValue().stream()
+                        .map((value) -> entry.getKey() + ":" + value + "\n")
+                        .collect(Collectors.joining()))
                 .collect(Collectors.joining());
         text.append(headersText);
         if (!headersText.endsWith("\n")) {

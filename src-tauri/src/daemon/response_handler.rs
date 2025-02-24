@@ -1,7 +1,8 @@
 use tauri::{AppHandle, Manager};
 
 use crate::{
-    api_client::HttpRequestError,
+    api_client::{HttpRequestError, HttpResponse},
+    app_state,
     events::{emit_event, DevWebPenEvent},
     proxy::{Proxy, ProxyState},
 };
@@ -83,6 +84,44 @@ fn handle_http_request_error_response(app_handle: &AppHandle, body: String) {
         app_state.add_error(format!("HTTP request error: {}", error));
     }
 
+    _update_app_state(app_handle, &app_state);
+}
+
+fn handle_http_response(app_handle: &AppHandle, body: String) {
+    let app_state = app_handle.state::<crate::AppState>();
+    let mut app_state = app_state.lock().unwrap();
+
+    let result: Result<HttpResponse, String> = body.try_into();
+
+    if let Err(e) = result {
+        app_state.add_error(format!("Failed to parse HTTP response: {}", e));
+        _update_app_state(app_handle, &app_state);
+        return;
+    }
+
+    let response = result.unwrap();
+
+    let api_client = app_handle.state::<crate::ApiClient>();
+    let mut api_client = api_client.lock().unwrap();
+    let result = api_client.add_response(response);
+
+    if let Err(e) = result {
+        app_state.add_error(format!("Failed to add HTTP response: {}", e));
+        _update_app_state(app_handle, &app_state);
+        return;
+    }
+
+    let result = emit_event(
+        app_handle,
+        DevWebPenEvent::ApiClientChanged(api_client.clone()),
+    );
+
+    if let Err(e) = result {
+        log::error!("{}", e);
+    }
+}
+
+fn _update_app_state(app_handle: &AppHandle, app_state: &app_state::AppStateInner) {
     if app_state.ephemeral.is_some() {
         let result = emit_event(
             app_handle,
@@ -102,8 +141,4 @@ fn handle_http_request_error_response(app_handle: &AppHandle, body: String) {
             log::error!("{}", e);
         }
     }
-}
-
-fn handle_http_response(app_handle: &AppHandle, body: String) {
-    log::info!("Received HTTP response: {}", body);
 }

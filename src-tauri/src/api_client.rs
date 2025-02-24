@@ -1,5 +1,6 @@
 use std::{fmt, sync::Mutex};
 
+use base64::prelude::*;
 use uuid::Uuid;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq)]
@@ -63,7 +64,7 @@ pub struct HttpRequest {
     pub scheme: String,
     pub authority: String,
     pub path: String,
-    pub version: HttpVersion,
+    pub http_version: HttpVersion,
     pub query_params: Option<Vec<HttpQueryParameter>>,
     pub path_params: Option<Vec<HttpPathParameter>>,
     pub headers: Vec<HttpHeader>,
@@ -139,11 +140,81 @@ impl TryFrom<String> for HttpRequestError {
 pub struct HttpResponse {
     pub request_id: Uuid,
     pub status: u16,
-    pub version: HttpVersion,
+    pub http_version: HttpVersion,
     pub headers: Vec<HttpHeader>,
     pub response_time_ms: u64,
     pub response_size_bytes: u64,
     pub body: Option<Vec<u8>>,
+}
+
+impl TryFrom<String> for HttpResponse {
+    type Error = String;
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        let lines = value.split("\n").collect::<Vec<&str>>();
+
+        if lines.len() < 6 {
+            return Err(format!("Invalid message: {}", value));
+        }
+
+        let mut index: usize = 0;
+
+        let request_id = Uuid::parse_str(lines[index]).map_err(|e| e.to_string())?;
+        index += 1;
+        let status = lines[index].parse::<u16>().map_err(|e| e.to_string())?;
+        index += 1;
+        let http_version = HttpVersion::parse(lines[index])?;
+        index += 1;
+        let headers_count = lines[index].parse::<usize>().map_err(|e| e.to_string())?;
+        index += 1;
+        let mut headers: Vec<HttpHeader> = Vec::new();
+
+        for _ in 0..headers_count {
+            if index >= lines.len() {
+                return Err(format!("Invalid message: {}", value));
+            }
+
+            let header_line = lines[index].split_once(":");
+
+            if header_line.is_none() {
+                return Err(format!("Invalid header line: {}", lines[index]));
+            }
+
+            let (name, value) = header_line.unwrap();
+
+            headers.push(HttpHeader {
+                id: Uuid::new_v4(),
+                name: name.to_string(),
+                value: value.to_string(),
+            });
+
+            index += 1;
+        }
+
+        let response_time_ms = lines[index].parse::<u64>().map_err(|e| e.to_string())?;
+        index += 1;
+        let response_size_bytes = lines[index].parse::<u64>().map_err(|e| e.to_string())?;
+        index += 1;
+
+        let body = if index < lines.len() {
+            let body = BASE64_STANDARD
+                .decode(lines[index])
+                .map_err(|e| e.to_string())?;
+            Some(body)
+        } else {
+            None
+        };
+
+        Ok(HttpResponse {
+            request_id,
+            status,
+            http_version,
+            headers,
+            response_time_ms,
+            response_size_bytes,
+            body,
+        })
+    }
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
@@ -301,7 +372,7 @@ impl ApiClientInner {
             path: "/".to_string(),
             path_params: None,
             query_params: None,
-            version: HttpVersion::Http_1_1,
+            http_version: HttpVersion::Http_1_1,
             headers: Vec::new(),
             body: None,
         };
@@ -476,6 +547,14 @@ impl ApiClientInner {
     ) -> Result<(), String> {
         let header = self._find_request_header_mut(request_id, header_id)?;
         header.value = header_value;
+        Ok(())
+    }
+
+    pub fn add_response(&mut self, res: HttpResponse) -> Result<(), String> {
+        let request_id = res.request_id.to_string();
+        let req = self._find_request_mut(request_id.as_str())?;
+        let pair = (req.clone(), res);
+        self.history.push(pair);
         Ok(())
     }
 }

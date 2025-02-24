@@ -30,7 +30,7 @@ export type HttpRequest = {
   scheme: string;
   authority: string;
   path: string;
-  version: HttpVersion;
+  httpVersion: HttpVersion;
   queryParams?: HttpQueryParameter[];
   pathParams?: HttpPathParameter[];
   headers: HttpHeader[];
@@ -38,7 +38,7 @@ export type HttpRequest = {
 };
 
 export type HttpResponse = {
-  version: HttpVersion;
+  httpVersion: HttpVersion;
   status: number;
   headers: HttpHeader[];
   body: null | string | ArrayBuffer;
