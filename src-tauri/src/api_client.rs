@@ -202,6 +202,9 @@ impl ApiClientInner {
         }
 
         // Remove path params that are no longer in the path
+        if req.path_params.is_none() {
+            req.path_params = Some(Vec::new());
+        }
         let req_path_params = req.path_params.as_mut().unwrap();
         req_path_params.retain(|path_param| path_params.contains(&path_param.name));
 

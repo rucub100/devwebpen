@@ -1,5 +1,9 @@
 use std::sync::atomic::{AtomicU64, Ordering};
 
+/**
+ * This is empty at the moment, but it may be a good place for general and common temporary states as opposed to the states like
+ * ViewState, Daemon, Proxy, ApiClient, etc. which are more specific to a particular feature.
+ */
 #[derive(serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Session {
