@@ -62,6 +62,16 @@ impl AppStateInner {
     pub fn close_project(&mut self) {
         self.project = None;
     }
+
+    pub fn add_error(&mut self, error: String) {
+        if self.ephemeral.is_some() {
+            self.ephemeral.as_mut().unwrap().add_error(error);
+        } else if self.project.is_some() {
+            self.project.as_mut().unwrap().session.add_error(error);
+        } else {
+            log::error!("No session or project to add error to");
+        }
+    }
 }
 
 pub type AppState = Mutex<AppStateInner>;

@@ -87,7 +87,13 @@ public class ApiClient {
             }
 
             // build client specific request
-            HttpRequest.Builder clientRequestBuilder = HttpRequest.newBuilder(uri);
+            HttpRequest.Builder clientRequestBuilder;
+            try {
+                clientRequestBuilder = HttpRequest.newBuilder(uri);
+            } catch (Exception e) {
+                future.completeExceptionally(new InvalidUriException(e.getMessage()));
+                return;
+            }
             clientRequestBuilder.timeout(Duration.ofSeconds(10));
             try {
                 clientRequestBuilder.method(request.getMethod(),

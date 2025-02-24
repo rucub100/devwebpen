@@ -1,6 +1,7 @@
 use tauri::{AppHandle, Manager};
 
 use crate::{
+    api_client::HttpRequestError,
     events::{emit_event, DevWebPenEvent},
     proxy::{Proxy, ProxyState},
 };
@@ -13,10 +14,10 @@ pub fn handle_daemon_response(app_handle: &AppHandle, res: Response) {
             handle_proxy_status_response(app_handle, res.body);
         }
         ResponseType::HttpRequestError => {
-            todo!("TODO: Handle http request error");
+            handle_http_request_error_response(app_handle, res.body);
         }
         ResponseType::HttpResponse => {
-            todo!("TODO: Handle http response");
+            handle_http_response(app_handle, res.body);
         }
     }
 }
@@ -67,4 +68,42 @@ fn handle_proxy_status_response(app_handle: &AppHandle, body: String) {
     if let Err(e) = result {
         log::error!("{}", e);
     }
+}
+
+fn handle_http_request_error_response(app_handle: &AppHandle, body: String) {
+    let app_state = app_handle.state::<crate::AppState>();
+    let mut app_state = app_state.lock().unwrap();
+
+    let error: Result<HttpRequestError, String> = body.try_into();
+
+    if let Err(e) = error {
+        app_state.add_error(format!("Failed to parse HTTP request error: {}", e));
+    } else {
+        let error = error.unwrap();
+        app_state.add_error(format!("HTTP request error: {}", error));
+    }
+
+    if app_state.ephemeral.is_some() {
+        let result = emit_event(
+            app_handle,
+            DevWebPenEvent::EphemeralSessionChanged(app_state.ephemeral.clone()),
+        );
+
+        if let Err(e) = result {
+            log::error!("{}", e);
+        }
+    } else if app_state.project.is_some() {
+        let result = emit_event(
+            app_handle,
+            DevWebPenEvent::ProjectChanged(app_state.project.clone()),
+        );
+
+        if let Err(e) = result {
+            log::error!("{}", e);
+        }
+    }
+}
+
+fn handle_http_response(app_handle: &AppHandle, body: String) {
+    log::info!("Received HTTP response: {}", body);
 }

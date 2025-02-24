@@ -39,6 +39,7 @@ public class Processor implements TextRequestHandler {
                             break;
                         case HTTP_REQUEST:
                             execHttpRequest(request);
+                            break;
                         default:
                             throw new IllegalArgumentException(
                                     "[Processor]: Unknown request type: " + request.getHeader().getRequestType());

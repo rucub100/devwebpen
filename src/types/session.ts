@@ -1,5 +1,6 @@
 export type Session = {
-  id: number;
+  id: String;
+  errors: String[];
 };
 
 const ephemeralSessionEvents = {

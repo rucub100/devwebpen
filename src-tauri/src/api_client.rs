@@ -72,14 +72,78 @@ pub struct HttpRequest {
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
-pub struct HttpResponse {
-    pub version: HttpVersion,
-    pub status: u16,
-    pub headers: Vec<HttpHeader>,
-    pub body: Option<Vec<u8>>,
+pub enum HttpRequestErrorCode {
+    UnknownError,
+    UnsupportedHttpVersion,
+    UnsupportedHttpMethod,
+    InvalidUri,
+}
+
+impl<T> From<T> for HttpRequestErrorCode
+where
+    T: Into<u64>,
+{
+    fn from(error: T) -> Self {
+        match error.into() {
+            0 => Self::UnknownError,
+            1 => Self::UnsupportedHttpVersion,
+            2 => Self::UnsupportedHttpMethod,
+            3 => Self::InvalidUri,
+            _ => Self::UnknownError,
+        }
+    }
+}
+
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct HttpRequestError {
     pub request_id: Uuid,
+    pub error_code: HttpRequestErrorCode,
+    pub error_message: String,
+}
+
+impl fmt::Display for HttpRequestError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{} (code: {:?}; request_id: {})",
+            self.error_message, self.error_code, self.request_id
+        )
+    }
+}
+
+impl TryFrom<String> for HttpRequestError {
+    type Error = String;
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        let lines = value.split("\n").collect::<Vec<&str>>();
+
+        if lines.len() < 3 {
+            return Err(format!("Invalid message: {}", value));
+        }
+
+        let request_id = Uuid::parse_str(lines[0]).map_err(|e| e.to_string())?;
+        let error_code = lines[1].parse::<u64>().map_err(|e| e.to_string())?;
+        let error_message = lines[2].to_string();
+
+        Ok(HttpRequestError {
+            request_id,
+            error_code: error_code.into(),
+            error_message,
+        })
+    }
+}
+
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct HttpResponse {
+    pub request_id: Uuid,
+    pub status: u16,
+    pub version: HttpVersion,
+    pub headers: Vec<HttpHeader>,
     pub response_time_ms: u64,
     pub response_size_bytes: u64,
+    pub body: Option<Vec<u8>>,
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]

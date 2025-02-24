@@ -50,11 +50,12 @@ async function updateEphemeralSession(
     const isActive = !!globalEphemeralSession;
 
     if (!init && isActive !== wasActive) {
-      sessionListeners.forEach((listener) =>
-        listener(globalEphemeralSession || null)
-      );
       isActiveListeners.forEach((listener) => listener(isActive));
     }
+
+    sessionListeners.forEach((listener) =>
+      listener(globalEphemeralSession || null)
+    );
 
     if (init) {
       console.debug("Ephemeral session initialized", globalEphemeralSession);

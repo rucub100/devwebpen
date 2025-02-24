@@ -5,45 +5,19 @@ use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
 };
 
-use super::session::{Session, SessionData};
+use super::session::Session;
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Project {
+    #[serde(skip)]
     pub path: String,
     pub name: Option<String>,
     pub description: Option<String>,
     pub session: Session,
 }
 
-#[derive(serde::Serialize, serde::Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ProjectData {
-    pub name: Option<String>,
-    pub description: Option<String>,
-    pub session: SessionData,
-}
-
-impl From<Project> for ProjectData {
-    fn from(project: Project) -> Self {
-        ProjectData {
-            name: project.name,
-            description: project.description,
-            session: project.session.into(),
-        }
-    }
-}
-
 impl Project {
-    pub fn from(data: ProjectData, path: String) -> Project {
-        Project {
-            path,
-            name: data.name,
-            description: data.description,
-            session: data.session.into(),
-        }
-    }
-
     pub async fn load(path: String) -> Result<Project, String> {
         let _path = Path::new(&path);
         let file = File::open(_path).await;
@@ -60,15 +34,16 @@ impl Project {
             return Err(e.to_string());
         }
 
-        let project_data = serde_json::from_str::<ProjectData>(&data);
+        let project = serde_json::from_str::<Project>(&data);
 
-        if let Err(e) = project_data {
+        if let Err(e) = project {
             return Err(e.to_string());
         }
 
-        let project_data = project_data.unwrap();
+        let mut project = project.unwrap();
+        project.path = path;
 
-        Ok(Project::from(project_data, path))
+        Ok(project)
     }
 
     pub async fn save(&self) -> Result<(), String> {
@@ -80,8 +55,8 @@ impl Project {
         }
 
         let mut file = file.unwrap();
-        let project_data: ProjectData = self.clone().into();
-        let data = serde_json::to_string(&project_data);
+        let project: Project = self.clone();
+        let data = serde_json::to_string(&project);
 
         if let Err(e) = data {
             return Err(e.to_string());
