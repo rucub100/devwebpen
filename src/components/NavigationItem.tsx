@@ -33,7 +33,7 @@ export default function NavigationItem({
         className={`${displayIndicator} absolute left-0 bg-primary-600/50 h-12 w-0.5`}
       ></div>
       <IconButton
-        icon={<Icon icon={icon} width={32}></Icon>}
+        icon={<Icon icon={icon} fontSize={32} wght={200}></Icon>}
         title={title}
         className={`${textColor} p-2`}
         disabled={disabled}

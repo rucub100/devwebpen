@@ -12,7 +12,8 @@
     "pretauri": "npm run sidecar",
     "tauri": "tauri",
     "tauri:dev": "cross-env RUST_LOG=debug tauri dev",
-    "tauri:icon": "tauri icon app-icon.svg"
+    "tauri:icon": "tauri icon app-icon.svg",
+    "mdifont:download": "node scripts/download-material-design-icons-variablefont.js"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.2.0",

@@ -1,60 +1,52 @@
-import { SVGAttributes } from "react";
-
-type IconString =
-  | "dashboard"
-  | "traffic"
-  | "api"
-  | "close"
-  | "delete"
-  | "error";
+import { CSSProperties, HTMLAttributes } from "react";
 
 /**
- * https://fonts.google.com/icons
- * https://www.apache.org/licenses/LICENSE-2.0.html
- * weight: 200
- * style: sharp
- * grade: 0
- * size: 48px
+ * Icons from Material Design Icons repo:
+ * https://github.com/google/material-design-icons
+ *
  */
-const IconData: Record<IconString, string> = {
-  dashboard:
-    "M535.38-586.15V-800H800v213.85H535.38ZM160-484.62V-800h264.62v315.38H160ZM535.38-160v-315.38H800V-160H535.38ZM160-160v-213.85h264.62V-160H160Zm30.77-355.38h203.08v-253.85H190.77v253.85Zm375.38 324.61h203.08v-253.85H566.15v253.85Zm0-426.15h203.08v-152.31H566.15v152.31ZM190.77-190.77h203.08v-152.31H190.77v152.31Zm203.08-324.61Zm172.3-101.54Zm0 172.3Zm-172.3 101.54Z",
-  traffic:
-    "M477.51-252.46q18.03 0 30.8-12.59t12.77-31q0-18.41-12.59-31.18T477.87-340q-18.02 0-30.79 12.59t-12.77 31q0 18.41 12.59 31.18t30.61 12.77Zm0-184.16q18.03 0 30.8-12.59t12.77-30.61q0-18.03-12.59-30.8-12.59-12.76-30.62-12.76-18.02 0-30.79 12.59t-12.77 30.61q0 18.03 12.59 30.8 12.59 12.76 30.61 12.76Zm0-183.38q18.03 0 30.8-12.59t12.77-31q0-18.41-12.59-31.18t-30.62-12.77q-18.02 0-30.79 12.59t-12.77 31q0 18.41 12.59 31.18T477.51-620ZM315.77-160v-107.15q-38.69-7.16-56.85-29.77-18.15-22.62-18.15-47.77h75v-109.23q-38.69-7.93-56.85-30.96-18.15-23.04-18.15-47.58h75V-641q-38.69-7.15-56.85-30.08-18.15-22.92-18.15-47.46h75V-800h324.61v81.46h78.85q0 24.54-20.46 47.46-20.46 22.93-58.39 30.08v108.54h78.85q0 24.54-20.46 47.58-20.46 23.03-58.39 30.96v109.23h78.85q0 25.15-20.46 47.77-20.46 22.61-58.39 29.77V-160H315.77Zm30.77-30.77h263.08v-578.46H346.54v578.46Zm0 0v-578.46 578.46Z",
-  api: "M480-388.85 388.85-480 480-571.92 571.92-480 480-388.85Zm-85-247.84-59.92-59.93L480-841.54l144.92 144.92L565-636.69l-85-85-85 85ZM263.38-335.08 118.46-480l144.92-144.92L323.31-565l-85 85 85 85-59.93 59.92Zm433.24 0L636.69-395l85-85-85-85 59.93-59.92L841.54-480 696.62-335.08ZM480-118.46 335.08-263.38 395-323.31l85 85 85-85 59.92 59.93L480-118.46Z",
-  close:
-    "M256-227.69 227.69-256l224-224-224-224L256-732.31l224 224 224-224L732.31-704l-224 224 224 224L704-227.69l-224-224-224 224Z",
-  delete:
-    "M240.23-160v-573.85H200v-30.77h154.15v-26.15h251.7v26.15H760v30.77h-40.23V-160H240.23ZM271-190.77h418v-543.08H271v543.08Zm124.46-82.92h30.77v-378.23h-30.77v378.23Zm138.31 0h30.77v-378.23h-30.77v378.23ZM271-733.85v543.08-543.08Z",
-  error:
-    "M479.98-301.54q9.79 0 15.64-5.83 5.84-5.83 5.84-15.61 0-9.79-5.83-15.64-5.83-5.84-15.61-5.84-9.79 0-15.64 5.83-5.84 5.83-5.84 15.61 0 9.79 5.83 15.64 5.83 5.84 15.61 5.84Zm-13.9-129.15h30.77v-246.08h-30.77v246.08ZM480.4-120q-75.18 0-140.29-28.34-65.12-28.34-114.25-77.42-49.13-49.08-77.49-114.21Q120-405.11 120-480.37q0-74.49 28.34-140.07 28.34-65.57 77.42-114.2 49.08-48.63 114.21-76.99Q405.11-840 480.37-840q74.49 0 140.07 28.34 65.57 28.34 114.2 76.92 48.63 48.58 76.99 114.26Q840-554.81 840-480.4q0 75.18-28.34 140.29-28.34 65.12-76.92 114.07-48.58 48.94-114.26 77.49Q554.81-120 480.4-120Zm.1-30.77q136.88 0 232.81-96.04 95.92-96.04 95.92-233.69 0-136.88-95.73-232.81-95.74-95.92-233.5-95.92-137.15 0-233.19 95.73-96.04 95.74-96.04 233.5 0 137.15 96.04 233.19 96.04 96.04 233.69 96.04ZM480-480Z",
-};
+type IconString =
+  | "api"
+  | "close"
+  | "dashboard"
+  | "delete"
+  | "error"
+  | "traffic";
 
-export interface IconProps extends SVGAttributes<SVGElement> {
+export interface IconProps
+  extends Omit<HTMLAttributes<HTMLSpanElement>, "style"> {
   icon: IconString;
+  fontSize?: CSSProperties["fontSize"];
+  style?: "outlined" | "rounded" | "sharp";
+  className?: string;
+  fill?: boolean;
+  wght?: number; // weight from 100 to 700
+  grad?: number; // grade from -25 to 200
+  opsz?: number; // optical size from 20 to 48
 }
 
 export default function Icon({
   icon,
-  xmlns = "http://www.w3.org/2000/svg",
-  viewBox = "0 -960 960 960",
-  fill = "currentColor",
-  width,
-  height = width ? undefined : "1em",
+  fontSize,
+  style = "sharp",
   className = "",
+  fill = false,
+  grad = 0,
+  opsz = 20,
+  wght = 400,
   ...props
 }: IconProps) {
+  const fontVariationSettings = `'FILL' ${
+    fill ? 1 : 0
+  }, 'wght' ${wght}, 'GRAD' ${grad}, 'opsz' ${opsz}`;
+
   return (
-    <svg
-      xmlns={xmlns}
-      viewBox={viewBox}
-      fill={fill}
-      width={width}
-      height={height}
-      className={`aspect-square ${className}`}
+    <span
+      className={`material-symbols-${style} ${className}`}
+      style={{ fontVariationSettings: fontVariationSettings, fontSize }}
       {...props}
     >
-      <path d={IconData[icon]} />
-    </svg>
+      {icon}
+    </span>
   );
 }
