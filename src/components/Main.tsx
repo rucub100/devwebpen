@@ -3,12 +3,12 @@ import { MainView, TabData } from "../types/view-state";
 import Welcome from "../views/Welcome";
 import styles from "./Main.module.css";
 import Default from "../views/Default";
-import ApiRequest from "../views/ApiRequest";
+import ApiRequestResponse from "../views/ApiRequestResponse";
 
 const viewComponents: Record<MainView, (data?: TabData | null) => ReactNode> = {
   none: () => <Default></Default>,
   welcome: () => <Welcome></Welcome>,
-  apiRequest: (data) => <ApiRequest data={data}></ApiRequest>,
+  apiRequest: (data) => <ApiRequestResponse data={data}></ApiRequestResponse>,
 };
 
 interface MainProps {

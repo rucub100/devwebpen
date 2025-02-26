@@ -1,13 +1,13 @@
 import { useState } from "react";
 import ApiRequestNavigation, {
   ApiRequestNavigationItem,
-} from "../components/api/request/ApiRequestNavigation";
-import ApiRequestStartLine from "../components/api/request/ApiRequestStartLine";
-import ApiRequestParams from "../components/api/request/ApiRequestParams";
-import ApiRequestHeaders from "../components/api/request/ApiRequestHeaders";
-import ApiRequestBody from "../components/api/request/ApiRequestBody";
-import { ApiRequestTabData } from "../types/view-state";
-import { useApiRequest } from "../hooks/useApiRequest";
+} from "./ApiRequestNavigation";
+import ApiRequestStartLine from "./ApiRequestStartLine";
+import ApiRequestParams from "./ApiRequestParams";
+import ApiRequestHeaders from "./ApiRequestHeaders";
+import ApiRequestBody from "./ApiRequestBody";
+import { ApiRequestTabData } from "../../../types/view-state";
+import { useApiRequest } from "../../../hooks/useApiRequest";
 
 interface ApiRequestProps {
   data?: ApiRequestTabData | null;
@@ -50,7 +50,7 @@ export default function ApiRequest({ data }: ApiRequestProps) {
   const queryParams = request.queryParams || [];
 
   return (
-    <div className="flex flex-col w-full h-full">
+    <div className="flex flex-col w-full h-full min-w-max">
       <ApiRequestStartLine
         method={method}
         scheme={scheme}
