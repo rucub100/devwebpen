@@ -48,11 +48,13 @@ export default function ApiResponseStartLine({
 }: ApiResponseStartLineProps) {
   return (
     <div className="flex flex-row items-center w-full p-2 gap-2">
-      <div className="p-2 bg-neutral-800">{formatStatus(response.status)}</div>
-      <div className="p-2 bg-neutral-800">
+      <div className="px-2 py-1 bg-neutral-800">
+        {formatStatus(response.status)}
+      </div>
+      <div className="px-2 py-1 bg-neutral-800">
         {formatMs(response.responseTimeMs)}
       </div>
-      <div className="p-2 bg-neutral-800">
+      <div className="px-2 py-1 bg-neutral-800">
         {formatBytes(response.responseSizeBytes)}
       </div>
     </div>

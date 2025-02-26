@@ -34,14 +34,14 @@ export type HttpRequest = {
   queryParams?: HttpQueryParameter[];
   pathParams?: HttpPathParameter[];
   headers: HttpHeader[];
-  body: null | string | ArrayBuffer;
+  body?: Uint8Array;
 };
 
 export type HttpResponse = {
   httpVersion: HttpVersion;
   status: number;
   headers: HttpHeader[];
-  body: null | string | ArrayBuffer;
+  body?: Uint8Array;
   requestId: string;
   responseTimeMs: number;
   responseSizeBytes: number;

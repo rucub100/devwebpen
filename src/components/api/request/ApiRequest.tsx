@@ -92,7 +92,9 @@ export default function ApiRequest({ data }: ApiRequestProps) {
           onSetPathParamValue={setPathParamValue}
         ></ApiRequestParams>
       )}
-      {selectedTab === "body" && <ApiRequestBody body={body}></ApiRequestBody>}
+      {selectedTab === "body" && body && (
+        <ApiRequestBody body={body}></ApiRequestBody>
+      )}
     </div>
   );
 }

@@ -149,9 +149,6 @@ pub async fn open_recent_project(
 pub async fn close_project<'a>(
     app_handle: tauri::AppHandle,
     app_state: tauri::State<'a, AppState>,
-    view_state: tauri::State<'a, ViewState>,
-    proxy: tauri::State<'a, Proxy>,
-    daemon: tauri::State<'a, Daemon>,
 ) -> Result<(), String> {
     {
         let mut app_state = app_state.lock().unwrap();
@@ -159,5 +156,5 @@ pub async fn close_project<'a>(
         emit_event(&app_handle, DevWebPenEvent::ProjectChanged(None)).map_err(|e| e.to_string())?;
     }
 
-    return reset(app_handle, view_state, proxy, daemon).await;
+    return reset(&app_handle).await;
 }

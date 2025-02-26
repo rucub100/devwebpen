@@ -34,9 +34,6 @@ pub async fn start_ephemeral_session<'a>(
 pub async fn close_ephemeral_session<'a>(
     app_handle: tauri::AppHandle,
     app_state: tauri::State<'a, AppState>,
-    view_state: tauri::State<'a, ViewState>,
-    proxy: tauri::State<'a, Proxy>,
-    daemon: tauri::State<'a, Daemon>,
 ) -> Result<(), String> {
     {
         let mut app_state = app_state.lock().unwrap();
@@ -45,5 +42,5 @@ pub async fn close_ephemeral_session<'a>(
             .map_err(|e| e.to_string())?;
     }
 
-    return reset(app_handle, view_state, proxy, daemon).await;
+    return reset(&app_handle).await;
 }

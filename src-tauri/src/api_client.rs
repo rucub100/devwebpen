@@ -557,6 +557,11 @@ impl ApiClientInner {
         self.history.push(pair);
         Ok(())
     }
+
+    pub fn reset(&mut self) -> ApiClientInner {
+        *self = ApiClientInner::default();
+        self.clone()
+    }
 }
 
 pub type ApiClient = Mutex<ApiClientInner>;

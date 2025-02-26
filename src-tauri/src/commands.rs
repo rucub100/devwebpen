@@ -6,6 +6,7 @@ pub mod proxy;
 pub mod view;
 
 use crate::{
+    api_client::ApiClient,
     daemon::{
         command::Command,
         request::{Request, RequestBody, RequestType},
@@ -17,26 +18,32 @@ use crate::{
 };
 
 use futures_util::SinkExt;
+use tauri::{AppHandle, Manager};
 use tokio_tungstenite::tungstenite::Message;
 
-pub async fn reset<'a>(
-    app_handle: tauri::AppHandle,
-    view_state: tauri::State<'a, ViewState>,
-    proxy: tauri::State<'a, Proxy>,
-    daemon: tauri::State<'a, Daemon>,
-) -> Result<(), String> {
+pub async fn reset(app_handle: &AppHandle) -> Result<(), String> {
     {
+        let view_state = app_handle.state::<ViewState>();
         let mut view_state = view_state.lock().unwrap();
         let view_state = view_state.reset();
         emit_event(&app_handle, DevWebPenEvent::ViewStateChanged(view_state))
             .map_err(|e| e.to_string())?;
     }
     {
+        let proxy = app_handle.state::<Proxy>();
         let mut proxy = proxy.lock().unwrap();
         let proxy = proxy.reset();
         emit_event(&app_handle, DevWebPenEvent::ProxyChanged(proxy)).map_err(|e| e.to_string())?;
     }
     {
+        let api_client = app_handle.state::<ApiClient>();
+        let mut api_client = api_client.lock().unwrap();
+        let api_client = api_client.reset();
+        emit_event(&app_handle, DevWebPenEvent::ApiClientChanged(api_client))
+            .map_err(|e| e.to_string())?;
+    }
+    {
+        let daemon = app_handle.state::<Daemon>();
         let ws_out = {
             let daemon = daemon.lock().await;
             daemon.get_ws_out()

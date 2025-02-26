@@ -148,7 +148,7 @@ async fn accept_connection(app_handle: AppHandle, stream: TcpStream) {
         }
 
         let msg = msg.unwrap();
-        log::debug!("Received message: {:?}", msg);
+        log::trace!("Received message: {:?}", msg);
         let res = Response::parse(msg);
 
         if let Err(e) = res {
