@@ -55,7 +55,8 @@ public class HttpResponse implements AsTextOrBinary {
         text.append(requestId).append("\n");
         text.append(status).append("\n");
         text.append(httpVersion).append("\n");
-        text.append(headers.size()).append("\n");
+        text.append(headers.values().stream().collect(Collectors.summingInt(value -> value.size())))
+                .append("\n");
 
         final String headersText = headers.entrySet().stream()
                 .map((entry) -> entry.getValue().stream()

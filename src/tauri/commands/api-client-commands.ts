@@ -20,6 +20,7 @@ enum ApiClientCommand {
   SetApiClientRequestQueryParamName = "set_api_client_request_query_param_name",
   SetApiClientRequestQueryParamValue = "set_api_client_request_query_param_value",
   SetApiClientRequestPathParamValue = "set_api_client_request_path_param_value",
+  SetApiClientRequestBody = "set_api_client_request_body",
 }
 
 export async function getApiClient(): Promise<ApiClient> {
@@ -189,5 +190,15 @@ export async function setApiClientRequestPathParamValue(
     requestId,
     paramId,
     value,
+  });
+}
+
+export async function setApiClientRequestBody(
+  requestId: string,
+  body?: Uint8Array
+): Promise<ApiClient> {
+  return invoke(ApiClientCommand.SetApiClientRequestBody, {
+    requestId,
+    body,
   });
 }

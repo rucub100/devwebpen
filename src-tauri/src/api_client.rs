@@ -563,6 +563,16 @@ impl ApiClientInner {
         Ok(())
     }
 
+    pub fn set_request_body(
+        &mut self,
+        request_id: &str,
+        body: Option<Vec<u8>>,
+    ) -> Result<(), String> {
+        let req = self._find_request_mut(request_id)?;
+        req.body = body;
+        Ok(())
+    }
+
     pub fn reset(&mut self) -> ApiClientInner {
         *self = ApiClientInner::default();
         self.clone()

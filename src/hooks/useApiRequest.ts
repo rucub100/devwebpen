@@ -21,6 +21,7 @@ export function useApiRequest(requestId: string | undefined | null) {
     setApiClientRequestQueryParamName,
     setApiClientRequestQueryParamValue,
     setApiClientRequestPathParamValue,
+    setApiClientRequestBody,
   } = useApiClient({
     listenApiClient: true,
   });
@@ -169,6 +170,15 @@ export function useApiRequest(requestId: string | undefined | null) {
     }
   }, [requestId, sendApiClientRequest]);
 
+  const setBody = useCallback(
+    (body?: Uint8Array) => {
+      if (requestId) {
+        setApiClientRequestBody(requestId, body);
+      }
+    },
+    [requestId, setApiClientRequestBody]
+  );
+
   return {
     request,
     setMethod,
@@ -186,5 +196,6 @@ export function useApiRequest(requestId: string | undefined | null) {
     setQueryParamValue,
     setPathParamValue,
     sendRequest,
+    setBody,
   };
 }

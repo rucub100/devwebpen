@@ -34,6 +34,7 @@ export default function ApiRequest({ data }: ApiRequestProps) {
     setQueryParamValue,
     setPathParamValue,
     sendRequest,
+    setBody,
   } = useApiRequest(data?.apiRequest.requestId);
 
   if (!request) {
@@ -92,8 +93,8 @@ export default function ApiRequest({ data }: ApiRequestProps) {
           onSetPathParamValue={setPathParamValue}
         ></ApiRequestParams>
       )}
-      {selectedTab === "body" && body && (
-        <ApiRequestBody body={body}></ApiRequestBody>
+      {selectedTab === "body" && (
+        <ApiRequestBody body={body} onBodyChange={setBody}></ApiRequestBody>
       )}
     </div>
   );

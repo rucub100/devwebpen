@@ -1,5 +1,4 @@
 import { HttpHeader } from "../../../types/api-client";
-import Button from "../../common/Button";
 import NameValueTable from "../../common/NameValueTable";
 
 interface ApiResponseHeadersProps {

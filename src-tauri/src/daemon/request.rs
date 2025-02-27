@@ -53,7 +53,11 @@ impl From<&HttpRequest> for Request {
             let params = http_request.path_params.as_ref().unwrap();
 
             path_params = params.iter().fold(String::new(), |acc, param| {
-                format!("{}\n{}:{}:{}", acc, param.id, param.name, param.value)
+                if acc.is_empty() {
+                    format!("{}:{}:{}", param.id, param.name, param.value)
+                } else {
+                    format!("{}\n{}:{}:{}", acc, param.id, param.name, param.value)
+                }
             });
 
             params.len()
@@ -66,7 +70,11 @@ impl From<&HttpRequest> for Request {
             let params = http_request.query_params.as_ref().unwrap();
 
             query_params = params.iter().fold(String::new(), |acc, param| {
-                format!("{}\n{}:{}:{}", acc, param.id, param.name, param.value)
+                if acc.is_empty() {
+                    format!("{}:{}:{}", param.id, param.name, param.value)
+                } else {
+                    format!("{}\n{}:{}:{}", acc, param.id, param.name, param.value)
+                }
             });
 
             params.len()
@@ -99,7 +107,11 @@ impl From<&HttpRequest> for Request {
                 .headers
                 .iter()
                 .fold(String::new(), |acc, header| {
-                    format!("{}\n{}:{}:{}", acc, header.id, header.name, header.value)
+                    if acc.is_empty() {
+                        format!("{}:{}:{}", header.id, header.name, header.value)
+                    } else {
+                        format!("{}\n{}:{}:{}", acc, header.id, header.name, header.value)
+                    }
                 }),
             http_body
         );

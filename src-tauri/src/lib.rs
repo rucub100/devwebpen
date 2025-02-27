@@ -8,11 +8,12 @@ use commands::{
         add_api_client_request_header, add_api_client_request_query_param,
         delete_api_client_request_header, delete_api_client_request_query_param, get_api_client,
         new_api_client_request, open_api_client_request, send_api_client_request,
-        set_api_client_request_authority, set_api_client_request_header_name,
-        set_api_client_request_header_value, set_api_client_request_method,
-        set_api_client_request_path, set_api_client_request_path_param_value,
-        set_api_client_request_query_param_name, set_api_client_request_query_param_value,
-        set_api_client_request_scheme, set_api_client_request_url,
+        set_api_client_request_authority, set_api_client_request_body,
+        set_api_client_request_header_name, set_api_client_request_header_value,
+        set_api_client_request_method, set_api_client_request_path,
+        set_api_client_request_path_param_value, set_api_client_request_query_param_name,
+        set_api_client_request_query_param_value, set_api_client_request_scheme,
+        set_api_client_request_url,
     },
     daemon::{get_daemon_error, get_daemon_state, restart_daemon},
     ephemeral_session::{close_ephemeral_session, get_ephemeral_session, start_ephemeral_session},
@@ -90,7 +91,8 @@ pub fn run() {
             set_api_client_request_header_value,
             set_api_client_request_query_param_name,
             set_api_client_request_query_param_value,
-            set_api_client_request_path_param_value
+            set_api_client_request_path_param_value,
+            set_api_client_request_body
         ])
         .on_window_event(window_event_handler)
         .setup(|app| {

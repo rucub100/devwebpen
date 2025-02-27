@@ -24,15 +24,9 @@ pub async fn send_api_client_request<'a>(
 ) -> Result<(), String> {
     let req = {
         let api_client = api_client.lock().unwrap();
-        let result = api_client.get_request(request_id);
+        let req = api_client.get_request(request_id)?;
 
-        if let Err(e) = result {
-            return Err(e);
-        }
-
-        let http_request = &result.unwrap();
-
-        Request::from(http_request)
+        Request::from(&req)
     };
 
     send_daemon_request(daemon_state, req).await?;
@@ -48,13 +42,7 @@ pub async fn new_api_client_request<'a>(
     api_client: tauri::State<'a, ApiClient>,
 ) -> Result<ApiClientInner, String> {
     let mut api_client = api_client.lock().unwrap();
-    let result = api_client.add_request(collection_name);
-
-    if let Err(e) = result {
-        return Err(e);
-    }
-
-    let req = result.unwrap();
+    let req = api_client.add_request(collection_name)?;
 
     let mut view_state = view_state.lock().unwrap();
     let view_stete = view_state.open_api_client_request(req);
@@ -72,13 +60,7 @@ pub async fn open_api_client_request<'a>(
     api_client: tauri::State<'a, ApiClient>,
 ) -> Result<(), String> {
     let api_client = api_client.lock().unwrap();
-    let result = api_client.get_request(request_id);
-
-    if let Err(e) = result {
-        return Err(e);
-    }
-
-    let req = result.unwrap();
+    let req = api_client.get_request(request_id)?;
 
     let mut view_state = view_state.lock().unwrap();
     let view_stete = view_state.open_api_client_request(req);
@@ -95,12 +77,7 @@ pub async fn set_api_client_request_method<'a>(
     api_client: tauri::State<'a, ApiClient>,
 ) -> Result<ApiClientInner, String> {
     let mut api_client = api_client.lock().unwrap();
-    let result = api_client.set_request_method(request_id, method);
-
-    if let Err(e) = result {
-        return Err(e);
-    }
-
+    api_client.set_request_method(request_id, method)?;
     Ok(api_client.clone())
 }
 
@@ -113,12 +90,7 @@ pub async fn set_api_client_request_url<'a>(
     api_client: tauri::State<'a, ApiClient>,
 ) -> Result<ApiClientInner, String> {
     let mut api_client = api_client.lock().unwrap();
-    let result = api_client.set_request_url(request_id, scheme, authority, path);
-
-    if let Err(e) = result {
-        return Err(e);
-    }
-
+    api_client.set_request_url(request_id, scheme, authority, path)?;
     Ok(api_client.clone())
 }
 
@@ -129,12 +101,7 @@ pub async fn set_api_client_request_scheme<'a>(
     api_client: tauri::State<'a, ApiClient>,
 ) -> Result<ApiClientInner, String> {
     let mut api_client = api_client.lock().unwrap();
-    let result = api_client.set_request_scheme(request_id, scheme);
-
-    if let Err(e) = result {
-        return Err(e);
-    }
-
+    api_client.set_request_scheme(request_id, scheme)?;
     Ok(api_client.clone())
 }
 
@@ -145,12 +112,7 @@ pub async fn set_api_client_request_authority<'a>(
     api_client: tauri::State<'a, ApiClient>,
 ) -> Result<ApiClientInner, String> {
     let mut api_client = api_client.lock().unwrap();
-    let result = api_client.set_request_authority(request_id, authority);
-
-    if let Err(e) = result {
-        return Err(e);
-    }
-
+    api_client.set_request_authority(request_id, authority)?;
     Ok(api_client.clone())
 }
 
@@ -161,12 +123,7 @@ pub async fn set_api_client_request_path<'a>(
     api_client: tauri::State<'a, ApiClient>,
 ) -> Result<ApiClientInner, String> {
     let mut api_client = api_client.lock().unwrap();
-    let result = api_client.set_request_path(request_id, path);
-
-    if let Err(e) = result {
-        return Err(e);
-    }
-
+    api_client.set_request_path(request_id, path)?;
     Ok(api_client.clone())
 }
 
@@ -176,12 +133,7 @@ pub async fn add_api_client_request_header<'a>(
     api_client: tauri::State<'a, ApiClient>,
 ) -> Result<ApiClientInner, String> {
     let mut api_client = api_client.lock().unwrap();
-    let result = api_client.add_request_header(request_id);
-
-    if let Err(e) = result {
-        return Err(e);
-    }
-
+    api_client.add_request_header(request_id)?;
     Ok(api_client.clone())
 }
 
@@ -192,12 +144,7 @@ pub async fn delete_api_client_request_header<'a>(
     api_client: tauri::State<'a, ApiClient>,
 ) -> Result<ApiClientInner, String> {
     let mut api_client = api_client.lock().unwrap();
-    let result = api_client.delete_request_header(request_id, header_id);
-
-    if let Err(e) = result {
-        return Err(e);
-    }
-
+    api_client.delete_request_header(request_id, header_id)?;
     Ok(api_client.clone())
 }
 
@@ -209,12 +156,7 @@ pub async fn set_api_client_request_header_name<'a>(
     api_client: tauri::State<'a, ApiClient>,
 ) -> Result<ApiClientInner, String> {
     let mut api_client = api_client.lock().unwrap();
-    let result = api_client.set_request_header_name(request_id, header_id, header_name);
-
-    if let Err(e) = result {
-        return Err(e);
-    }
-
+    api_client.set_request_header_name(request_id, header_id, header_name)?;
     Ok(api_client.clone())
 }
 
@@ -226,12 +168,7 @@ pub async fn set_api_client_request_header_value<'a>(
     api_client: tauri::State<'a, ApiClient>,
 ) -> Result<ApiClientInner, String> {
     let mut api_client = api_client.lock().unwrap();
-    let result = api_client.set_request_header_value(request_id, header_id, header_value);
-
-    if let Err(e) = result {
-        return Err(e);
-    }
-
+    api_client.set_request_header_value(request_id, header_id, header_value)?;
     Ok(api_client.clone())
 }
 
@@ -241,12 +178,7 @@ pub async fn add_api_client_request_query_param<'a>(
     api_client: tauri::State<'a, ApiClient>,
 ) -> Result<ApiClientInner, String> {
     let mut api_client = api_client.lock().unwrap();
-    let result = api_client.add_request_query_param(request_id);
-
-    if let Err(e) = result {
-        return Err(e);
-    }
-
+    api_client.add_request_query_param(request_id)?;
     Ok(api_client.clone())
 }
 
@@ -257,12 +189,7 @@ pub async fn delete_api_client_request_query_param<'a>(
     api_client: tauri::State<'a, ApiClient>,
 ) -> Result<ApiClientInner, String> {
     let mut api_client = api_client.lock().unwrap();
-    let result = api_client.delete_request_query_param(request_id, param_id);
-
-    if let Err(e) = result {
-        return Err(e);
-    }
-
+    api_client.delete_request_query_param(request_id, param_id)?;
     Ok(api_client.clone())
 }
 
@@ -274,12 +201,7 @@ pub async fn set_api_client_request_query_param_name<'a>(
     api_client: tauri::State<'a, ApiClient>,
 ) -> Result<ApiClientInner, String> {
     let mut api_client = api_client.lock().unwrap();
-    let result = api_client.set_request_query_param_name(request_id, param_id, name);
-
-    if let Err(e) = result {
-        return Err(e);
-    }
-
+    api_client.set_request_query_param_name(request_id, param_id, name)?;
     Ok(api_client.clone())
 }
 
@@ -291,12 +213,7 @@ pub async fn set_api_client_request_query_param_value<'a>(
     api_client: tauri::State<'a, ApiClient>,
 ) -> Result<ApiClientInner, String> {
     let mut api_client = api_client.lock().unwrap();
-    let result = api_client.set_request_query_param_value(request_id, param_id, value);
-
-    if let Err(e) = result {
-        return Err(e);
-    }
-
+    api_client.set_request_query_param_value(request_id, param_id, value)?;
     Ok(api_client.clone())
 }
 
@@ -308,7 +225,18 @@ pub async fn set_api_client_request_path_param_value<'a>(
     api_client: tauri::State<'a, ApiClient>,
 ) -> Result<ApiClientInner, String> {
     let mut api_client = api_client.lock().unwrap();
-    let result = api_client.set_request_path_param_value(request_id, param_id, value);
+    api_client.set_request_path_param_value(request_id, param_id, value)?;
+    Ok(api_client.clone())
+}
+
+#[tauri::command]
+pub async fn set_api_client_request_body<'a>(
+    request_id: &str,
+    body: Option<Vec<u8>>,
+    api_client: tauri::State<'a, ApiClient>,
+) -> Result<ApiClientInner, String> {
+    let mut api_client = api_client.lock().unwrap();
+    let result = api_client.set_request_body(request_id, body);
 
     if let Err(e) = result {
         return Err(e);

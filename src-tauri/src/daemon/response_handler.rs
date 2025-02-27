@@ -91,6 +91,8 @@ fn handle_http_response(app_handle: &AppHandle, body: String) {
     let app_state = app_handle.state::<crate::AppState>();
     let mut app_state = app_state.lock().unwrap();
 
+    log::debug!("Parsing HTTP response: {}", body);
+
     let result: Result<HttpResponse, String> = body.try_into();
 
     if let Err(e) = result {

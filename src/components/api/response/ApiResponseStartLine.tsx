@@ -1,3 +1,4 @@
+import { httpResponseStatusText } from "../../../helpers/http-response-status-codes";
 import { HttpResponse } from "../../../types/api-client";
 
 interface ApiResponseStartLineProps {
@@ -23,23 +24,10 @@ function formatMs(ms: number) {
 }
 
 function formatStatus(status: number) {
-  let statusText = "";
-
-  switch (status) {
-    case 200:
-      statusText = " OK";
-      break;
-    case 201:
-      statusText = " Created";
-      break;
-    case 202:
-      statusText = " Accepted";
-      break;
-    case 204:
-      statusText = " No Content";
-      break;
+  let statusText = httpResponseStatusText(status);
+  if (statusText.length > 0) {
+    statusText = ` ${statusText}`;
   }
-
   return `${status}${statusText}`;
 }
 
