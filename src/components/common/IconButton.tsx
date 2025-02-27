@@ -13,7 +13,7 @@ export default function IconButton({
 }: IconButtonProps) {
   return (
     <button
-      className={`outline-none ${className}`}
+      className={`flex outline-none ${className}`}
       disabled={disabled}
       {...props}
     >

@@ -1,6 +1,7 @@
 import { useDaemon } from "../../hooks/useDaemon";
 import { useContextMenu } from "../../hooks/useContextMenu";
 import { ContextMenu } from "../../types/context-menu";
+import { HTMLAttributes } from "react";
 
 const restartActionRef = {
   current: () => {
@@ -18,7 +19,11 @@ const contextMenu: ContextMenu = {
   ],
 };
 
-export default function Daemon() {
+interface DaemonProps extends HTMLAttributes<HTMLDivElement> {
+  className?: string;
+}
+
+export default function Daemon({ className = "" }: DaemonProps) {
   const { daemonState, daemonError, restartDaemon } = useDaemon({
     listenDaemonState: true,
     listenDaemonError: true,
@@ -28,7 +33,7 @@ export default function Daemon() {
 
   return (
     <div
-      className="w-[18ch]"
+      className={`w-[18ch] ${className}`}
       onContextMenu={daemonError ? showContextMenu : undefined}
       title={daemonError ?? ""}
     >

@@ -37,7 +37,7 @@ export default function ApiResponse({ data }: ApiRequestProps) {
           {selectedTab === "headers" && (
             <ApiResponseHeaders headers={response.headers}></ApiResponseHeaders>
           )}
-          {selectedTab === "body" && response.body && (
+          {selectedTab === "body" && (
             <ApiResponseBody body={response.body}></ApiResponseBody>
           )}
         </>
