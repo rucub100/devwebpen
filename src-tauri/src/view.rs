@@ -192,7 +192,6 @@ impl ViewStateInner {
             tab.kind.name == TabName::ApiRequest
                 && tab.data.as_ref().is_some_and(|data| match data {
                     TabData::ApiRequest(id) => id.request_id == req.id,
-                    _ => false,
                 })
         });
 

@@ -8,6 +8,7 @@ pub enum ResponseType {
 }
 
 pub struct ResponseHeader {
+    #[allow(dead_code)]
     pub request_id: Uuid,
     pub response_type: ResponseType,
 }

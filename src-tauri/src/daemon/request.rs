@@ -26,7 +26,7 @@ pub struct RequestHeader {
 
 pub enum RequestBody {
     Text(String),
-    Binary(Vec<u8>),
+    // Binary(Vec<u8>),
 }
 
 pub struct Request {
@@ -42,16 +42,6 @@ impl Request {
                 request_type,
             },
             body: RequestBody::Text(body),
-        }
-    }
-
-    pub fn new_binary(request_type: RequestType, body: Vec<u8>) -> Request {
-        Request {
-            header: RequestHeader {
-                request_id: Uuid::new_v4(),
-                request_type,
-            },
-            body: RequestBody::Binary(body),
         }
     }
 }

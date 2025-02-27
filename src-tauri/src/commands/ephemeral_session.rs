@@ -1,9 +1,6 @@
 use crate::{
     app_state::{session::Session, AppState},
-    daemon::Daemon,
     events::{emit_event, DevWebPenEvent},
-    proxy::Proxy,
-    view::ViewState,
 };
 
 use super::reset;

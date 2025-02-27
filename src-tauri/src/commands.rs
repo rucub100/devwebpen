@@ -81,7 +81,6 @@ pub async fn send_daemon_request<'a>(
             "{}\n{}\n{}",
             req.header.request_id, req.header.request_type, body
         )),
-        RequestBody::Binary(ref body) => todo!("Not supported yet"),
     };
 
     ws_out.send(msg).await.map_err(|e| e.to_string())?;

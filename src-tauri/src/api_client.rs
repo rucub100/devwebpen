@@ -4,19 +4,24 @@ use base64::prelude::*;
 use uuid::Uuid;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq)]
-#[serde(rename_all = "camelCase")]
 pub enum HttpVersion {
-    Http_1_1,
-    Http_2,
-    Http_3,
+    #[serde(rename = "HTTP/1.1")]
+    #[serde(alias = "HTTP/1.1")]
+    Http11,
+    #[serde(rename = "HTTP/2")]
+    #[serde(alias = "HTTP/2")]
+    Http2,
+    #[serde(rename = "HTTP/3")]
+    #[serde(alias = "HTTP/3")]
+    Http3,
 }
 
 impl HttpVersion {
     pub fn parse(state: &str) -> Result<HttpVersion, String> {
         match state {
-            "HTTP/1.1" => Ok(Self::Http_1_1),
-            "HTTP/2" => Ok(Self::Http_2),
-            "HTTP/3" => Ok(Self::Http_3),
+            "HTTP/1.1" => Ok(Self::Http11),
+            "HTTP/2" => Ok(Self::Http2),
+            "HTTP/3" => Ok(Self::Http3),
             _ => Err("Failed to parse HTTP version".to_string()),
         }
     }
@@ -25,9 +30,9 @@ impl HttpVersion {
 impl fmt::Display for HttpVersion {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Http_1_1 => write!(f, "HTTP/1.1"),
-            Self::Http_2 => write!(f, "HTTP/2"),
-            Self::Http_3 => write!(f, "HTTP/3"),
+            Self::Http11 => write!(f, "HTTP/1.1"),
+            Self::Http2 => write!(f, "HTTP/2"),
+            Self::Http3 => write!(f, "HTTP/3"),
         }
     }
 }
@@ -372,7 +377,7 @@ impl ApiClientInner {
             path: "/".to_string(),
             path_params: None,
             query_params: None,
-            http_version: HttpVersion::Http_1_1,
+            http_version: HttpVersion::Http11,
             headers: Vec::new(),
             body: None,
         };

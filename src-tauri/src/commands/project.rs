@@ -1,9 +1,6 @@
 use crate::{
     app_state::{project::Project, store::RecentProject, AppState},
-    daemon::Daemon,
     events::{emit_event, DevWebPenEvent},
-    proxy::Proxy,
-    view::ViewState,
 };
 
 use tauri::Manager;

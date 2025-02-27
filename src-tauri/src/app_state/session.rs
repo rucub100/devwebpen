@@ -4,6 +4,7 @@ use uuid::Uuid;
 #[serde(rename_all = "camelCase")]
 pub struct Session {
     #[serde(skip)]
+    #[allow(dead_code)]
     pub id: Uuid,
     pub errors: Vec<String>,
 }
