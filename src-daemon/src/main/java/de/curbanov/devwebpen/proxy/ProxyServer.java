@@ -44,7 +44,7 @@ public final class ProxyServer {
                     ChannelFuture f = b.bind(port).sync();
                     serverChannel = f.channel();
                     startFuture.complete(null);
-                    f.channel().closeFuture().sync();
+                    serverChannel.closeFuture().sync();
                 } catch (Throwable t) {
                     startFuture.completeExceptionally(t);
                     if (t instanceof InterruptedException) {

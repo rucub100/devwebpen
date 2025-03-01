@@ -37,10 +37,6 @@ public class ProxyServerHandler extends ChannelInboundHandlerAdapter {
                         final String host = uriParts[0];
                         try {
                             final int port = Integer.parseInt(uriParts[1]);
-                            if (port != 443) {
-                                throw new NumberFormatException("Invalid port, expected 443");
-                            }
-
                             bootstrapTargetConnection(ctx, host, port);
                         } catch (NumberFormatException e) {
                             handleBadRequest(ctx, Optional.of(e));
@@ -84,7 +80,6 @@ public class ProxyServerHandler extends ChannelInboundHandlerAdapter {
         targetConnectFuture.addListener((ChannelFutureListener) future -> {
             if (future.isSuccess()) {
                 handleConnectionEstablished(ctx);
-                targetChannel.config().setAutoRead(true);
             } else {
                 handleBadGateway(ctx, Optional.of(future.cause()));
             }
@@ -95,12 +90,14 @@ public class ProxyServerHandler extends ChannelInboundHandlerAdapter {
         HttpResponse res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         ctx.writeAndFlush(res).addListener(future -> {
             if (future.isSuccess()) {
-                ctx.pipeline().remove("httpCodec");
-                ctx.pipeline().remove("httpAggregator");
                 ctx.pipeline().replace(this, "tunnelHandler", new TunnelHandler(targetChannel));
+                ctx.pipeline().remove("httpAggregator");
+                ctx.pipeline().remove("httpCodec");
                 ctx.channel().config().setAutoRead(true);
+                targetChannel.config().setAutoRead(true);
             } else {
                 ctx.close();
+                targetChannel.close();
             }
         });
     }
