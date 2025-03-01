@@ -45,3 +45,6 @@ buildNumber.properties
 # Custom
 binaries/
 icons/
+
+# Draw.io bkp files
+*.drawio.bkp
