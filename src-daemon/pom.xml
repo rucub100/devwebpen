@@ -22,6 +22,18 @@
       <artifactId>netty-all</artifactId>
       <version>4.1.117.Final</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on -->
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk18on</artifactId>
+      <version>1.80</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk18on -->
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcpkix-jdk18on</artifactId>
+      <version>1.80</version>
+    </dependency>
   </dependencies>
 
   <build>
