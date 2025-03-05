@@ -41,6 +41,7 @@ import javax.net.ssl.X509KeyManager;
 import io.netty.util.NetUtil;
 
 public class ProxyX509KeyManager extends X509ExtendedKeyManager {
+    // TODO: Store and load the root CA from a file
     private final static ServerCertificateGenerator generator = new ServerCertificateGenerator(
             CertificateUtils.createRootCaKeyStore(new CertConfig(Duration.ofDays(365))));
 

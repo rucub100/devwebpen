@@ -18,18 +18,29 @@ package de.curbanov.devwebpen.proxy.tls;
 
 import javax.net.ssl.SSLException;
 
+import io.netty.handler.ssl.ApplicationProtocolConfig;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.ApplicationProtocolConfig.Protocol;
+import io.netty.handler.ssl.ApplicationProtocolConfig.SelectedListenerFailureBehavior;
+import io.netty.handler.ssl.ApplicationProtocolConfig.SelectorFailureBehavior;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 
 public class ProxyTls {
     private final String host;
+    private final ApplicationProtocolConfig apConfig;
 
     private SslContext serverSslContext;
     private SslContext clientSslContext;
 
     public ProxyTls(final String host) {
         this.host = host;
+        // HINT: For now we only support HTTP/1.1
+        this.apConfig = new ApplicationProtocolConfig(
+                Protocol.ALPN,
+                SelectorFailureBehavior.FATAL_ALERT,
+                SelectedListenerFailureBehavior.FATAL_ALERT,
+                "http/1.1");
     }
 
     public SslContext getServerSslContext() throws SSLException {
@@ -45,6 +56,7 @@ public class ProxyTls {
             this.clientSslContext = SslContextBuilder
                     .forClient()
                     .trustManager(InsecureTrustManagerFactory.INSTANCE)
+                    .applicationProtocolConfig(this.apConfig)
                     .build();
         }
 
@@ -54,6 +66,7 @@ public class ProxyTls {
     private void createServerSslContext() throws SSLException {
         this.serverSslContext = SslContextBuilder
                 .forServer(new ProxyX509KeyManager(host))
+                .applicationProtocolConfig(this.apConfig)
                 .build();
     }
 }
