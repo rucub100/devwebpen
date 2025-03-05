@@ -19,14 +19,12 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
-import io.netty.handler.logging.LoggingHandler;
 
 public class ProxyServerInitializer extends ChannelInitializer<SocketChannel> {
     @Override
     public void initChannel(SocketChannel ch) throws Exception {
-        ch.pipeline().addLast("logging", new LoggingHandler());
-        ch.pipeline().addLast("proxyHandler", new ProxyServerHandler());
-        ch.pipeline().addBefore("proxyHandler", "httpCodec", new HttpServerCodec());
-        ch.pipeline().addBefore("proxyHandler", "httpAggregator", new HttpObjectAggregator(0));
+        ch.pipeline().addLast("httpServerCodec", new HttpServerCodec());
+        ch.pipeline().addLast("httpObjectAggregator", new HttpObjectAggregator(1_048_576));
+        ch.pipeline().addLast("proxy", new ProxyServerHandler());
     }
 }

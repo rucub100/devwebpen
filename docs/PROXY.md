@@ -31,7 +31,7 @@ The [Proxy (MITM)](../src-daemon\src\main\java\de\curbanov\devwebpen\proxy\Proxy
 
 ### 3. MITM Proxy (HTTP/1.1)
 
-|  Source  |     |                    |     | (Optional) |     |                     |    Interception     |     |                      |     |    Interception    |  /  |                     |     |            |     |  Server  |
-| :------: | :-: | :----------------: | :-: | :--------: | :-: | :-----------------: | :-----------------: | :-: | :------------------: | :-: | :----------------: | :-: | :-----------------: | :-: | :--------: | :-: | :------: |
-| Inbound  | ->  | OptionalSslHandler | ->  | SslHandler | ->  | HttpRequestDecoder  | ------------------- | ->  | HttpObjectAggregator | ->  | **RequestHandler** | <>  | HttpRequestEncoder  | ->  | SslHandler | ->  | Outbound |
-| Outbound | <-  | ------------------ | <-  | SslHandler | <-  | HttpResponseEncoder | **ResponseHandler** | <-  | HttpObjectAggregator | <-  |  ---------------   | <>  | HttpResponseDecoder | <-  | SslHandler | <-  | Inbound  |
+|  Source  |     |                    |     | (Optional) |     |   HttpServerCodec   |    Interception     |     |                      |     |    Interception    |  /  |                          |     |   HttpClientCodec   |     |            |     |  Server  |
+| :------: | :-: | :----------------: | :-: | :--------: | :-: | :-----------------: | :-----------------: | :-: | :------------------: | :-: | :----------------: | :-: | :----------------------: | :-: | :-----------------: | :-: | :--------: | :-: | :------: |
+| Inbound  | ->  | OptionalSslHandler | ->  | SslHandler | ->  | HttpRequestDecoder  | ------------------- | ->  | HttpObjectAggregator | ->  | **RequestHandler** | <>  |                          | ->  | HttpRequestEncoder  | ->  | SslHandler | ->  | Outbound |
+| Outbound | <-  | ------------------ | <-  | SslHandler | <-  | HttpResponseEncoder | **ResponseHandler** | <-  | HttpObjectAggregator | <-  |  ---------------   | <>  | **TargetChannelHandler** | <-  | HttpResponseDecoder | <-  | SslHandler | <-  | Inbound  |

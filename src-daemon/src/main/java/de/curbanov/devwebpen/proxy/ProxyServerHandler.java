@@ -34,13 +34,19 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpRequestDecoder;
+import io.netty.handler.codec.http.HttpRequestEncoder;
 import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.codec.http.HttpResponseDecoder;
+import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.ssl.OptionalSslHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.util.ReferenceCountUtil;
 import io.netty.handler.codec.http.DefaultHttpResponse;
+import io.netty.handler.codec.http.HttpClientCodec;
 
 public class ProxyServerHandler extends ChannelInboundHandlerAdapter {
     private Channel targetChannel;
@@ -106,7 +112,8 @@ public class ProxyServerHandler extends ChannelInboundHandlerAdapter {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addFirst("ssl", tls.getClientSslContext().newHandler(ch.alloc(), host, port));
+                        ch.pipeline().addLast("ssl", tls.getClientSslContext().newHandler(ch.alloc(), host, port));
+                        ch.pipeline().addLast("httpClientCodec", new HttpClientCodec());
                         ch.pipeline().addLast("targetChannelHandler", new TargetChannelHandler(ctx));
                     }
                 })
@@ -129,10 +136,11 @@ public class ProxyServerHandler extends ChannelInboundHandlerAdapter {
         HttpResponse res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         ctx.writeAndFlush(res).addListener(future -> {
             if (future.isSuccess()) {
-                ctx.pipeline().replace(this, "tunnelHandler", new TunnelHandler(targetChannel));
-                ctx.pipeline().remove("httpAggregator");
-                ctx.pipeline().remove("httpCodec");
-                ctx.pipeline().addFirst(new OptionalSslHandler(sslCtx));
+                ctx.pipeline().remove("httpServerCodec");
+                ctx.pipeline().remove("httpObjectAggregator");
+                ctx.pipeline().addFirst("optionalSsl", new OptionalSslHandler(sslCtx));
+                ctx.pipeline().replace(this, "request", new TunnelHandler(targetChannel));
+                ctx.pipeline().addBefore("request", "httpServerCodec", new HttpServerCodec());
                 ctx.channel().config().setAutoRead(true);
                 targetChannel.config().setAutoRead(true);
             } else {
@@ -143,28 +151,16 @@ public class ProxyServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void handleBadGateway(ChannelHandlerContext ctx, Optional<Throwable> e) {
-        if (e.isPresent()) {
-            e.get().printStackTrace();
-        }
-
         HttpResponse res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_GATEWAY);
         ctx.writeAndFlush(res).addListener(ChannelFutureListener.CLOSE);
     }
 
     private void handleBadRequest(ChannelHandlerContext ctx, Optional<Throwable> e) {
-        if (e.isPresent()) {
-            e.get().printStackTrace();
-        }
-
         HttpResponse res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST);
         ctx.writeAndFlush(res).addListener(ChannelFutureListener.CLOSE);
     }
 
     private void handleProxyError(ChannelHandlerContext ctx, Optional<Throwable> e) {
-        if (e.isPresent()) {
-            e.get().printStackTrace();
-        }
-
         HttpResponse res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR);
         ctx.writeAndFlush(res).addListener(ChannelFutureListener.CLOSE);
     }
