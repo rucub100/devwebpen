@@ -33,12 +33,9 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequest;
-import io.netty.handler.codec.http.HttpRequestDecoder;
-import io.netty.handler.codec.http.HttpRequestEncoder;
 import io.netty.handler.codec.http.HttpResponse;
-import io.netty.handler.codec.http.HttpResponseDecoder;
-import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpVersion;
@@ -136,11 +133,14 @@ public class ProxyServerHandler extends ChannelInboundHandlerAdapter {
         HttpResponse res = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         ctx.writeAndFlush(res).addListener(future -> {
             if (future.isSuccess()) {
+                // we must not reuse the http handlers from proxy initialization
                 ctx.pipeline().remove("httpServerCodec");
                 ctx.pipeline().remove("httpObjectAggregator");
                 ctx.pipeline().addFirst("optionalSsl", new OptionalSslHandler(sslCtx));
-                ctx.pipeline().replace(this, "request", new TunnelHandler(targetChannel));
-                ctx.pipeline().addBefore("request", "httpServerCodec", new HttpServerCodec());
+                ctx.pipeline().replace(this, "request", new HttpRequestHandler(targetChannel));
+                ctx.pipeline().addBefore("request", "httpObjectAggregator", new HttpObjectAggregator(1_048_576));
+                ctx.pipeline().addBefore("httpObjectAggregator", "response", new HttpResponseHandler());
+                ctx.pipeline().addBefore("response", "httpServerCodec", new HttpServerCodec());
                 ctx.channel().config().setAutoRead(true);
                 targetChannel.config().setAutoRead(true);
             } else {

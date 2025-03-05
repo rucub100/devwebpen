@@ -20,15 +20,16 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-public class TunnelHandler extends ChannelInboundHandlerAdapter {
+public class HttpRequestHandler extends ChannelInboundHandlerAdapter {
     private final Channel targetChannel;
 
-    public TunnelHandler(Channel targetChannel) {
+    public HttpRequestHandler(Channel targetChannel) {
         this.targetChannel = targetChannel;
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        // TODO: msg is a FullHttpRequest
         targetChannel.writeAndFlush(msg).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
     }
 
