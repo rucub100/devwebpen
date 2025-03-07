@@ -4,6 +4,12 @@
 
 :root {
     color-scheme: dark light;
+
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: hsla(0, 0%, 50%, 0.25) transparent;
 }
 
 html {

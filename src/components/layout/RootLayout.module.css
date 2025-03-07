@@ -14,20 +14,10 @@
 
   display: grid;
   grid-template-columns:
-    [full-start nav-aside-start] minmax(0px, max-content)
-    [nav-aside-end left-aside-start] minmax(0px, max-content)
-    [left-aside-end left-split-start] 0px
-    [left-split-end main-start] minmax(400px, 1fr)
-    [main-end right-split-start] 0px
-    [right-split-end right-aside-start] minmax(0px, max-content)
-    [right-aside-end full-end];
+    [full-start nav-aside-start] minmax(0px, max-content) [nav-aside-end left-aside-start] minmax(0px, max-content) [left-aside-end left-split-start] 0px [left-split-end main-start] minmax(400px, 1fr) [main-end right-split-start] 0px [right-split-end right-aside-start] minmax(0px, max-content) [right-aside-end full-end];
 
   grid-template-rows:
-    [full-start main-start] minmax(200px, 1fr)
-    [main-end bottom-split-start] 0px
-    [bottom-split-end bottom-aside-start] minmax(0px, max-content)
-    [bottom-aside-end footer-start] minmax(0px, max-content)
-    [footer-end];
+    [full-start main-start] minmax(200px, 1fr) [main-end bottom-split-start] 0px [bottom-split-end bottom-aside-start] minmax(0px, max-content) [bottom-aside-end footer-start] minmax(0px, max-content) [footer-end];
 
   grid-template-areas:
     "nav-aside left-aside left-split main right-split right-aside"
@@ -75,8 +65,9 @@
 
   .bottomSplit {
     grid-area: bottom-split;
+    z-index: 1;
     cursor: n-resize;
-    height: 100%;
+    height: 4px;
     width: 100%;
   }
 

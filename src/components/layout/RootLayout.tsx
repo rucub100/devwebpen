@@ -2,9 +2,9 @@ import { useCallback, useRef, useState } from "react";
 import styles from "./RootLayout.module.css";
 import Navigation from "../Navigation";
 import Tabs from "../tabs/Tabs";
-import LeftAside from "./LeftAside";
-import RightAside from "./RightAside";
-import BottomAside from "./BottomAside";
+import NavAside from "./NavAside";
+import Aside from "./Aside";
+import BottomPanel from "./BottomPanel";
 import StatusBar from "./StatusBar";
 import { useViewState } from "../../hooks/useViewState";
 
@@ -169,7 +169,7 @@ export default function RootLayout() {
           display: nav === "none" ? "none" : "block",
         }}
       >
-        <LeftAside navigation={nav}></LeftAside>
+        <NavAside navigation={nav}></NavAside>
       </header>
       <div
         className={`${styles.leftSplit} ${
@@ -200,7 +200,7 @@ export default function RootLayout() {
           display: aside === "none" ? "none" : "block",
         }}
       >
-        <RightAside></RightAside>
+        <Aside></Aside>
       </aside>
       <div
         className={`${styles.bottomSplit} ${
@@ -219,7 +219,7 @@ export default function RootLayout() {
           display: bottom === "none" ? "none" : "block",
         }}
       >
-        <BottomAside></BottomAside>
+        <BottomPanel></BottomPanel>
       </aside>
       <footer
         className={`${styles.footer} border-t border-neutral-800`}

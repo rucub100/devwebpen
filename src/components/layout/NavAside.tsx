@@ -11,11 +11,11 @@ const components: Record<NavView, ReactNode> = {
   apiClient: <NavApiClient></NavApiClient>,
 };
 
-interface LeftAsideProps {
+interface NavAsideProps {
   navigation?: NavView;
 }
 
-export default function LeftAside({ navigation }: LeftAsideProps) {
+export default function NavAside({ navigation }: NavAsideProps) {
   const component = navigation ? components[navigation] : null;
   return <>{component}</>;
 }

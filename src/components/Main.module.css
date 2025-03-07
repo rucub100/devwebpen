@@ -10,7 +10,4 @@
     display: flex;
     justify-content: center;
     align-content: center;
-
-    scrollbar-width: thin;
-    scrollbar-color: hsla(0, 0%, 50%, 0.25) transparent;
 }
