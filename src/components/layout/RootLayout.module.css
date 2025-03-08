@@ -14,31 +14,31 @@
 
   display: grid;
   grid-template-columns:
-    [full-start nav-aside-start] minmax(0px, max-content) [nav-aside-end left-aside-start] minmax(0px, max-content) [left-aside-end left-split-start] 0px [left-split-end main-start] minmax(400px, 1fr) [main-end right-split-start] 0px [right-split-end right-aside-start] minmax(0px, max-content) [right-aside-end full-end];
+    [full-start nav-start] minmax(0px, max-content) [nav-end nav-aside-start] minmax(0px, max-content) [nav-aside-end nav-split-start] 0px [nav-split-end main-start] minmax(400px, 1fr) [main-end aside-split-start] 0px [aside-split-end aside-start] minmax(0px, max-content) [aside-end full-end];
 
   grid-template-rows:
-    [full-start main-start] minmax(200px, 1fr) [main-end bottom-split-start] 0px [bottom-split-end bottom-aside-start] minmax(0px, max-content) [bottom-aside-end footer-start] minmax(0px, max-content) [footer-end];
+    [full-start main-start] minmax(200px, 1fr) [main-end bottom-split-start] 0px [bottom-split-end bottom-panel-start] minmax(0px, max-content) [bottom-panel-end footer-start] minmax(0px, max-content) [footer-end];
 
   grid-template-areas:
-    "nav-aside left-aside left-split main right-split right-aside"
-    "nav-aside bottom-split bottom-split bottom-split bottom-split bottom-split"
-    "nav-aside bottom-aside bottom-aside bottom-aside bottom-aside bottom-aside"
+    "nav nav-aside nav-split main aside-split aside"
+    "nav bottom-split bottom-split bottom-split bottom-split bottom-split"
+    "nav bottom-panel bottom-panel bottom-panel bottom-panel bottom-panel"
     "footer footer footer footer footer footer";
+
+  .nav {
+    grid-area: nav;
+  }
 
   .navAside {
     grid-area: nav-aside;
   }
 
-  .leftAside {
-    grid-area: left-aside;
-  }
-
-  .leftSplit {
+  .navSplit {
     position: absolute;
     top: 0;
     left: -2px;
     z-index: 1;
-    grid-area: left-split;
+    grid-area: nav-split;
     cursor: e-resize;
     height: 100%;
     width: 4px;
@@ -48,19 +48,19 @@
     grid-area: main;
   }
 
-  .rightSplit {
+  .asideSplit {
     position: absolute;
     top: 0;
     left: -2px;
     z-index: 1;
-    grid-area: right-split;
+    grid-area: aside-split;
     cursor: e-resize;
     height: 100%;
     width: 4px;
   }
 
-  .rightAside {
-    grid-area: right-aside;
+  .aside {
+    grid-area: aside;
   }
 
   .bottomSplit {
@@ -71,8 +71,8 @@
     width: 100%;
   }
 
-  .bottomAside {
-    grid-area: bottom-aside;
+  .bottomPanel {
+    grid-area: bottom-panel;
   }
 
   .footer {
