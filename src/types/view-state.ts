@@ -12,7 +12,7 @@ const mainView = {
   ApiRequest: "apiRequest",
 } as const;
 const asideView = { ...none } as const;
-const bottomView = { ...none } as const;
+const bottomView = { ...none, ProxyTraffic: "proxyTraffic" } as const;
 const statusView = { ...none, Show: "show" } as const;
 type NavViewKeys = keyof typeof navView;
 type MainViewKeys = keyof typeof mainView;

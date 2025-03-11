@@ -12,7 +12,13 @@ pub async fn navigate_to<'a>(
     state: tauri::State<'a, ViewState>,
 ) -> Result<PartialViewState, String> {
     let mut view = state.lock().unwrap();
-    Ok(view.navigate_to(navigation))
+
+    let mut partial = view.navigate_to(navigation);
+    if view.nav == NavView::Proxy {
+        partial.merge(view.open_proxy_traffic());
+    }
+
+    Ok(partial)
 }
 
 #[tauri::command]
@@ -39,4 +45,20 @@ pub async fn open_welcome<'a>(
 ) -> Result<PartialViewState, String> {
     let mut view = state.lock().unwrap();
     Ok(view.open_welcome())
+}
+
+#[tauri::command]
+pub async fn close_bottom<'a>(
+    state: tauri::State<'a, ViewState>,
+) -> Result<PartialViewState, String> {
+    let mut view = state.lock().unwrap();
+    Ok(view.close_bottom())
+}
+
+#[tauri::command]
+pub async fn close_aside<'a>(
+    state: tauri::State<'a, ViewState>,
+) -> Result<PartialViewState, String> {
+    let mut view = state.lock().unwrap();
+    Ok(view.close_aside())
 }

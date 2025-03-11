@@ -36,6 +36,29 @@ pub struct PartialViewState {
     pub status: Option<StatusView>,
 }
 
+impl PartialViewState {
+    pub fn merge(&mut self, other: PartialViewState) {
+        if let Some(nav) = other.nav {
+            self.nav = Some(nav);
+        }
+        if let Some(tabs) = other.tabs {
+            self.tabs = Some(tabs);
+        }
+        if let Some(main) = other.main {
+            self.main = Some(main);
+        }
+        if let Some(aside) = other.aside {
+            self.aside = Some(aside);
+        }
+        if let Some(bottom) = other.bottom {
+            self.bottom = Some(bottom);
+        }
+        if let Some(status) = other.status {
+            self.status = Some(status);
+        }
+    }
+}
+
 impl From<ViewStateInner> for PartialViewState {
     fn from(view_state: ViewStateInner) -> Self {
         PartialViewState {
@@ -185,6 +208,47 @@ impl ViewStateInner {
             None => self._new_tab(Tab::new_welcome()),
             Some(tab) => self._select_tab(tab.id),
         }
+    }
+
+    pub fn close_bottom(&mut self) -> PartialViewState {
+        if self.bottom == BottomView::None {
+            log::error!("Bottom view already closed");
+            return PartialViewState::default();
+        }
+
+        self.bottom = BottomView::None;
+
+        return PartialViewState {
+            bottom: Some(self.bottom.clone()),
+            ..Default::default()
+        };
+    }
+
+    pub fn close_aside(&mut self) -> PartialViewState {
+        if self.aside == AsideView::None {
+            log::error!("Aside view already closed");
+            return PartialViewState::default();
+        }
+
+        self.aside = AsideView::None;
+
+        return PartialViewState {
+            aside: Some(self.aside.clone()),
+            ..Default::default()
+        };
+    }
+
+    pub fn open_proxy_traffic(&mut self) -> PartialViewState {
+        if self.bottom == BottomView::ProxyTraffic {
+            return PartialViewState::default();
+        }
+
+        self.bottom = BottomView::ProxyTraffic;
+
+        return PartialViewState {
+            bottom: Some(self.bottom.clone()),
+            ..Default::default()
+        };
     }
 
     pub fn open_api_client_request(&mut self, req: HttpRequest) -> PartialViewState {

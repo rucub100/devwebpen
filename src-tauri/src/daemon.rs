@@ -143,8 +143,8 @@ async fn generate_token(app_handle: &tauri::AppHandle) {
 }
 
 async fn set_daemon_error(app_handle: &AppHandle, error: String) {
-    let state = app_handle.state::<Daemon>();
-    let mut daemon = state.lock().await;
+    let daemon_state = app_handle.state::<Daemon>();
+    let mut daemon = daemon_state.lock().await;
 
     daemon.set_error(error.to_string());
 

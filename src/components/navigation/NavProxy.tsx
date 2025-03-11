@@ -3,11 +3,14 @@ import { useProxy } from "../../hooks/useProxy";
 import Accordion, { AccordionItem } from "../common/Accordion";
 import InputNumber from "../common/InputNumber";
 import Button from "../common/Button";
+import Icon from "../common/Icon";
+import LinkButton from "../common/LinkButton";
 
 export default function NavProxy() {
-  const { proxy, setProxyPort, startProxy, stopProxy } = useProxy({
-    listenProxy: true,
-  });
+  const { proxy, setProxyPort, startProxy, stopProxy, toggleDebugging } =
+    useProxy({
+      listenProxy: true,
+    });
 
   const portChangeHandler = useCallback(
     (port: number) => {
@@ -22,7 +25,7 @@ export default function NavProxy() {
     } else {
       stopProxy();
     }
-  }, [proxy, startProxy, stopProxy]);
+  }, [proxy?.state, startProxy, stopProxy]);
 
   const listenerItem: AccordionItem = {
     key: "listener",
@@ -40,6 +43,14 @@ export default function NavProxy() {
         <Button onClick={proxyActionHandler}>
           {proxy?.state != "running" ? "Start" : "Stop"}
         </Button>
+        <LinkButton
+          className="max-w-max"
+          onClick={toggleDebugging}
+          disabled={proxy?.state !== "running"}
+        >
+          <Icon icon={proxy?.debug ? "toggle_on" : "toggle_off"}></Icon>
+          <span className="ml-2">Debugging {proxy?.debug ? "on" : "off"}</span>
+        </LinkButton>
       </div>
     ),
   };

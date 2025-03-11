@@ -11,7 +11,9 @@ type IconString =
   | "dashboard"
   | "delete"
   | "error"
-  | "traffic";
+  | "traffic"
+  | "toggle_on"
+  | "toggle_off";
 
 export interface IconProps
   extends Omit<HTMLAttributes<HTMLSpanElement>, "style"> {

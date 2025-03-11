@@ -2,4 +2,5 @@
 #[serde(rename_all = "camelCase")]
 pub enum BottomView {
     None,
+    ProxyTraffic,
 }

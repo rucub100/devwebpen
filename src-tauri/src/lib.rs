@@ -21,8 +21,10 @@ use commands::{
         close_project, create_project, get_project, get_recent_projects, open_project,
         open_recent_project,
     },
-    proxy::{get_proxy_state, set_proxy_port, start_proxy, stop_proxy},
-    view::{close_tab, init_view, navigate_to, open_welcome, select_tab},
+    proxy::{get_proxy_state, proxy_toggle_debugging, set_proxy_port, start_proxy, stop_proxy},
+    view::{
+        close_aside, close_bottom, close_tab, init_view, navigate_to, open_welcome, select_tab,
+    },
 };
 use daemon::Daemon;
 use proxy::Proxy;
@@ -59,6 +61,8 @@ pub fn run() {
             close_tab,
             select_tab,
             open_welcome,
+            close_bottom,
+            close_aside,
             start_ephemeral_session,
             close_ephemeral_session,
             get_project,
@@ -74,6 +78,7 @@ pub fn run() {
             stop_proxy,
             get_proxy_state,
             set_proxy_port,
+            proxy_toggle_debugging,
             get_api_client,
             send_api_client_request,
             new_api_client_request,

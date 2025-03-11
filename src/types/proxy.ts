@@ -10,6 +10,7 @@ export type ProxyState = (typeof proxyState)[ProxyStateKeys];
 export type Proxy = {
   state: ProxyState;
   port: number;
+  debug: boolean;
   error: string | null;
 };
 

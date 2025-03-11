@@ -12,6 +12,8 @@ import {
   closeTab as _closeTab,
   selectTab as _selectTab,
   openWelcome as _openWelcome,
+  closeBottom as _closeBottom,
+  closeAside as _closeAside,
 } from "../tauri/commands/view-commands";
 import {
   AsideView,
@@ -236,6 +238,9 @@ export function useViewState({
 
   const openWelcome = useCallback(() => updateViewState(_openWelcome()), []);
 
+  const closeBottom = useCallback(() => updateViewState(_closeBottom()), []);
+  const closeAside = useCallback(() => updateViewState(_closeAside()), []);
+
   return {
     nav: globalViewState?.nav,
     tabs: globalViewState?.tabs,
@@ -247,5 +252,7 @@ export function useViewState({
     closeTab,
     selectTab,
     openWelcome,
+    closeBottom,
+    closeAside,
   };
 }

@@ -57,3 +57,13 @@ pub async fn set_proxy_port<'a>(
     let proxy = proxy.clone();
     Ok(proxy)
 }
+
+#[tauri::command]
+pub async fn proxy_toggle_debugging<'a>(
+    proxy_state: tauri::State<'a, Proxy>,
+) -> Result<ProxyInner, String> {
+    let mut proxy = proxy_state.lock().unwrap();
+    proxy.toggle_debugging();
+    let proxy = proxy.clone();
+    Ok(proxy)
+}

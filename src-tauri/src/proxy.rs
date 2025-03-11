@@ -24,6 +24,7 @@ impl ProxyState {
 pub struct ProxyInner {
     state: ProxyState,
     port: u16,
+    debug: bool,
     error: Option<String>,
 }
 
@@ -32,6 +33,7 @@ impl Default for ProxyInner {
         ProxyInner {
             state: ProxyState::Stopped,
             port: 9090,
+            debug: false,
             error: None,
         }
     }
@@ -60,6 +62,14 @@ impl ProxyInner {
     pub fn set_error(&mut self, error: String) -> ProxyInner {
         self.state = ProxyState::Error;
         self.error = Some(error);
+        self.clone()
+    }
+
+    pub fn toggle_debugging(&mut self) -> ProxyInner {
+        if self.state == ProxyState::Running {
+            self.debug = !self.debug;
+        }
+
         self.clone()
     }
 }
