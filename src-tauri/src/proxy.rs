@@ -65,11 +65,12 @@ impl ProxyInner {
         self.clone()
     }
 
-    pub fn toggle_debugging(&mut self) -> ProxyInner {
-        if self.state == ProxyState::Running {
-            self.debug = !self.debug;
-        }
+    pub fn get_debug(&self) -> bool {
+        self.debug
+    }
 
+    pub fn set_debug(&mut self, debug: bool) -> ProxyInner {
+        self.debug = debug;
         self.clone()
     }
 }

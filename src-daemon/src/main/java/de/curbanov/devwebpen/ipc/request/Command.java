@@ -36,6 +36,7 @@ public final class Command<T> {
         RESET,
         START_PROXY,
         STOP_PROXY,
+        PROXY_DEBUG,
     }
 
     public static Command<Void> reset() {
@@ -48,5 +49,9 @@ public final class Command<T> {
 
     public static Command<Void> stopProxy() {
         return new Command<>(CommandId.STOP_PROXY, null);
+    }
+
+    public static Command<Boolean> proxyDebug(boolean debug) {
+        return new Command<>(CommandId.PROXY_DEBUG, debug);
     }
 }

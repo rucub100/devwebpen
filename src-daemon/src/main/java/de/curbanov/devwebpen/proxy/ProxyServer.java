@@ -16,6 +16,7 @@
 package de.curbanov.devwebpen.proxy;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -32,13 +33,28 @@ import io.netty.handler.logging.LoggingHandler;
 
 public final class ProxyServer {
     private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
+
+    private int port;
+
     private Channel serverChannel;
 
-    public boolean isRunning() {
-        return serverChannel != null && serverChannel.isActive();
-    }
+    private final ConcurrentLinkedQueue<SuspendedRequest<?>> suspendedRequests = new ConcurrentLinkedQueue<>();
+    private boolean debug = false;
+    private final ProxyDebug proxyDebug = new ProxyDebug() {
+        @Override
+        public boolean debug() {
+            return debug;
+        }
+
+        @Override
+        public void addRequest(SuspendedRequest<?> request) {
+            suspendedRequests.add(request);
+        }
+
+    };
 
     public CompletableFuture<Void> start(final int port) {
+        this.port = port;
         CompletableFuture<Void> startFuture = new CompletableFuture<>();
 
         if (isRunning()) {
@@ -53,7 +69,7 @@ public final class ProxyServer {
                     b.group(bossGroup, workerGroup)
                             .channel(NioServerSocketChannel.class)
                             .handler(new LoggingHandler(LogLevel.INFO))
-                            .childHandler(new ProxyServerInitializer())
+                            .childHandler(new ProxyServerInitializer(proxyDebug))
                             .childOption(ChannelOption.AUTO_READ, false);
 
                     ChannelFuture f = b.bind(port).sync();
@@ -69,6 +85,7 @@ public final class ProxyServer {
                     workerGroup.shutdownGracefully();
                     bossGroup.shutdownGracefully();
                     serverChannel = null;
+                    debug = false;
                 }
             }, executor);
         }
@@ -94,5 +111,21 @@ public final class ProxyServer {
         }
 
         return stopFuture;
+    }
+
+    public boolean isRunning() {
+        return serverChannel != null && serverChannel.isActive();
+    }
+
+    public int getPort() {
+        return this.port;
+    }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
     }
 }

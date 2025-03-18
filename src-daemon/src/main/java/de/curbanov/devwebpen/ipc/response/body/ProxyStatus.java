@@ -22,24 +22,14 @@ import de.curbanov.devwebpen.ipc.response.AsTextOrBinary;
 public class ProxyStatus implements AsTextOrBinary {
     private final State state;
     private final int port;
+    private final boolean debug;
     private final String error;
 
-    private ProxyStatus(State state, int port, String error) {
+    public ProxyStatus(State state, int port, boolean debug, String error) {
         this.state = state;
         this.port = port;
+        this.debug = debug;
         this.error = error;
-    }
-
-    public static ProxyStatus stopped() {
-        return new ProxyStatus(State.STOPPED, -1, null);
-    }
-
-    public static ProxyStatus running(int port) {
-        return new ProxyStatus(State.RUNNING, port, null);
-    }
-
-    public static ProxyStatus error(String error) {
-        return new ProxyStatus(State.ERROR, -1, error);
     }
 
     public static enum State {
@@ -61,8 +51,9 @@ public class ProxyStatus implements AsTextOrBinary {
     @Override
     public String asText() {
         var port = this.port == -1 ? "" : String.valueOf(this.port);
+        var debug = String.valueOf(this.debug);
         var error = this.error == null ? "" : this.error;
-        return this.state.name() + "\n" + port + "\n" + error;
+        return this.state.name() + "\n" + port + "\n" + debug + "\n" + error;
     }
 
     @Override

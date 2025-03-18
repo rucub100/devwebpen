@@ -4,6 +4,7 @@ pub enum Command {
     Reset,
     StartProxy,
     StopProxy,
+    ProxyDebug,
 }
 
 impl fmt::Display for Command {
@@ -12,6 +13,7 @@ impl fmt::Display for Command {
             Command::Reset => write!(f, "RESET"),
             Command::StartProxy => write!(f, "START_PROXY"),
             Command::StopProxy => write!(f, "STOP_PROXY"),
+            Command::ProxyDebug => write!(f, "PROXY_DEBUG"),
         }
     }
 }

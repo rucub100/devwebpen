@@ -21,10 +21,16 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 
 public class ProxyServerInitializer extends ChannelInitializer<SocketChannel> {
+    private final ProxyDebug proxyDebug;
+
+    public ProxyServerInitializer(ProxyDebug proxyDebug) {
+        this.proxyDebug = proxyDebug;
+    }
+
     @Override
     public void initChannel(SocketChannel ch) throws Exception {
         ch.pipeline().addLast("httpServerCodec", new HttpServerCodec());
         ch.pipeline().addLast("httpObjectAggregator", new HttpObjectAggregator(1_048_576));
-        ch.pipeline().addLast("proxy", new ProxyServerHandler());
+        ch.pipeline().addLast("proxy", new ProxyServerHandler(this.proxyDebug));
     }
 }

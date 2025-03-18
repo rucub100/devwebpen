@@ -48,6 +48,12 @@ import io.netty.handler.codec.http.HttpClientCodec;
 public class ProxyServerHandler extends ChannelInboundHandlerAdapter {
     private Channel targetChannel;
 
+    private final ProxyDebug proxyDebug;
+
+    public ProxyServerHandler(ProxyDebug proxyDebug) {
+        this.proxyDebug = proxyDebug;
+    }
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         ctx.channel().read();
@@ -137,9 +143,9 @@ public class ProxyServerHandler extends ChannelInboundHandlerAdapter {
                 ctx.pipeline().remove("httpServerCodec");
                 ctx.pipeline().remove("httpObjectAggregator");
                 ctx.pipeline().addFirst("optionalSsl", new OptionalSslHandler(sslCtx));
-                ctx.pipeline().replace(this, "request", new HttpRequestHandler(targetChannel));
+                ctx.pipeline().replace(this, "request", new HttpRequestHandler(targetChannel, proxyDebug));
                 ctx.pipeline().addBefore("request", "httpObjectAggregator", new HttpObjectAggregator(1_048_576));
-                ctx.pipeline().addBefore("httpObjectAggregator", "response", new HttpResponseHandler());
+                ctx.pipeline().addBefore("httpObjectAggregator", "response", new HttpResponseHandler(proxyDebug));
                 ctx.pipeline().addBefore("response", "httpServerCodec", new HttpServerCodec());
                 ctx.channel().config().setAutoRead(true);
                 targetChannel.config().setAutoRead(true);

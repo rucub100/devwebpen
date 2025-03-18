@@ -39,6 +39,8 @@ public class Request<T> implements Serializable {
                         return Command.startProxy(Integer.parseInt(bodyParts[1]));
                     case STOP_PROXY:
                         return Command.stopProxy();
+                    case PROXY_DEBUG:
+                        return Command.proxyDebug(Boolean.parseBoolean(bodyParts[1]));
                     default:
                         throw new IllegalArgumentException("Unknown command: " + commandId);
                 }

@@ -79,6 +79,13 @@ public class Processor implements TextRequestHandler {
             case STOP_PROXY:
                 execStopProxyCommand(request);
                 break;
+            case PROXY_DEBUG:
+                if (command.getPayload() instanceof Boolean debug) {
+                    execProxyDebugCommand(request, debug);
+                } else {
+                    throw new IllegalArgumentException("[Processor]: Invalid payload type for PROXY_DEBUG command");
+                }
+                break;
 
             default:
                 throw new IllegalArgumentException("[Processor]: Unknown command: " + command);
@@ -93,12 +100,22 @@ public class Processor implements TextRequestHandler {
                     Response<ProxyStatus> res;
                     if (e != null) {
                         System.err.println("[Processor]: Error stopping proxy");
-                        res = Response.createProxyStatus(request.getHeader().getUuid(),
-                                ProxyStatus.error(e.getMessage()));
+                        res = Response.createProxyStatus(
+                                request.getHeader().getUuid(),
+                                new ProxyStatus(
+                                        ProxyStatus.State.ERROR,
+                                        proxyServer.getPort(),
+                                        proxyServer.isDebug(),
+                                        e.getMessage()));
 
                     } else {
                         System.out.println("[Processor]: Proxy stopped");
-                        res = Response.createProxyStatus(request.getHeader().getUuid(), ProxyStatus.stopped());
+                        res = Response.createProxyStatus(
+                                request.getHeader().getUuid(), new ProxyStatus(
+                                        ProxyStatus.State.STOPPED,
+                                        proxyServer.getPort(),
+                                        proxyServer.isDebug(),
+                                        null));
                     }
                     responseSender.sendResponse(res);
                 }, executor);
@@ -112,11 +129,21 @@ public class Processor implements TextRequestHandler {
                     Response<ProxyStatus> res;
                     if (e != null) {
                         System.err.println("[Processor]: Error starting proxy");
-                        res = Response.createProxyStatus(request.getHeader().getUuid(),
-                                ProxyStatus.error(e.getMessage()));
+                        res = Response.createProxyStatus(
+                                request.getHeader().getUuid(),
+                                new ProxyStatus(
+                                        ProxyStatus.State.ERROR,
+                                        proxyServer.getPort(),
+                                        proxyServer.isDebug(),
+                                        e.getMessage()));
                     } else {
                         System.out.println("[Processor]: Proxy started");
-                        res = Response.createProxyStatus(request.getHeader().getUuid(), ProxyStatus.running(port));
+                        res = Response.createProxyStatus(
+                                request.getHeader().getUuid(), new ProxyStatus(
+                                        ProxyStatus.State.RUNNING,
+                                        proxyServer.getPort(),
+                                        proxyServer.isDebug(),
+                                        null));
                     }
                     responseSender.sendResponse(res);
                 }, executor);
@@ -129,14 +156,38 @@ public class Processor implements TextRequestHandler {
             Response<ProxyStatus> res;
             if (e != null) {
                 System.err.println("[Processor]: Error stopping proxy");
-                res = Response.createProxyStatus(request.getHeader().getUuid(),
-                        ProxyStatus.error(e.getMessage()));
+                res = Response.createProxyStatus(
+                        request.getHeader().getUuid(),
+                        new ProxyStatus(
+                                ProxyStatus.State.ERROR,
+                                proxyServer.getPort(),
+                                proxyServer.isDebug(),
+                                e.getMessage()));
             } else {
                 System.out.println("[Processor]: Proxy stopped");
-                res = Response.createProxyStatus(request.getHeader().getUuid(), ProxyStatus.stopped());
+                res = Response.createProxyStatus(
+                        request.getHeader().getUuid(),
+                        new ProxyStatus(
+                                ProxyStatus.State.STOPPED,
+                                proxyServer.getPort(),
+                                proxyServer.isDebug(),
+                                null));
             }
             responseSender.sendResponse(res);
         }, executor);
+    }
+
+    private void execProxyDebugCommand(Request<?> request, boolean debug) {
+        System.out.println("[Processor]: Toggling proxy debug mode...");
+        proxyServer.setDebug(debug);
+        Response<ProxyStatus> res = Response.createProxyStatus(
+                request.getHeader().getUuid(),
+                new ProxyStatus(
+                        proxyServer.isRunning() ? ProxyStatus.State.RUNNING : ProxyStatus.State.STOPPED,
+                        proxyServer.getPort(),
+                        proxyServer.isDebug(),
+                        null));
+        responseSender.sendResponse(res);
     }
 
     private void execHttpRequest(Request<?> request) {

@@ -25,30 +25,45 @@ pub fn handle_daemon_response(app_handle: &AppHandle, res: Response) {
 
 fn handle_proxy_status_response(app_handle: &AppHandle, body: String) {
     let mut body_lines = body.lines();
-    let state = body_lines.next();
 
+    let state = body_lines.next();
     if let None = state {
         log::error!("Failed to parse proxy status, missing state");
         return;
     }
-
     let state = ProxyState::parse(state.unwrap());
-
     if let Err(e) = state {
         log::error!("{}", e);
         return;
     }
-
     let state = state.unwrap();
 
-    let error = body_lines.next();
-
-    if let None = error {
-        log::error!("Failed to parse proxy error");
+    let port = body_lines.next();
+    if let None = port {
+        log::error!("Failed to parse proxy status, missing port");
         return;
     }
+    let port = port.unwrap().parse::<u16>();
+    if let Err(e) = port {
+        log::error!("Failed to parse proxy port: {}", e);
+        return;
+    }
+    let port = port.unwrap();
 
-    let error = error.unwrap();
+    let debug = body_lines.next();
+    if let None = debug {
+        log::error!("Failed to parse proxy status, missing debug");
+        return;
+    }
+    let debug = debug.unwrap().parse::<bool>();
+    if let Err(e) = debug {
+        log::error!("Failed to parse proxy debug: {}", e);
+        return;
+    }
+    let debug = debug.unwrap();
+
+    let error = body_lines.next();
+    let error = error.unwrap_or_default();
 
     let proxy = app_handle.state::<Proxy>();
     let mut proxy = proxy.lock().unwrap();
@@ -61,6 +76,8 @@ fn handle_proxy_status_response(app_handle: &AppHandle, body: String) {
             proxy.set_state(state);
         }
     }
+    proxy.set_port(port);
+    proxy.set_debug(debug);
 
     let proxy = proxy.clone();
 

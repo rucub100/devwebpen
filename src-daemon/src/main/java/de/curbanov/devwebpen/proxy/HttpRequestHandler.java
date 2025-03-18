@@ -19,18 +19,26 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.codec.http.FullHttpRequest;
 
 public class HttpRequestHandler extends ChannelInboundHandlerAdapter {
     private final Channel targetChannel;
+    private final ProxyDebug proxyDebug;
 
-    public HttpRequestHandler(Channel targetChannel) {
+    public HttpRequestHandler(Channel targetChannel, ProxyDebug proxyDebug) {
         this.targetChannel = targetChannel;
+        this.proxyDebug = proxyDebug;
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        // TODO: msg is a FullHttpRequest
-        targetChannel.writeAndFlush(msg).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
+        if (proxyDebug.debug() && msg instanceof FullHttpRequest request) {
+            // suspend the request
+            ctx.channel().config().setAutoRead(false);
+            proxyDebug.addRequest(new SuspendedRequest<>(request, ctx, targetChannel));
+        } else {
+            targetChannel.writeAndFlush(msg).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
+        }
     }
 
     @Override

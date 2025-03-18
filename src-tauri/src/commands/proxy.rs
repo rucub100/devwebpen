@@ -61,9 +61,19 @@ pub async fn set_proxy_port<'a>(
 #[tauri::command]
 pub async fn proxy_toggle_debugging<'a>(
     proxy_state: tauri::State<'a, Proxy>,
-) -> Result<ProxyInner, String> {
-    let mut proxy = proxy_state.lock().unwrap();
-    proxy.toggle_debugging();
-    let proxy = proxy.clone();
-    Ok(proxy)
+    daemon_state: tauri::State<'a, Daemon>,
+) -> Result<(), String> {
+    let debug = {
+        let proxy = proxy_state.lock().unwrap();
+        proxy.get_debug()
+    };
+
+    let req = Request::new_text(
+        RequestType::Command,
+        format!("{}:{}", Command::ProxyDebug, !debug),
+    );
+
+    send_daemon_request(daemon_state, req).await?;
+
+    Ok(())
 }
