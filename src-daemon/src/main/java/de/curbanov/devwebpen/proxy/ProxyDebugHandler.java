@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.curbanov.devwebpen.ipc.response;
+package de.curbanov.devwebpen.proxy;
 
-public enum ResponseType {
-    PROXY_STATUS,
-    HTTP_RESPONSE,
-    HTTP_REQUEST_ERROR,
-    PROXY_REQUEST_DEBUG
+@FunctionalInterface
+public interface ProxyDebugHandler {
+    void onProxyDebug(SuspendedRequest<?> request, int queueSize);
 }

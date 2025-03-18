@@ -30,14 +30,17 @@ import de.curbanov.devwebpen.ipc.request.TextRequestHandler;
 import de.curbanov.devwebpen.ipc.response.Response;
 import de.curbanov.devwebpen.ipc.response.ResponseSender;
 import de.curbanov.devwebpen.ipc.response.body.HttpRequestError;
+import de.curbanov.devwebpen.ipc.response.body.ProxyRequestDebug;
 import de.curbanov.devwebpen.ipc.response.body.ProxyStatus;
+import de.curbanov.devwebpen.proxy.ProxyDebugHandler;
 import de.curbanov.devwebpen.proxy.ProxyServer;
+import de.curbanov.devwebpen.proxy.SuspendedRequest;
 
-public class Processor implements TextRequestHandler {
+public class Processor implements TextRequestHandler, ProxyDebugHandler {
     private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
     private final ResponseSender responseSender;
 
-    private final ProxyServer proxyServer = new ProxyServer();
+    private final ProxyServer proxyServer = new ProxyServer(this);
     private final ApiClient apiClient = new ApiClient(executor);
 
     public Processor(ResponseSender responseSender) {
@@ -61,6 +64,13 @@ public class Processor implements TextRequestHandler {
                     }
                 },
                 executor);
+    }
+
+    @Override
+    public void onProxyDebug(SuspendedRequest<?> request, int queueSize) {
+        var res = Response.createProxyRequestDebug(
+                new ProxyRequestDebug(request.getId().toString(), request.getMethod(), request.getUri(), queueSize));
+        responseSender.sendResponse(res);
     }
 
     private void execCommand(Request<?> request) {

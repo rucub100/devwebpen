@@ -21,10 +21,19 @@ impl ProxyState {
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
+pub struct SuspendedRequest {
+    pub id: String,
+    pub method: String,
+    pub uri: String,
+}
+
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct ProxyInner {
     state: ProxyState,
     port: u16,
     debug: bool,
+    suspended_requests: Vec<SuspendedRequest>,
     error: Option<String>,
 }
 
@@ -34,6 +43,7 @@ impl Default for ProxyInner {
             state: ProxyState::Stopped,
             port: 9090,
             debug: false,
+            suspended_requests: vec![],
             error: None,
         }
     }
@@ -56,6 +66,7 @@ impl ProxyInner {
 
     pub fn set_state(&mut self, state: ProxyState) -> ProxyInner {
         self.state = state;
+        self.suspended_requests.clear();
         self.clone()
     }
 
@@ -71,6 +82,23 @@ impl ProxyInner {
 
     pub fn set_debug(&mut self, debug: bool) -> ProxyInner {
         self.debug = debug;
+        if (!debug) {
+            self.suspended_requests.clear();
+        }
+        self.clone()
+    }
+
+    pub fn get_suspended_requests_count(&self) -> usize {
+        self.suspended_requests.len()
+    }
+
+    pub fn add_suspended_request(&mut self, request: SuspendedRequest) -> ProxyInner {
+        self.suspended_requests.push(request);
+        self.clone()
+    }
+
+    pub fn remove_suspended_request(&mut self, id: &str) -> ProxyInner {
+        self.suspended_requests.retain(|r| r.id != id);
         self.clone()
     }
 }

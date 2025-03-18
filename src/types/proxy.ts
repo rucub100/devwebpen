@@ -7,10 +7,17 @@ const proxyState = {
 type ProxyStateKeys = keyof typeof proxyState;
 export type ProxyState = (typeof proxyState)[ProxyStateKeys];
 
+export type SuspendedRequest = {
+  id: string;
+  method: string;
+  url: string;
+};
+
 export type Proxy = {
   state: ProxyState;
   port: number;
   debug: boolean;
+  suspendedRequests: SuspendedRequest[];
   error: string | null;
 };
 

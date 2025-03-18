@@ -38,6 +38,7 @@ public final class ProxyServer {
 
     private Channel serverChannel;
 
+    private final ProxyDebugHandler debugHandler;
     private final ConcurrentLinkedQueue<SuspendedRequest<?>> suspendedRequests = new ConcurrentLinkedQueue<>();
     private boolean debug = false;
     private final ProxyDebug proxyDebug = new ProxyDebug() {
@@ -49,9 +50,14 @@ public final class ProxyServer {
         @Override
         public void addRequest(SuspendedRequest<?> request) {
             suspendedRequests.add(request);
+            debugHandler.onProxyDebug(request, suspendedRequests.size());
         }
 
     };
+
+    public ProxyServer(ProxyDebugHandler debugHandler) {
+        this.debugHandler = debugHandler;
+    }
 
     public CompletableFuture<Void> start(final int port) {
         this.port = port;
@@ -127,5 +133,13 @@ public final class ProxyServer {
 
     public void setDebug(boolean debug) {
         this.debug = debug;
+
+        if (!debug) {
+            for (SuspendedRequest<?> request : suspendedRequests) {
+                request.resume();
+            }
+
+            suspendedRequests.clear();
+        }
     }
 }

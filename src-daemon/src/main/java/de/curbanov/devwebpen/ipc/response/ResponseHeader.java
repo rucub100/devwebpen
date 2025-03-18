@@ -17,6 +17,7 @@ package de.curbanov.devwebpen.ipc.response;
 
 import java.io.Serializable;
 import java.nio.ByteBuffer;
+import java.util.UUID;
 
 public class ResponseHeader implements Serializable, AsTextOrBinary {
     private final String requestUuid;
@@ -24,6 +25,11 @@ public class ResponseHeader implements Serializable, AsTextOrBinary {
 
     public ResponseHeader(String requestUuid, ResponseType responseType) {
         this.requestUuid = requestUuid;
+        this.responseType = responseType;
+    }
+
+    public ResponseHeader(ResponseType responseType) {
+        this.requestUuid = UUID.randomUUID().toString();
         this.responseType = responseType;
     }
 

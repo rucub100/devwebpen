@@ -5,6 +5,7 @@ import java.util.UUID;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.util.ReferenceCountUtil;
 
 public class SuspendedRequest<T> {
@@ -27,6 +28,22 @@ public class SuspendedRequest<T> {
 
     public T getRequest() {
         return request;
+    }
+
+    public String getMethod() {
+        if (request instanceof FullHttpRequest fullHttpRequest) {
+            return fullHttpRequest.method().name();
+        }
+
+        throw new IllegalStateException("Request is not a FullHttpRequest");
+    }
+
+    public String getUri() {
+        if (request instanceof FullHttpRequest fullHttpRequest) {
+            return fullHttpRequest.uri();
+        }
+
+        throw new IllegalStateException("Request is not a FullHttpRequest");
     }
 
     public void resume() {

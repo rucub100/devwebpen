@@ -4,7 +4,7 @@ use crate::{
     api_client::{HttpRequestError, HttpResponse},
     app_state,
     events::{emit_event, DevWebPenEvent},
-    proxy::{Proxy, ProxyState},
+    proxy::{Proxy, ProxyState, SuspendedRequest},
 };
 
 use super::response::{Response, ResponseType};
@@ -20,6 +20,63 @@ pub fn handle_daemon_response(app_handle: &AppHandle, res: Response) {
         ResponseType::HttpResponse => {
             handle_http_response(app_handle, res.body);
         }
+        ResponseType::ProxyRequestDebug => {
+            handle_proxy_request_debug_response(app_handle, res.body);
+        }
+    }
+}
+
+fn handle_proxy_request_debug_response(app_handle: &AppHandle, body: String) {
+    let mut body_lines = body.lines();
+
+    let id = body_lines.next();
+    if let None = id {
+        log::error!("Failed to parse proxy request debug, missing id");
+        return;
+    }
+    let id = id.unwrap().to_string();
+
+    let method = body_lines.next();
+    if let None = method {
+        log::error!("Failed to parse proxy request debug, missing method");
+        return;
+    }
+    let method = method.unwrap().to_string();
+
+    let uri = body_lines.next();
+    if let None = uri {
+        log::error!("Failed to parse proxy request debug, missing uri");
+        return;
+    }
+    let uri = uri.unwrap().to_string();
+
+    let total_requests: Option<&str> = body_lines.next();
+    if let None = total_requests {
+        log::error!("Failed to parse proxy request debug, missing total_requests");
+        return;
+    }
+    let total_requests = total_requests.unwrap().parse::<usize>();
+    if let Err(e) = total_requests {
+        log::error!("Failed to parse proxy request debug total_requests: {}", e);
+        return;
+    }
+    let total_requests = total_requests.unwrap();
+
+    let proxy = app_handle.state::<Proxy>();
+    let mut proxy = proxy.lock().unwrap();
+
+    proxy.add_suspended_request(SuspendedRequest { id, method, uri });
+
+    if total_requests != proxy.get_suspended_requests_count() {
+        log::error!("'total_requests' does not match suspended requests count");
+    }
+
+    let proxy = proxy.clone();
+
+    let result = emit_event(app_handle, DevWebPenEvent::ProxyChanged(proxy));
+
+    if let Err(e) = result {
+        log::error!("{}", e);
     }
 }
 
