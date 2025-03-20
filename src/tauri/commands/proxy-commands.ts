@@ -7,6 +7,7 @@ enum ProxyCommand {
   StopProxy = "stop_proxy",
   SetProxyPort = "set_proxy_port",
   ToggleDebugging = "proxy_toggle_debugging",
+  OpenSuspended = "proxy_open_suspended",
 }
 
 export async function getProxy(): Promise<Proxy> {
@@ -27,4 +28,8 @@ export async function setProxyPort(port: number): Promise<Proxy> {
 
 export async function toggleDebugging(): Promise<Proxy> {
   return invoke<Proxy>(ProxyCommand.ToggleDebugging);
+}
+
+export async function openSuspended(id: string): Promise<void> {
+  return invoke(ProxyCommand.OpenSuspended, { id });
 }

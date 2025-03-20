@@ -219,7 +219,7 @@ export default function RootLayout() {
           display: bottom === "none" ? "none" : "block",
         }}
       >
-        <BottomPanel></BottomPanel>
+        <BottomPanel view={bottom}></BottomPanel>
       </aside>
       <footer
         className={`${styles.footer} border-t border-neutral-800`}

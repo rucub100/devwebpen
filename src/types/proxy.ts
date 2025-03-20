@@ -10,7 +10,7 @@ export type ProxyState = (typeof proxyState)[ProxyStateKeys];
 export type SuspendedRequest = {
   id: string;
   method: string;
-  url: string;
+  uri: string;
 };
 
 export type Proxy = {

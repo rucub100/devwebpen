@@ -21,11 +21,7 @@ export default function Accordion({
       {...props}
     >
       {items.map((item, index) => (
-        <details
-          key={item.key}
-          open={index === 0}
-          className="h-full overflow-auto"
-        >
+        <details key={item.key} open={index === 0} className="overflow-auto">
           <summary className="cursor-pointer">{item.title}</summary>
           {item.content}
         </details>

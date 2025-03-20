@@ -12,6 +12,7 @@ import {
   stopProxy as _stopProxy,
   setProxyPort as _setProxyPort,
   toggleDebugging as _toggleDebugging,
+  openSuspended as _openSuspended,
 } from "../tauri/commands/proxy-commands";
 import { subscribe } from "../tauri/events";
 
@@ -93,11 +94,17 @@ export function useProxy({ listenProxy }: UseProxyOptioins = {}) {
     [_toggleDebugging]
   );
 
+  const openSuspended = useCallback(
+    (id: string) => _openSuspended(id),
+    [_openSuspended]
+  );
+
   return {
     proxy: globalProxy,
     startProxy,
     stopProxy,
     setProxyPort,
     toggleDebugging,
+    openSuspended,
   };
 }

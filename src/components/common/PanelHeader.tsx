@@ -9,10 +9,13 @@ interface PanelHeaderProps extends HTMLAttributes<HTMLDivElement> {
 
 export default function PanelHeader({ onClose }: PanelHeaderProps) {
   return (
-    <div className="flex flex-row border-b border-neutral-800">
+    <div className="flex flex-row items-center border-b border-neutral-800 px-1">
+      <div className="text-xs font-light border-b border-primary-800 cursor-pointer">
+        Proxy Traffic
+      </div>
       <IconButton
         icon={<Icon icon="close"></Icon>}
-        className="ml-auto hover:bg-primary-600/10 p-0.5 rounded"
+        className="ml-auto hover:bg-primary-600/10 p-0.5 my-1 rounded"
         onClick={onClose}
       ></IconButton>
     </div>

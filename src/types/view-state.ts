@@ -10,6 +10,7 @@ const mainView = {
   ...none,
   Welcome: "welcome",
   ApiRequest: "apiRequest",
+  ProxyTraffic: "proxyTraffic",
 } as const;
 const asideView = { ...none } as const;
 const bottomView = { ...none, ProxyTraffic: "proxyTraffic" } as const;
@@ -31,9 +32,31 @@ export type ApiRequestTabData = {
   };
 };
 
-export type TabData = ApiRequestTabData;
+export type ProxyTrafficTabData = {
+  proxyTraffic: {
+    id: string;
+  };
+};
 
-const tabName = { Welcome: "welcome" } as const;
+export type TabData = ApiRequestTabData | ProxyTrafficTabData;
+
+export function isApiRequestTabData(
+  data: TabData | undefined | null
+): data is ApiRequestTabData {
+  return !!(data && "apiRequest" in data);
+}
+
+export function isProxyTrafficTabData(
+  data: TabData | undefined | null
+): data is ProxyTrafficTabData {
+  return !!(data && "proxyTraffic" in data);
+}
+
+const tabName = {
+  Welcome: "welcome",
+  ApiRequest: "apiRequest",
+  ProxyTraffic: "proxyTraffic",
+} as const;
 type TabNameKeys = keyof typeof tabName;
 export type TabName = (typeof tabName)[TabNameKeys];
 

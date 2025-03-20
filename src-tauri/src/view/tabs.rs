@@ -2,7 +2,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 
 use uuid::Uuid;
 
-use crate::api_client::HttpRequest;
+use crate::{api_client::HttpRequest, proxy::Proxy};
 
 use super::nav::NavView;
 
@@ -14,8 +14,15 @@ pub struct ApiRequestTabData {
 
 #[derive(serde::Serialize, serde::Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
+pub struct ProxyTrafficTabData {
+    pub id: Uuid,
+}
+
+#[derive(serde::Serialize, serde::Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub enum TabData {
     ApiRequest(ApiRequestTabData),
+    ProxyTraffic(ProxyTrafficTabData),
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq)]
@@ -23,6 +30,7 @@ pub enum TabData {
 pub enum TabName {
     Welcome,
     ApiRequest,
+    ProxyTraffic,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Clone)]
@@ -44,6 +52,13 @@ impl TabKind {
         Self {
             nav: NavView::ApiClient,
             name: TabName::ApiRequest,
+        }
+    }
+
+    pub fn proxy_traffic() -> Self {
+        Self {
+            nav: NavView::Proxy,
+            name: TabName::ProxyTraffic,
         }
     }
 }
@@ -80,6 +95,15 @@ impl Tab {
             data: Some(TabData::ApiRequest(ApiRequestTabData {
                 request_id: req.id,
             })),
+        }
+    }
+
+    pub fn new_proxy_suspend(id: Uuid) -> Self {
+        Self {
+            id: Self::next_id(),
+            kind: TabKind::proxy_traffic(),
+            label: Some("Proxy Traffic".to_string()),
+            data: Some(TabData::ProxyTraffic(ProxyTrafficTabData { id })),
         }
     }
 }

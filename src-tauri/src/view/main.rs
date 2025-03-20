@@ -4,4 +4,5 @@ pub enum MainView {
     None,
     Welcome,
     ApiRequest,
+    ProxyTraffic,
 }

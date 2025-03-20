@@ -21,7 +21,10 @@ use commands::{
         close_project, create_project, get_project, get_recent_projects, open_project,
         open_recent_project,
     },
-    proxy::{get_proxy_state, proxy_toggle_debugging, set_proxy_port, start_proxy, stop_proxy},
+    proxy::{
+        get_proxy_state, proxy_open_suspended, proxy_toggle_debugging, set_proxy_port, start_proxy,
+        stop_proxy,
+    },
     view::{
         close_aside, close_bottom, close_tab, init_view, navigate_to, open_welcome, select_tab,
     },
@@ -79,6 +82,7 @@ pub fn run() {
             get_proxy_state,
             set_proxy_port,
             proxy_toggle_debugging,
+            proxy_open_suspended,
             get_api_client,
             send_api_client_request,
             new_api_client_request,
@@ -97,7 +101,7 @@ pub fn run() {
             set_api_client_request_query_param_name,
             set_api_client_request_query_param_value,
             set_api_client_request_path_param_value,
-            set_api_client_request_body
+            set_api_client_request_body,
         ])
         .on_window_event(window_event_handler)
         .setup(|app| {

@@ -35,6 +35,12 @@ fn handle_proxy_request_debug_response(app_handle: &AppHandle, body: String) {
         return;
     }
     let id = id.unwrap().to_string();
+    let uuid = uuid::Uuid::parse_str(&id);
+    if let Err(e) = uuid {
+        log::error!("Failed to parse UUID: {}", e);
+        return;
+    }
+    let uuid = uuid.unwrap();
 
     let method = body_lines.next();
     if let None = method {
@@ -69,6 +75,18 @@ fn handle_proxy_request_debug_response(app_handle: &AppHandle, body: String) {
 
     if total_requests != proxy.get_suspended_requests_count() {
         log::error!("'total_requests' does not match suspended requests count");
+    }
+
+    if proxy.get_suspended_requests_count() == 1 {
+        let view_state = app_handle.state::<crate::ViewState>();
+        let mut view = view_state.lock().unwrap();
+        let view = view.open_proxy_suspended(uuid);
+
+        let result = emit_event(app_handle, DevWebPenEvent::ViewStateChanged(view));
+
+        if let Err(e) = result {
+            log::error!("{}", e);
+        }
     }
 
     let proxy = proxy.clone();

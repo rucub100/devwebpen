@@ -5,7 +5,8 @@ use bottom::BottomView;
 use main::MainView;
 use nav::NavView;
 use status::StatusView;
-use tabs::{Tab, TabData, TabKind, TabName, TabsView};
+use tabs::{ProxyTrafficTabData, Tab, TabData, TabKind, TabName, TabsView};
+use uuid::Uuid;
 
 use crate::api_client::HttpRequest;
 
@@ -108,6 +109,7 @@ impl ViewStateInner {
                 self.main = match tab.kind.name {
                     TabName::Welcome => MainView::Welcome,
                     TabName::ApiRequest => MainView::ApiRequest,
+                    TabName::ProxyTraffic => MainView::ProxyTraffic,
                 };
             }
             None => {
@@ -251,11 +253,50 @@ impl ViewStateInner {
         };
     }
 
+    pub fn open_proxy_suspended(&mut self, id: Uuid) -> PartialViewState {
+        let tab = self
+            .tabs
+            .tabs
+            .iter_mut()
+            .find(|tab| tab.kind.name == TabName::ProxyTraffic);
+
+        match tab {
+            None => self._new_tab(Tab::new_proxy_suspend(id)),
+            Some(tab) => {
+                let tab_id = tab.id;
+
+                match tab.data.as_mut() {
+                    Some(TabData::ProxyTraffic(data)) => {
+                        if data.id == id {
+                            return self._select_tab(tab_id);
+                        }
+
+                        data.id = id;
+                    }
+                    None => {
+                        log::error!("Tab data is not ProxyTraffic");
+                        tab.data = Some(TabData::ProxyTraffic(ProxyTrafficTabData { id }));
+                    }
+                    Some(_) => {
+                        log::error!("Tab data is not ProxyTraffic");
+                        return PartialViewState::default();
+                    }
+                }
+
+                return PartialViewState {
+                    tabs: Some(self.tabs.clone()),
+                    ..self._select_tab(tab_id)
+                };
+            }
+        }
+    }
+
     pub fn open_api_client_request(&mut self, req: HttpRequest) -> PartialViewState {
         let tab = self.tabs.tabs.iter().find(|tab| {
             tab.kind.name == TabName::ApiRequest
                 && tab.data.as_ref().is_some_and(|data| match data {
-                    TabData::ApiRequest(id) => id.request_id == req.id,
+                    TabData::ApiRequest(data) => data.request_id == req.id,
+                    _ => false,
                 })
         });
 

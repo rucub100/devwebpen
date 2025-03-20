@@ -43,6 +43,15 @@ export default function NavProxy() {
         <Button onClick={proxyActionHandler}>
           {proxy?.state != "running" ? "Start" : "Stop"}
         </Button>
+      </div>
+    ),
+  };
+
+  const debuggerItem: AccordionItem = {
+    key: "debugger",
+    title: "Debugger",
+    content: (
+      <div className="flex flex-col p-4 gap-2 text-neutral-300">
         <LinkButton
           className="max-w-max"
           onClick={toggleDebugging}
@@ -51,11 +60,15 @@ export default function NavProxy() {
           <Icon icon={proxy?.debug ? "toggle_on" : "toggle_off"}></Icon>
           <span className="ml-2">Debugging {proxy?.debug ? "on" : "off"}</span>
         </LinkButton>
+        <Button>Forward</Button>
+        <Button>Forward All</Button>
+        <Button>Drop</Button>
+        <Button>Drop All</Button>
       </div>
     ),
   };
 
-  const items: AccordionItem[] = [listenerItem];
+  const items: AccordionItem[] = [listenerItem, debuggerItem];
 
   return <Accordion className="p-1 min-w-[200px]" items={items} />;
 }

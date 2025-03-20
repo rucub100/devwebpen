@@ -1,10 +1,14 @@
+use uuid::Uuid;
+
 use crate::{
     daemon::{
         command::Command,
         request::{Request, RequestType},
         Daemon,
     },
+    events::{emit_event, DevWebPenEvent},
     proxy::{Proxy, ProxyInner},
+    view::ViewState,
 };
 
 use super::send_daemon_request;
@@ -76,4 +80,19 @@ pub async fn proxy_toggle_debugging<'a>(
     send_daemon_request(daemon_state, req).await?;
 
     Ok(())
+}
+
+#[tauri::command]
+pub async fn proxy_open_suspended<'a>(
+    id: Uuid,
+    app_handle: tauri::AppHandle,
+    view_state: tauri::State<'a, ViewState>,
+) -> Result<(), String> {
+    let view = {
+        let mut view = view_state.lock().unwrap();
+        view.open_proxy_suspended(id)
+    };
+
+    return emit_event(&app_handle, DevWebPenEvent::ViewStateChanged(view))
+        .map_err(|e| e.to_string());
 }

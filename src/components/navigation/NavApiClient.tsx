@@ -3,6 +3,7 @@ import { useApiClient } from "../../hooks/useApiClient";
 import { useViewState } from "../../hooks/useViewState";
 import Accordion, { AccordionItem } from "../common/Accordion";
 import Button from "../common/Button";
+import { isApiRequestTabData } from "../../types/view-state";
 
 export default function NavApiClient() {
   const { apiClient, newApiClientRequest, openApiClientRequest } = useApiClient(
@@ -15,7 +16,9 @@ export default function NavApiClient() {
 
   const requestId = useMemo(() => {
     const activeTab = tabs?.tabs.find((tab) => tab.id === tabs?.activeTabId);
-    return activeTab?.data?.apiRequest.requestId;
+    return isApiRequestTabData(activeTab?.data)
+      ? activeTab.data.apiRequest.requestId
+      : undefined;
   }, [tabs]);
 
   const collections: AccordionItem[] = apiClient.collections.map(
