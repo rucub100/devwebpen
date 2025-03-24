@@ -106,17 +106,20 @@ fn handle_proxy_status_response(app_handle: &AppHandle, body: String) {
     let proxy = app_handle.state::<Proxy>();
     let mut proxy = proxy.lock().unwrap();
 
-    if proxy.get_suspended_requests_count() == 0 && suspended_length > 0 {
+    let view_state = app_handle.state::<crate::ViewState>();
+    let mut view = view_state.lock().unwrap();
+
+    if (proxy.get_suspended_requests_count() == 0 || view.get_proxy_suspended_id().is_none())
+        && suspended_length > 0
+    {
         let uuid = uuid::Uuid::parse_str(&suspended_requests[0].id);
         if let Err(e) = uuid {
             log::error!("Failed to parse UUID: {}", e);
             return;
         }
         let uuid = uuid.unwrap();
-        let view_state = app_handle.state::<crate::ViewState>();
-        let mut view = view_state.lock().unwrap();
-        let view = view.open_proxy_suspended(uuid);
 
+        let view = view.open_proxy_suspended(uuid);
         let result = emit_event(app_handle, DevWebPenEvent::ViewStateChanged(view));
 
         if let Err(e) = result {
@@ -143,9 +146,6 @@ fn handle_proxy_status_response(app_handle: &AppHandle, body: String) {
     if let Err(e) = result {
         log::error!("{}", e);
     }
-
-    let view_state = app_handle.state::<crate::ViewState>();
-    let mut view = view_state.lock().unwrap();
 
     let tab_suspended_id = view.get_proxy_suspended_id();
     let mut close_suspended = false;

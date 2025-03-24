@@ -94,8 +94,17 @@ pub async fn proxy_open_suspended<'a>(
 #[tauri::command]
 pub async fn proxy_forward_suspended<'a>(
     id: Uuid,
+    app_handle: tauri::AppHandle,
+    view_state: tauri::State<'a, ViewState>,
     daemon_state: tauri::State<'a, Daemon>,
 ) -> Result<(), String> {
+    let view = {
+        let mut view = view_state.lock().unwrap();
+        view.close_proxy_suspended()
+    };
+
+    emit_event(&app_handle, DevWebPenEvent::ViewStateChanged(view)).map_err(|e| e.to_string())?;
+
     let req = Request::new_text(
         RequestType::Command,
         format!("{}:{}", Command::ProxyForward, id),
@@ -106,8 +115,17 @@ pub async fn proxy_forward_suspended<'a>(
 
 #[tauri::command]
 pub async fn proxy_forward_all_suspended<'a>(
+    app_handle: tauri::AppHandle,
+    view_state: tauri::State<'a, ViewState>,
     daemon_state: tauri::State<'a, Daemon>,
 ) -> Result<(), String> {
+    let view = {
+        let mut view = view_state.lock().unwrap();
+        view.close_proxy_suspended()
+    };
+
+    emit_event(&app_handle, DevWebPenEvent::ViewStateChanged(view)).map_err(|e| e.to_string())?;
+
     let req = Request::new_text(RequestType::Command, Command::ProxyForwardAll.to_string());
 
     return send_daemon_request(daemon_state, req).await;
@@ -116,8 +134,17 @@ pub async fn proxy_forward_all_suspended<'a>(
 #[tauri::command]
 pub async fn proxy_drop_suspended<'a>(
     id: Uuid,
+    app_handle: tauri::AppHandle,
+    view_state: tauri::State<'a, ViewState>,
     daemon_state: tauri::State<'a, Daemon>,
 ) -> Result<(), String> {
+    let view = {
+        let mut view = view_state.lock().unwrap();
+        view.close_proxy_suspended()
+    };
+
+    emit_event(&app_handle, DevWebPenEvent::ViewStateChanged(view)).map_err(|e| e.to_string())?;
+
     let req = Request::new_text(
         RequestType::Command,
         format!("{}:{}", Command::ProxyDrop, id),
@@ -128,8 +155,17 @@ pub async fn proxy_drop_suspended<'a>(
 
 #[tauri::command]
 pub async fn proxy_drop_all_suspended<'a>(
+    app_handle: tauri::AppHandle,
+    view_state: tauri::State<'a, ViewState>,
     daemon_state: tauri::State<'a, Daemon>,
 ) -> Result<(), String> {
+    let view = {
+        let mut view = view_state.lock().unwrap();
+        view.close_proxy_suspended()
+    };
+
+    emit_event(&app_handle, DevWebPenEvent::ViewStateChanged(view)).map_err(|e| e.to_string())?;
+
     let req = Request::new_text(RequestType::Command, Command::ProxyDropAll.to_string());
 
     return send_daemon_request(daemon_state, req).await;
