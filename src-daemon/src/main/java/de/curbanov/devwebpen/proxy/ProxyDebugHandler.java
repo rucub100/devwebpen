@@ -17,5 +17,5 @@ package de.curbanov.devwebpen.proxy;
 
 @FunctionalInterface
 public interface ProxyDebugHandler {
-    void onProxyDebug(SuspendedRequest<?> request, int queueSize);
+    void onProxyDebug(SuspendedRequest<?> request);
 }

@@ -82,7 +82,7 @@ impl ProxyInner {
 
     pub fn set_debug(&mut self, debug: bool) -> ProxyInner {
         self.debug = debug;
-        if (!debug) {
+        if !debug {
             self.suspended_requests.clear();
         }
         self.clone()
@@ -92,13 +92,8 @@ impl ProxyInner {
         self.suspended_requests.len()
     }
 
-    pub fn add_suspended_request(&mut self, request: SuspendedRequest) -> ProxyInner {
-        self.suspended_requests.push(request);
-        self.clone()
-    }
-
-    pub fn remove_suspended_request(&mut self, id: &str) -> ProxyInner {
-        self.suspended_requests.retain(|r| r.id != id);
+    pub fn set_suspended_requests(&mut self, requests: Vec<SuspendedRequest>) -> ProxyInner {
+        self.suspended_requests = requests;
         self.clone()
     }
 }

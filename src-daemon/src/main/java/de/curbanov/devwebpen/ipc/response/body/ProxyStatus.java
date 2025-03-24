@@ -23,12 +23,14 @@ public class ProxyStatus implements AsTextOrBinary {
     private final State state;
     private final int port;
     private final boolean debug;
+    private final ProxyRequestDebug[] suspended;
     private final String error;
 
-    public ProxyStatus(State state, int port, boolean debug, String error) {
+    public ProxyStatus(State state, int port, boolean debug, ProxyRequestDebug[] suspended, String error) {
         this.state = state;
         this.port = port;
         this.debug = debug;
+        this.suspended = suspended;
         this.error = error;
     }
 
@@ -53,7 +55,16 @@ public class ProxyStatus implements AsTextOrBinary {
         var port = this.port == -1 ? "" : String.valueOf(this.port);
         var debug = String.valueOf(this.debug);
         var error = this.error == null ? "" : this.error;
-        return this.state.name() + "\n" + port + "\n" + debug + "\n" + error;
+        var suspendedLength = String.valueOf(this.suspended.length);
+        var suspended = new StringBuilder();
+        for (var i = 0; i < this.suspended.length; i++) {
+            suspended.append(this.suspended[i].asText());
+            if (i < this.suspended.length - 1) {
+                suspended.append("\n");
+            }
+        }
+        return this.state.name() + "\n" + port + "\n" + debug + "\n" + suspendedLength + "\n" + suspended.toString()
+                + "\n" + error;
     }
 
     @Override

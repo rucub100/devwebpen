@@ -253,6 +253,22 @@ impl ViewStateInner {
         };
     }
 
+    pub fn get_proxy_suspended_id(&self) -> Option<Uuid> {
+        let tab = self
+            .tabs
+            .tabs
+            .iter()
+            .find(|tab| tab.kind.name == TabName::ProxyTraffic);
+
+        match tab {
+            None => None,
+            Some(tab) => match tab.data.as_ref() {
+                Some(TabData::ProxyTraffic(data)) => Some(data.id),
+                _ => None,
+            },
+        }
+    }
+
     pub fn open_proxy_suspended(&mut self, id: Uuid) -> PartialViewState {
         let tab = self
             .tabs
@@ -288,6 +304,21 @@ impl ViewStateInner {
                     ..self._select_tab(tab_id)
                 };
             }
+        }
+    }
+
+    pub fn close_proxy_suspended(&mut self) -> PartialViewState {
+        let tab_id = self.tabs.tabs.iter().find_map(|tab| {
+            if tab.kind.name == TabName::ProxyTraffic {
+                Some(tab.id)
+            } else {
+                None
+            }
+        });
+
+        match tab_id {
+            None => PartialViewState::default(),
+            Some(tab_id) => self.close_tab(tab_id),
         }
     }
 

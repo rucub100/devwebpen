@@ -8,6 +8,10 @@ enum ProxyCommand {
   SetProxyPort = "set_proxy_port",
   ToggleDebugging = "proxy_toggle_debugging",
   OpenSuspended = "proxy_open_suspended",
+  ForwardSuspended = "proxy_forward_suspended",
+  DropSuspended = "proxy_drop_suspended",
+  ForwardAllSuspended = "proxy_forward_all_suspended",
+  DropAllSuspended = "proxy_drop_all_suspended",
 }
 
 export async function getProxy(): Promise<Proxy> {
@@ -32,4 +36,20 @@ export async function toggleDebugging(): Promise<Proxy> {
 
 export async function openSuspended(id: string): Promise<void> {
   return invoke(ProxyCommand.OpenSuspended, { id });
+}
+
+export async function forwardSuspended(id: string): Promise<void> {
+  return invoke(ProxyCommand.ForwardSuspended, { id });
+}
+
+export async function dropSuspended(id: string): Promise<void> {
+  return invoke(ProxyCommand.DropSuspended, { id });
+}
+
+export async function forwardAllSuspended(): Promise<void> {
+  return invoke(ProxyCommand.ForwardAllSuspended);
+}
+
+export async function dropAllSuspended(): Promise<void> {
+  return invoke(ProxyCommand.DropAllSuspended);
 }

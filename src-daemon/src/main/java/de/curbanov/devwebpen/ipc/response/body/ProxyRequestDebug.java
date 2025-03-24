@@ -1,3 +1,18 @@
+/*
+ * Copyright 2025 Ruslan Curbanov
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package de.curbanov.devwebpen.ipc.response.body;
 
 import java.nio.ByteBuffer;
@@ -8,13 +23,11 @@ public class ProxyRequestDebug implements AsTextOrBinary {
     private final String id;
     private final String method;
     private final String uri;
-    private final int totalRequests;
 
-    public ProxyRequestDebug(String id, String method, String uri, int totalRequests) {
+    public ProxyRequestDebug(String id, String method, String uri) {
         this.id = id;
         this.method = method;
         this.uri = uri;
-        this.totalRequests = totalRequests;
     }
 
     @Override
@@ -29,7 +42,7 @@ public class ProxyRequestDebug implements AsTextOrBinary {
 
     @Override
     public String asText() {
-        return id + "\n" + method + "\n" + uri + "\n" + totalRequests;
+        return id + "\n" + method + "\n" + uri;
     }
 
     @Override

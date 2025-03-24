@@ -15,6 +15,8 @@
  */
 package de.curbanov.devwebpen.ipc.request;
 
+import java.util.UUID;
+
 public final class Command<T> {
     private final CommandId commandId;
     private final T payload;
@@ -37,6 +39,10 @@ public final class Command<T> {
         START_PROXY,
         STOP_PROXY,
         PROXY_DEBUG,
+        PROXY_FORWARD,
+        PROXY_FORWARD_ALL,
+        PROXY_DROP,
+        PROXY_DROP_ALL,
     }
 
     public static Command<Void> reset() {
@@ -53,5 +59,21 @@ public final class Command<T> {
 
     public static Command<Boolean> proxyDebug(boolean debug) {
         return new Command<>(CommandId.PROXY_DEBUG, debug);
+    }
+
+    public static Command<UUID> proxyForward(String id) {
+        return new Command<>(CommandId.PROXY_FORWARD, UUID.fromString(id));
+    }
+
+    public static Command<Void> proxyForwardAll() {
+        return new Command<>(CommandId.PROXY_FORWARD_ALL, null);
+    }
+
+    public static Command<UUID> proxyDrop(String id) {
+        return new Command<>(CommandId.PROXY_DROP, UUID.fromString(id));
+    }
+
+    public static Command<Void> proxyDropAll() {
+        return new Command<>(CommandId.PROXY_DROP_ALL, null);
     }
 }

@@ -28,18 +28,14 @@ pub async fn start_proxy<'a>(
         format!("{}:{}", Command::StartProxy, port),
     );
 
-    send_daemon_request(daemon_state, req).await?;
-
-    Ok(())
+    return send_daemon_request(daemon_state, req).await;
 }
 
 #[tauri::command]
 pub async fn stop_proxy<'a>(daemon_state: tauri::State<'a, Daemon>) -> Result<(), String> {
     let req = Request::new_text(RequestType::Command, Command::StopProxy.to_string());
 
-    send_daemon_request(daemon_state, req).await?;
-
-    Ok(())
+    return send_daemon_request(daemon_state, req).await;
 }
 
 #[tauri::command]
@@ -77,9 +73,7 @@ pub async fn proxy_toggle_debugging<'a>(
         format!("{}:{}", Command::ProxyDebug, !debug),
     );
 
-    send_daemon_request(daemon_state, req).await?;
-
-    Ok(())
+    return send_daemon_request(daemon_state, req).await;
 }
 
 #[tauri::command]
@@ -95,4 +89,48 @@ pub async fn proxy_open_suspended<'a>(
 
     return emit_event(&app_handle, DevWebPenEvent::ViewStateChanged(view))
         .map_err(|e| e.to_string());
+}
+
+#[tauri::command]
+pub async fn proxy_forward_suspended<'a>(
+    id: Uuid,
+    daemon_state: tauri::State<'a, Daemon>,
+) -> Result<(), String> {
+    let req = Request::new_text(
+        RequestType::Command,
+        format!("{}:{}", Command::ProxyForward, id),
+    );
+
+    return send_daemon_request(daemon_state, req).await;
+}
+
+#[tauri::command]
+pub async fn proxy_forward_all_suspended<'a>(
+    daemon_state: tauri::State<'a, Daemon>,
+) -> Result<(), String> {
+    let req = Request::new_text(RequestType::Command, Command::ProxyForwardAll.to_string());
+
+    return send_daemon_request(daemon_state, req).await;
+}
+
+#[tauri::command]
+pub async fn proxy_drop_suspended<'a>(
+    id: Uuid,
+    daemon_state: tauri::State<'a, Daemon>,
+) -> Result<(), String> {
+    let req = Request::new_text(
+        RequestType::Command,
+        format!("{}:{}", Command::ProxyDrop, id),
+    );
+
+    return send_daemon_request(daemon_state, req).await;
+}
+
+#[tauri::command]
+pub async fn proxy_drop_all_suspended<'a>(
+    daemon_state: tauri::State<'a, Daemon>,
+) -> Result<(), String> {
+    let req = Request::new_text(RequestType::Command, Command::ProxyDropAll.to_string());
+
+    return send_daemon_request(daemon_state, req).await;
 }

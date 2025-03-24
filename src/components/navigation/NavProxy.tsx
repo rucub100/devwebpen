@@ -1,16 +1,27 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useProxy } from "../../hooks/useProxy";
 import Accordion, { AccordionItem } from "../common/Accordion";
 import InputNumber from "../common/InputNumber";
 import Button from "../common/Button";
 import Icon from "../common/Icon";
 import LinkButton from "../common/LinkButton";
+import { useViewState } from "../../hooks/useViewState";
+import { isProxyTrafficTabData } from "../../types/view-state";
 
 export default function NavProxy() {
-  const { proxy, setProxyPort, startProxy, stopProxy, toggleDebugging } =
-    useProxy({
-      listenProxy: true,
-    });
+  const {
+    proxy,
+    setProxyPort,
+    startProxy,
+    stopProxy,
+    toggleDebugging,
+    forwardSuspended,
+    forwardAllSuspended,
+    dropSuspended,
+    dropAllSuspended,
+  } = useProxy({
+    listenProxy: true,
+  });
 
   const portChangeHandler = useCallback(
     (port: number) => {
@@ -26,6 +37,17 @@ export default function NavProxy() {
       stopProxy();
     }
   }, [proxy?.state, startProxy, stopProxy]);
+
+  const { tabs } = useViewState({ listenTabs: true });
+
+  const suspendedId = useMemo(() => {
+    const activeTab = tabs?.tabs.find((tab) => tab.id === tabs?.activeTabId);
+    return isProxyTrafficTabData(activeTab?.data)
+      ? activeTab.data.proxyTraffic.id
+      : undefined;
+  }, [tabs]);
+
+  const anySuspended = proxy && proxy.suspendedRequests.length > 0;
 
   const listenerItem: AccordionItem = {
     key: "listener",
@@ -60,10 +82,24 @@ export default function NavProxy() {
           <Icon icon={proxy?.debug ? "toggle_on" : "toggle_off"}></Icon>
           <span className="ml-2">Debugging {proxy?.debug ? "on" : "off"}</span>
         </LinkButton>
-        <Button>Forward</Button>
-        <Button>Forward All</Button>
-        <Button>Drop</Button>
-        <Button>Drop All</Button>
+        <Button
+          disabled={!suspendedId}
+          onClick={() => forwardSuspended(suspendedId!)}
+        >
+          Forward
+        </Button>
+        <Button disabled={!anySuspended} onClick={forwardAllSuspended}>
+          Forward All
+        </Button>
+        <Button
+          disabled={!suspendedId}
+          onClick={() => dropSuspended(suspendedId!)}
+        >
+          Drop
+        </Button>
+        <Button disabled={!anySuspended} onClick={dropAllSuspended}>
+          Drop All
+        </Button>
       </div>
     ),
   };

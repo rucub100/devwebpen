@@ -15,10 +15,12 @@
  */
 package de.curbanov.devwebpen.proxy;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Stream;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -50,7 +52,7 @@ public final class ProxyServer {
         @Override
         public void addRequest(SuspendedRequest<?> request) {
             suspendedRequests.add(request);
-            debugHandler.onProxyDebug(request, suspendedRequests.size());
+            debugHandler.onProxyDebug(request);
         }
 
     };
@@ -137,6 +139,48 @@ public final class ProxyServer {
         if (!debug) {
             for (SuspendedRequest<?> request : suspendedRequests) {
                 request.resume();
+            }
+
+            suspendedRequests.clear();
+        }
+    }
+
+    public Stream<SuspendedRequest<?>> getDebugRequests() {
+        return suspendedRequests.stream();
+    }
+
+    public void resume(UUID id) {
+        if (debug) {
+            suspendedRequests.stream()
+                    .filter(request -> request.getId().equals(id))
+                    .findFirst()
+                    .ifPresent(SuspendedRequest::resume);
+        }
+    }
+
+    public void drop(UUID id) {
+        if (debug) {
+            suspendedRequests.stream()
+                    .filter(request -> request.getId().equals(id))
+                    .findFirst()
+                    .ifPresent(SuspendedRequest::drop);
+        }
+    }
+
+    public void resumeAll() {
+        if (debug) {
+            for (SuspendedRequest<?> request : suspendedRequests) {
+                request.resume();
+            }
+
+            suspendedRequests.clear();
+        }
+    }
+
+    public void dropAll() {
+        if (debug) {
+            for (SuspendedRequest<?> request : suspendedRequests) {
+                request.drop();
             }
 
             suspendedRequests.clear();

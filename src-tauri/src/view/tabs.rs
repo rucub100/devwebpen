@@ -2,7 +2,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 
 use uuid::Uuid;
 
-use crate::{api_client::HttpRequest, proxy::Proxy};
+use crate::api_client::HttpRequest;
 
 use super::nav::NavView;
 

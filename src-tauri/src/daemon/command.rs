@@ -5,6 +5,10 @@ pub enum Command {
     StartProxy,
     StopProxy,
     ProxyDebug,
+    ProxyForward,
+    ProxyForwardAll,
+    ProxyDrop,
+    ProxyDropAll,
 }
 
 impl fmt::Display for Command {
@@ -14,6 +18,10 @@ impl fmt::Display for Command {
             Command::StartProxy => write!(f, "START_PROXY"),
             Command::StopProxy => write!(f, "STOP_PROXY"),
             Command::ProxyDebug => write!(f, "PROXY_DEBUG"),
+            Command::ProxyForward => write!(f, "PROXY_FORWARD"),
+            Command::ProxyForwardAll => write!(f, "PROXY_FORWARD_ALL"),
+            Command::ProxyDrop => write!(f, "PROXY_DROP"),
+            Command::ProxyDropAll => write!(f, "PROXY_DROP_ALL"),
         }
     }
 }

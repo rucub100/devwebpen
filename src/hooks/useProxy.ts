@@ -13,6 +13,10 @@ import {
   setProxyPort as _setProxyPort,
   toggleDebugging as _toggleDebugging,
   openSuspended as _openSuspended,
+  forwardSuspended as _forwardSuspended,
+  dropSuspended as _dropSuspended,
+  forwardAllSuspended as _forwardAllSuspended,
+  dropAllSuspended as _dropAllSuspended,
 } from "../tauri/commands/proxy-commands";
 import { subscribe } from "../tauri/events";
 
@@ -99,6 +103,26 @@ export function useProxy({ listenProxy }: UseProxyOptioins = {}) {
     [_openSuspended]
   );
 
+  const forwardSuspended = useCallback(
+    (id: string) => _forwardSuspended(id),
+    [_forwardSuspended]
+  );
+
+  const dropSuspended = useCallback(
+    (id: string) => _dropSuspended(id),
+    [_dropSuspended]
+  );
+
+  const forwardAllSuspended = useCallback(
+    () => _forwardAllSuspended(),
+    [_forwardAllSuspended]
+  );
+
+  const dropAllSuspended = useCallback(
+    () => _dropAllSuspended(),
+    [_dropAllSuspended]
+  );
+
   return {
     proxy: globalProxy,
     startProxy,
@@ -106,5 +130,9 @@ export function useProxy({ listenProxy }: UseProxyOptioins = {}) {
     setProxyPort,
     toggleDebugging,
     openSuspended,
+    forwardSuspended,
+    forwardAllSuspended,
+    dropSuspended,
+    dropAllSuspended,
   };
 }

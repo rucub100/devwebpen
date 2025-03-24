@@ -22,8 +22,9 @@ use commands::{
         open_recent_project,
     },
     proxy::{
-        get_proxy_state, proxy_open_suspended, proxy_toggle_debugging, set_proxy_port, start_proxy,
-        stop_proxy,
+        get_proxy_state, proxy_drop_all_suspended, proxy_drop_suspended,
+        proxy_forward_all_suspended, proxy_forward_suspended, proxy_open_suspended,
+        proxy_toggle_debugging, set_proxy_port, start_proxy, stop_proxy,
     },
     view::{
         close_aside, close_bottom, close_tab, init_view, navigate_to, open_welcome, select_tab,
@@ -83,6 +84,10 @@ pub fn run() {
             set_proxy_port,
             proxy_toggle_debugging,
             proxy_open_suspended,
+            proxy_forward_suspended,
+            proxy_forward_all_suspended,
+            proxy_drop_suspended,
+            proxy_drop_all_suspended,
             get_api_client,
             send_api_client_request,
             new_api_client_request,

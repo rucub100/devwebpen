@@ -20,7 +20,6 @@ import java.nio.ByteBuffer;
 
 import de.curbanov.devwebpen.ipc.response.body.HttpRequestError;
 import de.curbanov.devwebpen.ipc.response.body.HttpResponse;
-import de.curbanov.devwebpen.ipc.response.body.ProxyRequestDebug;
 import de.curbanov.devwebpen.ipc.response.body.ProxyStatus;
 
 public class Response<T extends AsTextOrBinary> implements Serializable, AsTextOrBinary {
@@ -33,6 +32,11 @@ public class Response<T extends AsTextOrBinary> implements Serializable, AsTextO
         return new Response<>(header, body);
     }
 
+    public static Response<ProxyStatus> createProxyStatus(ProxyStatus body) {
+        var header = new ResponseHeader(ResponseType.PROXY_STATUS);
+        return new Response<>(header, body);
+    }
+
     public static Response<HttpResponse> createHttpResponse(String requestId, HttpResponse body) {
         var header = new ResponseHeader(requestId, ResponseType.HTTP_RESPONSE);
         return new Response<>(header, body);
@@ -40,11 +44,6 @@ public class Response<T extends AsTextOrBinary> implements Serializable, AsTextO
 
     public static Response<HttpRequestError> createHttpRequestError(String requestId, HttpRequestError body) {
         var header = new ResponseHeader(requestId, ResponseType.HTTP_REQUEST_ERROR);
-        return new Response<>(header, body);
-    }
-
-    public static Response<ProxyRequestDebug> createProxyRequestDebug(ProxyRequestDebug body) {
-        var header = new ResponseHeader(ResponseType.PROXY_REQUEST_DEBUG);
         return new Response<>(header, body);
     }
 

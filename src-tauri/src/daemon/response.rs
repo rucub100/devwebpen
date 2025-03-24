@@ -5,7 +5,6 @@ pub enum ResponseType {
     ProxyStatus,
     HttpResponse,
     HttpRequestError,
-    ProxyRequestDebug,
 }
 
 pub struct ResponseHeader {
@@ -54,7 +53,6 @@ impl Response {
             "PROXY_STATUS" => ResponseType::ProxyStatus,
             "HTTP_RESPONSE" => ResponseType::HttpResponse,
             "HTTP_REQUEST_ERROR" => ResponseType::HttpRequestError,
-            "PROXY_REQUEST_DEBUG" => ResponseType::ProxyRequestDebug,
             _ => return Err("Invalid request type".to_string()),
         };
 
