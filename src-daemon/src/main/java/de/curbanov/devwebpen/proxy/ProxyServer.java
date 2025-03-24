@@ -154,7 +154,10 @@ public final class ProxyServer {
             suspendedRequests.stream()
                     .filter(request -> request.getId().equals(id))
                     .findFirst()
-                    .ifPresent(SuspendedRequest::resume);
+                    .ifPresent((request) -> {
+                        request.resume();
+                        suspendedRequests.remove(request);
+                    });
         }
     }
 
@@ -163,7 +166,10 @@ public final class ProxyServer {
             suspendedRequests.stream()
                     .filter(request -> request.getId().equals(id))
                     .findFirst()
-                    .ifPresent(SuspendedRequest::drop);
+                    .ifPresent((request) -> {
+                        request.drop();
+                        suspendedRequests.remove(request);
+                    });
         }
     }
 

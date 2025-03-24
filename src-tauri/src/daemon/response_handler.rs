@@ -154,7 +154,7 @@ fn handle_proxy_status_response(app_handle: &AppHandle, body: String) {
         let tab_suspended_id = tab_suspended_id.unwrap();
         close_suspended = suspended_requests
             .iter()
-            .any(|req| req.id == tab_suspended_id.to_string());
+            .all(|req| req.id != tab_suspended_id.to_string());
     }
 
     if !debug || close_suspended {
