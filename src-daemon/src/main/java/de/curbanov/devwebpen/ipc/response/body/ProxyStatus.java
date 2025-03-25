@@ -21,14 +21,12 @@ import de.curbanov.devwebpen.ipc.response.AsTextOrBinary;
 
 public class ProxyStatus implements AsTextOrBinary {
     private final State state;
-    private final int port;
     private final boolean debug;
     private final ProxyRequestDebug[] suspended;
     private final String error;
 
-    public ProxyStatus(State state, int port, boolean debug, ProxyRequestDebug[] suspended, String error) {
+    public ProxyStatus(State state, boolean debug, ProxyRequestDebug[] suspended, String error) {
         this.state = state;
-        this.port = port;
         this.debug = debug;
         this.suspended = suspended;
         this.error = error;
@@ -52,7 +50,6 @@ public class ProxyStatus implements AsTextOrBinary {
 
     @Override
     public String asText() {
-        var port = this.port == -1 ? "" : String.valueOf(this.port);
         var debug = String.valueOf(this.debug);
         var error = this.error == null ? "" : this.error;
         var suspendedLength = String.valueOf(this.suspended.length);
@@ -63,7 +60,7 @@ public class ProxyStatus implements AsTextOrBinary {
                 suspended.append("\n");
             }
         }
-        return this.state.name() + "\n" + port + "\n" + debug + "\n" + suspendedLength + "\n" + suspended.toString()
+        return this.state.name() + "\n" + debug + "\n" + suspendedLength + "\n" + suspended.toString()
                 + "\n" + error;
     }
 

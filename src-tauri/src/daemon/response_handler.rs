@@ -38,18 +38,6 @@ fn handle_proxy_status_response(app_handle: &AppHandle, body: String) {
     }
     let state = state.unwrap();
 
-    let port = body_lines.next();
-    if let None = port {
-        log::error!("Failed to parse proxy status, missing port");
-        return;
-    }
-    let port = port.unwrap().parse::<u16>();
-    if let Err(e) = port {
-        log::error!("Failed to parse proxy port: {}", e);
-        return;
-    }
-    let port = port.unwrap();
-
     let debug = body_lines.next();
     if let None = debug {
         log::error!("Failed to parse proxy status, missing debug");
@@ -135,7 +123,6 @@ fn handle_proxy_status_response(app_handle: &AppHandle, body: String) {
             proxy.set_state(state);
         }
     }
-    proxy.set_port(port);
     proxy.set_debug(debug);
     proxy.set_suspended_requests(suspended_requests.clone());
 

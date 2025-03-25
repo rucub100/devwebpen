@@ -28,6 +28,8 @@ pub async fn start_proxy<'a>(
         format!("{}:{}", Command::StartProxy, port),
     );
 
+    log::debug!("Starting proxy on port {}...", port);
+
     return send_daemon_request(daemon_state, req).await;
 }
 

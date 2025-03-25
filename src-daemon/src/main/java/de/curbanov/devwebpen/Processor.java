@@ -73,6 +73,21 @@ public class Processor implements TextRequestHandler, ProxyDebugHandler {
         responseSender.sendResponse(res);
     }
 
+    private ProxyStatus createProxyStatus() {
+        return createProxyStatus(null);
+    }
+
+    private ProxyStatus createProxyStatus(Throwable error) {
+        return new ProxyStatus(
+                error != null ? ProxyStatus.State.ERROR
+                        : proxyServer.isRunning() ? ProxyStatus.State.RUNNING : ProxyStatus.State.STOPPED,
+                proxyServer.isDebug(),
+                proxyServer.getDebugRequests()
+                        .map((req) -> new ProxyRequestDebug(req.getId().toString(), req.getMethod(), req.getUri()))
+                        .toArray(ProxyRequestDebug[]::new),
+                error != null ? error.getMessage() : null);
+    }
+
     private void execCommand(Request<?> request) {
         var command = (Command<?>) request.getBody();
         switch (command.getCommandId()) {
@@ -119,22 +134,6 @@ public class Processor implements TextRequestHandler, ProxyDebugHandler {
             default:
                 throw new IllegalArgumentException("[Processor]: Unknown command: " + command);
         }
-    }
-
-    private ProxyStatus createProxyStatus() {
-        return createProxyStatus(null);
-    }
-
-    private ProxyStatus createProxyStatus(Throwable error) {
-        return new ProxyStatus(
-                error != null ? ProxyStatus.State.ERROR
-                        : proxyServer.isRunning() ? ProxyStatus.State.RUNNING : ProxyStatus.State.STOPPED,
-                proxyServer.getPort(),
-                proxyServer.isDebug(),
-                proxyServer.getDebugRequests()
-                        .map((req) -> new ProxyRequestDebug(req.getId().toString(), req.getMethod(), req.getUri()))
-                        .toArray(ProxyRequestDebug[]::new),
-                error != null ? error.getMessage() : null);
     }
 
     private void execResetCommand(Request<?> request) {
