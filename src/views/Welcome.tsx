@@ -48,7 +48,7 @@ export default function Welcome() {
         <LinkButton className="-ml-2" onClick={startEphemeralSession}>
           Start ephemeral session...
         </LinkButton>
-        <LinkButton className="-ml-2" onClick={createProject}>
+        {/* <LinkButton className="-ml-2" onClick={createProject}>
           Create a new project...
         </LinkButton>
         <LinkButton className="-ml-2" onClick={openProject}>
@@ -63,7 +63,7 @@ export default function Welcome() {
           >
             {project.path}
           </LinkButton>
-        ))}
+        ))} */}
       </div>
     </div>
   );
