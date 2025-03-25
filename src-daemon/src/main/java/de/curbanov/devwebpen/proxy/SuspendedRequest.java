@@ -6,6 +6,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.util.ReferenceCountUtil;
 
 public class SuspendedRequest<T> {
@@ -40,7 +41,7 @@ public class SuspendedRequest<T> {
 
     public String getUri() {
         if (request instanceof FullHttpRequest fullHttpRequest) {
-            return fullHttpRequest.uri();
+            return fullHttpRequest.headers().get(HttpHeaderNames.HOST) + fullHttpRequest.uri();
         }
 
         throw new IllegalStateException("Request is not a FullHttpRequest");
