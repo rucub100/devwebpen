@@ -49,6 +49,8 @@ public class Request<T> implements Serializable {
                         return Command.proxyDrop(bodyParts[1]);
                     case PROXY_DROP_ALL:
                         return Command.proxyDropAll();
+                    case PROXY_SUSPENDED_CONTENT:
+                        return Command.proxySuspendedContent(bodyParts[1]);
                     default:
                         throw new IllegalArgumentException("Unknown command: " + commandId);
                 }

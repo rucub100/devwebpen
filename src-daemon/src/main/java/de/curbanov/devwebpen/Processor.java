@@ -28,14 +28,16 @@ import de.curbanov.devwebpen.ipc.request.Command;
 import de.curbanov.devwebpen.ipc.request.HttpRequest;
 import de.curbanov.devwebpen.ipc.request.Request;
 import de.curbanov.devwebpen.ipc.request.TextRequestHandler;
+import de.curbanov.devwebpen.ipc.response.AsTextOrBinary;
 import de.curbanov.devwebpen.ipc.response.Response;
 import de.curbanov.devwebpen.ipc.response.ResponseSender;
 import de.curbanov.devwebpen.ipc.response.body.HttpRequestError;
-import de.curbanov.devwebpen.ipc.response.body.ProxyRequestDebug;
+import de.curbanov.devwebpen.ipc.response.body.ProxySuspendedRequest;
 import de.curbanov.devwebpen.ipc.response.body.ProxyStatus;
 import de.curbanov.devwebpen.proxy.ProxyDebugHandler;
 import de.curbanov.devwebpen.proxy.ProxyServer;
 import de.curbanov.devwebpen.proxy.SuspendedRequest;
+import io.netty.handler.codec.http.FullHttpRequest;
 
 public class Processor implements TextRequestHandler, ProxyDebugHandler {
     private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
@@ -83,8 +85,9 @@ public class Processor implements TextRequestHandler, ProxyDebugHandler {
                         : proxyServer.isRunning() ? ProxyStatus.State.RUNNING : ProxyStatus.State.STOPPED,
                 proxyServer.isDebug(),
                 proxyServer.getDebugRequests()
-                        .map((req) -> new ProxyRequestDebug(req.getId().toString(), req.getMethod(), req.getUri()))
-                        .toArray(ProxyRequestDebug[]::new),
+                        .map((req) -> new ProxySuspendedRequest(req.getId().toString(), req.getProtocolVersion(),
+                                req.getMethod(), req.getUri()))
+                        .toArray(ProxySuspendedRequest[]::new),
                 error != null ? error.getMessage() : null);
     }
 
@@ -130,6 +133,14 @@ public class Processor implements TextRequestHandler, ProxyDebugHandler {
                 break;
             case PROXY_DROP_ALL:
                 execProxyDropAllCommand(request);
+                break;
+            case PROXY_SUSPENDED_CONTENT:
+                if (command.getPayload() instanceof UUID id) {
+                    execProxySuspendedContentCommand(request, id);
+                } else {
+                    throw new IllegalArgumentException(
+                            "[Processor]: Invalid payload type for PROXY_SUSPENDED_CONTENT command");
+                }
                 break;
             default:
                 throw new IllegalArgumentException("[Processor]: Unknown command: " + command);
@@ -240,6 +251,22 @@ public class Processor implements TextRequestHandler, ProxyDebugHandler {
                 createProxyStatus());
 
         responseSender.sendResponse(res);
+    }
+
+    private void execProxySuspendedContentCommand(Request<?> request, UUID id) {
+        System.out.println("[Processor]: Droping proxy request...");
+
+        proxyServer.getDebugRequests().filter(req -> req.getId().equals(id))
+                .findFirst()
+                .ifPresent(req -> {
+                    FullHttpRequest httpRequest = (FullHttpRequest) req.getRequest();
+                    Response<AsTextOrBinary> res = Response.createProxySuspendedContent(
+                            request.getHeader().getUuid(),
+                            new ProxySuspendedRequest(req.getId().toString(), httpRequest));
+
+                    responseSender.sendResponse(res);
+                });
+
     }
 
     private void execProxyDropAllCommand(Request<?> request) {

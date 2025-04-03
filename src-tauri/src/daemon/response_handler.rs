@@ -14,12 +14,120 @@ pub fn handle_daemon_response(app_handle: &AppHandle, res: Response) {
         ResponseType::ProxyStatus => {
             handle_proxy_status_response(app_handle, res.body);
         }
+        ResponseType::ProxySuspendedContent => {
+            handle_proxy_suspended_content_response(app_handle, res.body);
+        }
         ResponseType::HttpRequestError => {
             handle_http_request_error_response(app_handle, res.body);
         }
         ResponseType::HttpResponse => {
             handle_http_response(app_handle, res.body);
         }
+    }
+}
+
+fn handle_proxy_suspended_content_response(app_handle: &AppHandle, body: String) {
+    let mut body_lines = body.lines();
+
+    let id = body_lines.next();
+    if let None = id {
+        log::error!("Failed to parse suspended proxy request, missing id");
+        return;
+    }
+    let id = id.unwrap().to_string();
+
+    let protocol_version = body_lines.next();
+    if let None = protocol_version {
+        log::error!("Failed to parse suspended proxy request, missing protocol_version");
+        return;
+    }
+    let protocol_version = protocol_version.unwrap().to_string();
+
+    let method = body_lines.next();
+    if let None = method {
+        log::error!("Failed to parse suspended proxy request, missing method");
+        return;
+    }
+    let method = method.unwrap().to_string();
+
+    let uri = body_lines.next();
+    if let None = uri {
+        log::error!("Failed to parse suspended proxy request, missing uri");
+        return;
+    }
+    let uri = uri.unwrap().to_string();
+
+    let headers_length = body_lines.next();
+    if let None = headers_length {
+        log::error!("Failed to parse suspended proxy request, missing headers_length");
+        return;
+    }
+    let headers_length = headers_length.unwrap().parse::<usize>();
+    if let Err(e) = headers_length {
+        log::error!(
+            "Failed to parse suspended proxy request, headers_length: {}",
+            e
+        );
+        return;
+    }
+    let headers_length = headers_length.unwrap();
+    let mut headers: Vec<(String, String)> = Vec::new();
+
+    for _ in 0..headers_length {
+        let header = body_lines.next();
+        if let None = header {
+            log::error!("Failed to parse suspended proxy request, missing header");
+            return;
+        }
+        let header = header.unwrap().to_string();
+        let mut parts = header.splitn(2, ':');
+        let key = parts.next();
+        if let None = key {
+            log::error!("Failed to parse suspended proxy request, missing header key");
+            return;
+        }
+        let key = key.unwrap().to_string();
+        let value = parts.next();
+        if let None = value {
+            log::error!("Failed to parse suspended proxy request, missing header value");
+            return;
+        }
+        let value = value.unwrap().to_string();
+        headers.push((key, value));
+    }
+
+    let app_state = app_handle.state::<crate::AppState>();
+    let app_state = app_state.lock().unwrap();
+
+    let channel = app_state.channels.get(&id);
+    if let None = channel {
+        log::error!(
+            "Failed to find channel for suspended request content: {}",
+            id
+        );
+        return;
+    }
+    let channel = channel.unwrap();
+
+    let suspended_request = SuspendedRequest {
+        id,
+        protocol_version,
+        method,
+        uri,
+        headers: Some(headers),
+        body: None,
+    };
+    let json_value = serde_json::to_value(&suspended_request);
+    if let Err(e) = json_value {
+        log::error!("Failed to serialize suspended request content: {}", e);
+        return;
+    }
+    let json_value = json_value.unwrap();
+
+    let result = channel.send(json_value);
+    if let Err(e) = result {
+        log::error!("Failed to send suspended request content: {}", e);
+        return;
     }
 }
 
@@ -71,6 +179,13 @@ fn handle_proxy_status_response(app_handle: &AppHandle, body: String) {
         }
         let id = id.unwrap().to_string();
 
+        let protocol_version = body_lines.next();
+        if let None = protocol_version {
+            log::error!("Failed to parse suspended proxy request, missing protocol_version");
+            return;
+        }
+        let protocol_version = protocol_version.unwrap().to_string();
+
         let method = body_lines.next();
         if let None = method {
             log::error!("Failed to parse suspended proxy request, missing method");
@@ -85,7 +200,14 @@ fn handle_proxy_status_response(app_handle: &AppHandle, body: String) {
         }
         let uri = uri.unwrap().to_string();
 
-        suspended_requests.push(SuspendedRequest { id, method, uri });
+        suspended_requests.push(SuspendedRequest {
+            id,
+            protocol_version,
+            method,
+            uri,
+            headers: None,
+            body: None,
+        });
     }
 
     let error = body_lines.next();

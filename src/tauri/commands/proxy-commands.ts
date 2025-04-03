@@ -1,13 +1,14 @@
-import { invoke } from "@tauri-apps/api/core";
-import { Proxy } from "../../types/proxy";
+import { Channel, invoke } from "@tauri-apps/api/core";
+import { Proxy, SuspendedContent } from "../../types/proxy";
 
 enum ProxyCommand {
   GetProxyState = "get_proxy_state",
-  startProxy = "start_proxy",
+  StartProxy = "start_proxy",
   StopProxy = "stop_proxy",
   SetProxyPort = "set_proxy_port",
   ToggleDebugging = "proxy_toggle_debugging",
   OpenSuspended = "proxy_open_suspended",
+  GetSuspendedContent = "proxy_get_suspended_content",
   ForwardSuspended = "proxy_forward_suspended",
   DropSuspended = "proxy_drop_suspended",
   ForwardAllSuspended = "proxy_forward_all_suspended",
@@ -19,7 +20,7 @@ export async function getProxy(): Promise<Proxy> {
 }
 
 export async function startProxy(): Promise<void> {
-  return invoke(ProxyCommand.startProxy);
+  return invoke(ProxyCommand.StartProxy);
 }
 
 export async function stopProxy(): Promise<void> {
@@ -36,6 +37,13 @@ export async function toggleDebugging(): Promise<Proxy> {
 
 export async function openSuspended(id: string): Promise<void> {
   return invoke(ProxyCommand.OpenSuspended, { id });
+}
+
+export async function getSuspendedContent(
+  id: string,
+  channel: Channel<SuspendedContent>
+): Promise<void> {
+  return invoke(ProxyCommand.GetSuspendedContent, { id, channel });
 }
 
 export async function forwardSuspended(id: string): Promise<void> {

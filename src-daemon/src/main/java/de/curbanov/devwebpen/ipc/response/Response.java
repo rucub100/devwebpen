@@ -32,6 +32,11 @@ public class Response<T extends AsTextOrBinary> implements Serializable, AsTextO
         return new Response<>(header, body);
     }
 
+    public static Response<AsTextOrBinary> createProxySuspendedContent(String requestId, AsTextOrBinary body) {
+        var header = new ResponseHeader(requestId, ResponseType.PROXY_SUSPENDED_CONTENT);
+        return new Response<>(header, body);
+    }
+
     public static Response<ProxyStatus> createProxyStatus(ProxyStatus body) {
         var header = new ResponseHeader(ResponseType.PROXY_STATUS);
         return new Response<>(header, body);

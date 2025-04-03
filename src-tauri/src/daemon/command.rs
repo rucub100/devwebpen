@@ -9,6 +9,7 @@ pub enum Command {
     ProxyForwardAll,
     ProxyDrop,
     ProxyDropAll,
+    ProxySuspendedContent,
 }
 
 impl fmt::Display for Command {
@@ -22,6 +23,7 @@ impl fmt::Display for Command {
             Command::ProxyForwardAll => write!(f, "PROXY_FORWARD_ALL"),
             Command::ProxyDrop => write!(f, "PROXY_DROP"),
             Command::ProxyDropAll => write!(f, "PROXY_DROP_ALL"),
+            Command::ProxySuspendedContent => write!(f, "PROXY_SUSPENDED_CONTENT"),
         }
     }
 }

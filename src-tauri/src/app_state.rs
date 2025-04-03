@@ -1,8 +1,9 @@
-use std::sync::Mutex;
+use std::{collections::HashMap, sync::Mutex};
 
 use project::Project;
 use session::Session;
 use store::Store;
+use tauri::ipc::Channel;
 
 pub mod project;
 pub mod session;
@@ -13,6 +14,7 @@ pub struct AppStateInner {
     pub ephemeral: Option<Session>,
     pub project: Option<Project>,
     pub store: Option<Store>,
+    pub channels: HashMap<String, Channel<serde_json::Value>>,
 }
 
 impl AppStateInner {

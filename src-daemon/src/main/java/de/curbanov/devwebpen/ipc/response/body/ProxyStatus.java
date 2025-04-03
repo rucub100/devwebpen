@@ -22,10 +22,10 @@ import de.curbanov.devwebpen.ipc.response.AsTextOrBinary;
 public class ProxyStatus implements AsTextOrBinary {
     private final State state;
     private final boolean debug;
-    private final ProxyRequestDebug[] suspended;
+    private final ProxySuspendedRequest[] suspended;
     private final String error;
 
-    public ProxyStatus(State state, boolean debug, ProxyRequestDebug[] suspended, String error) {
+    public ProxyStatus(State state, boolean debug, ProxySuspendedRequest[] suspended, String error) {
         this.state = state;
         this.debug = debug;
         this.suspended = suspended;

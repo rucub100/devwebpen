@@ -43,6 +43,7 @@ public final class Command<T> {
         PROXY_FORWARD_ALL,
         PROXY_DROP,
         PROXY_DROP_ALL,
+        PROXY_SUSPENDED_CONTENT,
     }
 
     public static Command<Void> reset() {
@@ -75,5 +76,9 @@ public final class Command<T> {
 
     public static Command<Void> proxyDropAll() {
         return new Command<>(CommandId.PROXY_DROP_ALL, null);
+    }
+
+    public static Command<UUID> proxySuspendedContent(String id) {
+        return new Command<>(CommandId.PROXY_SUSPENDED_CONTENT, UUID.fromString(id));
     }
 }

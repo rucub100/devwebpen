@@ -31,6 +31,14 @@ public class SuspendedRequest<T> {
         return request;
     }
 
+    public String getProtocolVersion() {
+        if (request instanceof FullHttpRequest fullHttpRequest) {
+            return fullHttpRequest.protocolVersion().text();
+        }
+
+        throw new IllegalStateException("Request is not a FullHttpRequest");
+    }
+
     public String getMethod() {
         if (request instanceof FullHttpRequest fullHttpRequest) {
             return fullHttpRequest.method().name();

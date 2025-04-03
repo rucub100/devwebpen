@@ -17,6 +17,7 @@ package de.curbanov.devwebpen.ipc.response;
 
 public enum ResponseType {
     PROXY_STATUS,
+    PROXY_SUSPENDED_CONTENT,
     HTTP_RESPONSE,
     HTTP_REQUEST_ERROR
 }

@@ -3,6 +3,7 @@ use uuid::Uuid;
 
 pub enum ResponseType {
     ProxyStatus,
+    ProxySuspendedContent,
     HttpResponse,
     HttpRequestError,
 }
@@ -51,6 +52,7 @@ impl Response {
         let request_type_line = request_type_line.unwrap();
         let request_type = match request_type_line {
             "PROXY_STATUS" => ResponseType::ProxyStatus,
+            "PROXY_SUSPENDED_CONTENT" => ResponseType::ProxySuspendedContent,
             "HTTP_RESPONSE" => ResponseType::HttpResponse,
             "HTTP_REQUEST_ERROR" => ResponseType::HttpRequestError,
             _ => return Err("Invalid request type".to_string()),

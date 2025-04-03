@@ -5,7 +5,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { Proxy } from "../types/proxy";
+import { Proxy, SuspendedContent } from "../types/proxy";
 import {
   getProxy,
   startProxy as _startProxy,
@@ -13,12 +13,14 @@ import {
   setProxyPort as _setProxyPort,
   toggleDebugging as _toggleDebugging,
   openSuspended as _openSuspended,
+  getSuspendedContent as _getSuspendedContent,
   forwardSuspended as _forwardSuspended,
   dropSuspended as _dropSuspended,
   forwardAllSuspended as _forwardAllSuspended,
   dropAllSuspended as _dropAllSuspended,
 } from "../tauri/commands/proxy-commands";
 import { subscribe } from "../tauri/events";
+import { Channel } from "@tauri-apps/api/core";
 
 let globalProxy: Proxy | undefined = undefined;
 let proxyListeners: Dispatch<SetStateAction<Proxy>>[] = [];
@@ -103,6 +105,12 @@ export function useProxy({ listenProxy }: UseProxyOptioins = {}) {
     [_openSuspended]
   );
 
+  const getSuspendedContent = useCallback(
+    (id: string, channel: Channel<SuspendedContent>) =>
+      _getSuspendedContent(id, channel),
+    [_getSuspendedContent]
+  );
+
   const forwardSuspended = useCallback(
     (id: string) => _forwardSuspended(id),
     [_forwardSuspended]
@@ -134,5 +142,6 @@ export function useProxy({ listenProxy }: UseProxyOptioins = {}) {
     forwardAllSuspended,
     dropSuspended,
     dropAllSuspended,
+    getSuspendedContent,
   };
 }

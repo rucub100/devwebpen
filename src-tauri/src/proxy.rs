@@ -23,8 +23,17 @@ impl ProxyState {
 #[serde(rename_all = "camelCase")]
 pub struct SuspendedRequest {
     pub id: String,
+    pub protocol_version: String,
     pub method: String,
     pub uri: String,
+    pub headers: Option<Vec<(String, String)>>,
+    pub body: Option<String>,
+}
+
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct SuspendedContent {
+    pub id: String,
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq)]

@@ -13,6 +13,8 @@ export type SuspendedRequest = {
   uri: string;
 };
 
+export type SuspendedContent = {};
+
 export type Proxy = {
   state: ProxyState;
   port: number;

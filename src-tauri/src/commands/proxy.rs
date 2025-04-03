@@ -1,13 +1,15 @@
+use tauri::ipc::Channel;
 use uuid::Uuid;
 
 use crate::{
+    app_state::{self, AppState, AppStateInner},
     daemon::{
         command::Command,
         request::{Request, RequestType},
         Daemon,
     },
     events::{emit_event, DevWebPenEvent},
-    proxy::{Proxy, ProxyInner},
+    proxy::{Proxy, ProxyInner, SuspendedContent},
     view::ViewState,
 };
 
@@ -169,6 +171,25 @@ pub async fn proxy_drop_all_suspended<'a>(
     emit_event(&app_handle, DevWebPenEvent::ViewStateChanged(view)).map_err(|e| e.to_string())?;
 
     let req = Request::new_text(RequestType::Command, Command::ProxyDropAll.to_string());
+
+    return send_daemon_request(daemon_state, req).await;
+}
+#[tauri::command]
+pub async fn proxy_get_suspended_content<'a>(
+    id: Uuid,
+    channel: Channel<serde_json::Value>,
+    app_state: tauri::State<'a, AppState>,
+    daemon_state: tauri::State<'a, Daemon>,
+) -> Result<(), String> {
+    {
+        let mut app_state = app_state.lock().unwrap();
+        app_state.channels.insert(id.to_string(), channel);
+    }
+
+    let req = Request::new_text(
+        RequestType::Command,
+        format!("{}:{}", Command::ProxySuspendedContent, id),
+    );
 
     return send_daemon_request(daemon_state, req).await;
 }
