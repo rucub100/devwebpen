@@ -2,14 +2,14 @@ use tauri::ipc::Channel;
 use uuid::Uuid;
 
 use crate::{
-    app_state::{self, AppState, AppStateInner},
+    app_state::AppState,
     daemon::{
         command::Command,
         request::{Request, RequestType},
         Daemon,
     },
     events::{emit_event, DevWebPenEvent},
-    proxy::{Proxy, ProxyInner, SuspendedContent},
+    proxy::{Proxy, ProxyInner},
     view::ViewState,
 };
 

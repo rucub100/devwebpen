@@ -7,13 +7,20 @@ const proxyState = {
 type ProxyStateKeys = keyof typeof proxyState;
 export type ProxyState = (typeof proxyState)[ProxyStateKeys];
 
-export type SuspendedRequest = {
+export type SuspendedRequestHttpHeader = {
   id: string;
-  method: string;
-  uri: string;
+  name: string;
+  value: string;
 };
 
-export type SuspendedContent = {};
+export type SuspendedRequest = {
+  id: string;
+  protocolVersion: string;
+  method: string;
+  uri: string;
+  headers?: SuspendedRequestHttpHeader[];
+  body?: Uint8Array;
+};
 
 export type Proxy = {
   state: ProxyState;
