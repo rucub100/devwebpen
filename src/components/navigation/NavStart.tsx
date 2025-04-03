@@ -14,8 +14,8 @@ export default function NavStart() {
 
   const {
     isActive: isProjectActive,
-    createProject,
-    openProject,
+    // createProject,
+    // openProject,
     closeProject,
   } = useProject({
     listenIsActive: true,

@@ -5,7 +5,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { Proxy, SuspendedContent } from "../types/proxy";
+import { Proxy, SuspendedRequest } from "../types/proxy";
 import {
   getProxy,
   startProxy as _startProxy,
@@ -106,7 +106,7 @@ export function useProxy({ listenProxy }: UseProxyOptioins = {}) {
   );
 
   const getSuspendedContent = useCallback(
-    (id: string, channel: Channel<SuspendedContent>) =>
+    (id: string, channel: Channel<SuspendedRequest>) =>
       _getSuspendedContent(id, channel),
     [_getSuspendedContent]
   );

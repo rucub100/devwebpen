@@ -11,10 +11,10 @@ export default function Welcome() {
 
   const {
     isActive: isProjectActive,
-    recentProjects,
-    createProject,
-    openProject,
-    openRecentProject,
+    // recentProjects,
+    // createProject,
+    // openProject,
+    // openRecentProject,
   } = useProject({
     listenIsActive: true,
     listenRecentProjects: true,

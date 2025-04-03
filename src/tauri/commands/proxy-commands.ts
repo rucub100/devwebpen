@@ -1,5 +1,5 @@
 import { Channel, invoke } from "@tauri-apps/api/core";
-import { Proxy, SuspendedContent } from "../../types/proxy";
+import { Proxy, SuspendedRequest } from "../../types/proxy";
 
 enum ProxyCommand {
   GetProxyState = "get_proxy_state",
@@ -41,7 +41,7 @@ export async function openSuspended(id: string): Promise<void> {
 
 export async function getSuspendedContent(
   id: string,
-  channel: Channel<SuspendedContent>
+  channel: Channel<SuspendedRequest>
 ): Promise<void> {
   return invoke(ProxyCommand.GetSuspendedContent, { id, channel });
 }

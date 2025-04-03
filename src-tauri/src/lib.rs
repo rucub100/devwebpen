@@ -1,6 +1,5 @@
 use api_client::ApiClient;
 use log;
-use tauri::Manager;
 
 use app_state::AppState;
 use commands::{
@@ -32,6 +31,7 @@ use commands::{
 };
 use daemon::Daemon;
 use proxy::Proxy;
+use tauri::Manager;
 use view::ViewState;
 use window::window_event_handler;
 
