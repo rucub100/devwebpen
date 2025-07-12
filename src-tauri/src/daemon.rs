@@ -206,12 +206,12 @@ async fn set_daemon_connecting(app_handle: &AppHandle) {
 
     if let Err(e) = daemon.set_connecting() {
         log::error!("{}", e);
-    } else if let Err(e) = emit_event(
+    } else { match emit_event(
         app_handle,
         DevWebPenEvent::DaemonStateChanged(daemon.state.clone()),
-    ) {
+    ) { Err(e) => {
         log::error!("{}", e);
-    }
+    } _ => {}}}
 }
 
 async fn set_daemon_running(app_handle: &AppHandle) {
@@ -220,12 +220,12 @@ async fn set_daemon_running(app_handle: &AppHandle) {
 
     if let Err(e) = daemon.set_running() {
         log::error!("{}", e);
-    } else if let Err(e) = emit_event(
+    } else { match emit_event(
         app_handle,
         DevWebPenEvent::DaemonStateChanged(daemon.state.clone()),
-    ) {
+    ) { Err(e) => {
         log::error!("{}", e);
-    }
+    } _ => {}}}
 }
 
 async fn stop_sidecar(app_handle: &tauri::AppHandle) {
