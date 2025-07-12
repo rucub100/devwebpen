@@ -2,9 +2,9 @@
 
 Devwebpen is a desktop application designed to assist developers and security professionals with common web application tasks. It aims to provide core functionalities for interacting with HTTP APIs and inspecting network traffic in a modern, user-friendly interface.
 
-## ⚠️ Disclaimer: Work in Progress ⚠️
+## ⚠️ Disclaimer: Experimental & Educational Project ⚠️
 
-**Please be aware that devwebpen is currently under active development.** It is **not** feature-complete, may contain bugs, and is **not recommended for production use** or critical tasks at this stage. Use it at your own risk.
+**devwebpen is an experimental project created for educational purposes only.** Development is not ongoing, and the project is not feature-complete or production-ready. Use at your own risk.
 
 ## Screenshots
 
